@@ -1,0 +1,31 @@
+{
+    name: "teltek/pmk2-expired-video-bundle",
+    type: "symfony-bundle",
+    description: "Bundle for PuMuKIT2 to configure the automatic expiration of a video",
+    keywords: [
+        "expiration",
+        "expired",
+        "videos",
+        "symfony2",
+        "bundle",
+        "pumukit",
+        "teltek"
+    ],
+    homepage: "https://github.com/teltek/PuMuKIT2-expired-video-bundle",
+    license: "Copyright",
+    authors: [
+        {
+            name: "Teltek Team",
+            homepage: "http://teltek.es"
+        }
+    ],
+    require: {
+        php: ">=5.3.9",
+        pumukit/pumukit2: "2.2.*"
+    },
+    autoload: {
+        psr-4: {
+            Pumukit\ExpiredVideoBundle\: ""
+        }
+    }
+}
