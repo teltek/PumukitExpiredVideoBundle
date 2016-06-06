@@ -21,7 +21,7 @@
     ],
     "require": {
         "php": ">=5.3.9",
-        "pumukit/pumukit2": "2.2.*"
+        "pumukit/pumukit2": ">=2.2"
     },
     "autoload": {
         "psr-4": {
