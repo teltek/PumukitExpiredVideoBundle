@@ -6,10 +6,18 @@
 
     <services>
 
+        <service id="pumukit_expired_video.notification" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService">
+            <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="pumukit_notification.sender" on-invalid="ignore"/>
+            <argument type="service" id="translator"/>
+        </service>
+
         <service id="pumukit_expired_video.init_date" class="Pumukit\ExpiredVideoBundle\EventListener\InitDateListener">
             <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
             <argument>365</argument>
             <tag name="kernel.event_listener" event="multimediaobject.create" method="onMultimediaobjectCreate" />
         </service>
+
     </services>
 </container>

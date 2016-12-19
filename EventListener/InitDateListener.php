@@ -30,6 +30,7 @@ class InitDateListener
 
         $date = new \DateTime("+" . $this->interval . " days");
         $mm->setProperty('expiration_date', $date->format('c'));
+        $mm->setProperty('renew_expiration_date', $this->interval);
 
         $this->dm->persist($mm);
         $this->dm->flush();
