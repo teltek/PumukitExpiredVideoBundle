@@ -24,7 +24,7 @@ class ExpiredVideoDeleteCommand extends ContainerAwareCommand
             ->setDescription('Expired video delete')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
             ->setHelp(<<<EOT
-Expired video list
+This command delete all the videos without owner people when this expiration_date is less than a year ago.
 EOT
             );
     }
@@ -75,7 +75,7 @@ EOT
         $qb = $this->mmobjRepo->createQueryBuilder();
         $qb->field('properties.expiration_date')->exists(true);
         $qb->field('properties.expiration_date')->lte($now);
-        
+
         return $qb->getQuery()->execute();
     }
 
