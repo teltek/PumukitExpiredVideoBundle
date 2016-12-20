@@ -12,6 +12,7 @@ class ExpiredVideoDeleteCommand extends ContainerAwareCommand
     private $dm = null;
     private $mmobjRepo = null;
     private $days = 365;
+    private $user_code = "owner";
 
     private $factoryService;
     private $logger;
@@ -44,15 +45,17 @@ EOT
             $i = 0;
             if ($mmobjExpired) {
                 foreach ($mmobjExpired as $mmObj) {
-                    $output->writeln('Delete Multimedia Object ID - '.$mmObj->getId());
-                    $result = $this->deleteVideos($mmObj);
+                    if(!$mmObj->getPeopleByRoleCod($this->user_code, true) || empty($mmObj->getPeopleByRoleCod($this->user_code, true))) {
+                        $output->writeln('Delete Multimedia Object ID - '.$mmObj->getId());
+                        $result = $this->deleteVideos($mmObj);
 
-                    $output->writeln('Status remove - ' . $result["ok"]);
-                    if($result["errmsg"] && $result["err"]) {
-                        $output->writeln('errmsg - '.$result["errmsg"]);
-                        $output->writeln('err' - $result["err"]);
-                    } else {
-                        $i++;
+                        $output->writeln('Status remove - '.$result["ok"]);
+                        if ($result["errmsg"] && $result["err"]) {
+                            $output->writeln('errmsg - '.$result["errmsg"]);
+                            $output->writeln('err' - $result["err"]);
+                        } else {
+                            $i++;
+                        }
                     }
                 }
                 $output->writeln('Total delete count: '. $i);
@@ -72,11 +75,11 @@ EOT
         $qb = $this->mmobjRepo->createQueryBuilder();
         $qb->field('properties.expiration_date')->exists(true);
         $qb->field('properties.expiration_date')->lte($now);
-        $qb->addAnd(
+        /*$qb->addAnd(
             $qb->expr()->addOr($qb->expr()->field('people')->exists(false))
                ->addOr($qb->expr()->field('people')->size(0))
                ->addOr($qb->expr()->field('people')->equals(null))
-        );
+        );*/
 
         return $qb->getQuery()->execute();
     }
