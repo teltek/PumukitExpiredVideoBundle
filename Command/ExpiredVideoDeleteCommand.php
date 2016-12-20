@@ -75,12 +75,7 @@ EOT
         $qb = $this->mmobjRepo->createQueryBuilder();
         $qb->field('properties.expiration_date')->exists(true);
         $qb->field('properties.expiration_date')->lte($now);
-        /*$qb->addAnd(
-            $qb->expr()->addOr($qb->expr()->field('people')->exists(false))
-               ->addOr($qb->expr()->field('people')->size(0))
-               ->addOr($qb->expr()->field('people')->equals(null))
-        );*/
-
+        
         return $qb->getQuery()->execute();
     }
 
