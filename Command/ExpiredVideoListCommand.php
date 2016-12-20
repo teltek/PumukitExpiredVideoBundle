@@ -20,7 +20,7 @@ class ExpiredVideoListCommand extends ContainerAwareCommand
             ->setName('video:expired:list')
             ->setDescription('Expired video list')
             ->setHelp(<<<EOT
-Expired video list
+Expired video list returns a list of multimedia object ID when the expiration_date is less than now
 EOT
             );
     }
