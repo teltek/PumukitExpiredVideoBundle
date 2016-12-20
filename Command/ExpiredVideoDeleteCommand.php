@@ -20,7 +20,7 @@ class ExpiredVideoDeleteCommand extends ContainerAwareCommand
     {
         $this
             ->setName('video:expired:delete')
-            ->setDescription('Expired video list')
+            ->setDescription('Expired video delete')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
             ->setHelp(<<<EOT
 Expired video list
@@ -41,14 +41,21 @@ EOT
         if($input->getOption('force')) {
 
             $mmobjExpired = $this->getDeleteExpiredVideos($this->days);
-
+            $i = 0;
             if ($mmobjExpired) {
                 foreach ($mmobjExpired as $mmObj) {
                     $output->writeln('Delete Multimedia Object ID - '.$mmObj->getId());
-                    //$result = $this->deleteVideos($mmObj);
-                    //$output->writeln('Status remove - ' . $result);
+                    $result = $this->deleteVideos($mmObj);
+
+                    $output->writeln('Status remove - ' . $result["ok"]);
+                    if($result["errmsg"] && $result["err"]) {
+                        $output->writeln('errmsg - '.$result["errmsg"]);
+                        $output->writeln('err' - $result["err"]);
+                    } else {
+                        $i++;
+                    }
                 }
-                $output->writeln('Total delete count: '.count($mmobjExpired));
+                $output->writeln('Total delete count: '. $i);
             } else {
                 $output->writeln('No videos to delete.');
             }
@@ -62,16 +69,21 @@ EOT
         $now = new \DateTime();
         $now->sub(new \DateInterval('P' . $days . 'D'));
 
-        return $this->createQueryBuilder()
-            ->field('properties.expiration_date')->exists(true)
-            ->field('properties.expiration_date')->lte($now)
-            ->getQuery()
-            ->execute();
+        $qb = $this->mmobjRepo->createQueryBuilder();
+        $qb->field('properties.expiration_date')->exists(true);
+        $qb->field('properties.expiration_date')->lte($now);
+        $qb->addAnd(
+            $qb->expr()->addOr($qb->expr()->field('people')->exists(false))
+               ->addOr($qb->expr()->field('people')->size(0))
+               ->addOr($qb->expr()->field('people')->equals(null))
+        );
+
+        return $qb->getQuery()->execute();
     }
 
     private function deleteVideos($mmObj)
     {
-        return $this->createQueryBuilder()
+        return $this->mmobjRepo->createQueryBuilder()
             ->remove()
             ->field('_id')->equals(new \MongoId($mmObj->getId()))
             ->getQuery()
