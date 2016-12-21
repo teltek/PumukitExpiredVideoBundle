@@ -1,0 +1,23 @@
+{% extends 'PumukitWebTVBundle::layout.html.twig' %}
+
+{% block body %}
+
+    <div class="col-md-6 col-md-offset-3 text-center" style="margin-top:30px">
+        {% if message == 0 %}
+            <h4>{% trans %}El objeto multimedia ha sido renovado correctamente.{% endtrans %}</h4>
+        {% elseif message == 1  %}
+            <h4>{% trans %}No eres el propietario de este objeto multimedia.{% endtrans %}</h4>
+        {% elseif message == 2 %}
+            <h4>
+                {% trans %}El objeto multimedia al que accedes cumple uno de los siguientes casos{% endtrans %} :
+            </h4>
+            <ul>
+                <li>{% trans %}Ha sido renovado{% endtrans %}</li>
+                <li>{% trans %}No existe el objeto multimedia{% endtrans %}</li>
+            </ul>
+        {% endif %}
+    </div>
+    <div class="col-md-4 col-md-offset-4" style="margin-top:40px">
+        <a href="{{ path('homepage') }}" class="btn btn-block btn-default">{% trans %}Return{% endtrans %}</a>
+    </div>
+{% endblock %}

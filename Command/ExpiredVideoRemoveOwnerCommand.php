@@ -13,6 +13,7 @@ class ExpiredVideoRemoveOwnerCommand extends ContainerAwareCommand
     private $dm = null;
     private $mmobjRepo = null;
     private $user_code = "owner";
+    private $type = "removeOwner";
 
     private $factoryService;
     private $logger;
@@ -68,12 +69,13 @@ EOT
                     }
                     if($removeOwner) {
                         $aMultimediaObject[] = $mmObj->getId();
+                        $subject = "Remove owner people from " . $mmObj->getTitle();
                         $output->writeln('Remove owner people from multimedia object id - '.$mmObj->getId());
                     }
                 }
 
                 try {
-                    $this->expiredVideoService->generateNotification($this->sendMail);
+                    $this->expiredVideoService->generateNotification($this->sendMail, $this->type, $mmObj);
                 } catch(\Exception $e) {
                     $output->writeln('<error>' . $e->getMessage() . '</error>');
                 }

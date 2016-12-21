@@ -11,11 +11,10 @@ class ExpiredVideoNotificationCommand extends ContainerAwareCommand
 {
     private $dm = null;
     private $mmobjRepo = null;
-
+    private $type = "expired";
+    private $user_code = 'owner';
     private $factoryService;
     private $logger;
-
-    private $user_code = 'owner';
 
     protected function configure()
     {
@@ -23,8 +22,12 @@ class ExpiredVideoNotificationCommand extends ContainerAwareCommand
             ->setName('video:expired:notification')
             ->setDescription('Automatically sending notifications to users who have a video about to expire.')
             ->addArgument('days', InputArgument::REQUIRED, 'days')
-            ->setHelp(<<<EOT
-Automatically sending notifications to users who have a video about to expire
+            ->setHelp(
+                <<<EOT
+Automatic email sending to owners who have videos that expire soon
+
+Arguments: 
+    days : Videos that expire in the next X days
 EOT
             );
     }
@@ -41,7 +44,7 @@ EOT
     {
         $this->initParameters();
         $days = intval($input->getArgument('days'));
-        if(!is_int($days)) {
+        if (!is_int($days)) {
             $output->writeln('Please, write an integer number');
         }
 
@@ -62,28 +65,30 @@ EOT
 
     private function getOwnerEmails(OutputInterface $output, $mmobjExpired)
     {
-        if($mmobjExpired) {
+        if ($mmobjExpired) {
             foreach ($mmobjExpired as $mmObj) {
-                $sendMail = array('pablo.ogando@teltek.es');
-                foreach($mmObj->getPeopleByRoleCod($this->user_code) as $person) {
-                    if($person->getEmail()) {
-                        //$sendMail[] = $person->getEmail();
-                        $sendMail = array('pablo.ogando@teltek.es');
-                    } else {
-                        $sendMail = array('pablo.ogando@teltek.es');
+                $sendMail = array();
+                foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
+                    if ($person->getEmail()) {
+                        $sendMail[] = $person->getEmail();
                     }
                 }
 
-                $output->writeln(' ***** Send notification email for ****** ' );
-                $output->writeln('Multimedia Object ID - ' . $mmObj->getId());
-                $output->writeln('Owners count - ' . count($sendMail));
-                try {
-                    $this->expiredVideoService->generateNotification($sendMail);
-                } catch(\Exception $e) {
-                    $output->writeln('<error>' . $e->getMessage() . '</error>');
+                $output->writeln(' ***** Send notification email for ****** ');
+                $output->writeln('Multimedia Object ID - '.$mmObj->getId());
+                $output->writeln('Owners count - '.count($sendMail));
+
+                if (!empty($sendMail)) {
+                    try {
+                        $this->expiredVideoService->generateNotification($sendMail, $this->type, $mmObj);
+                    } catch (\Exception $e) {
+                        $output->writeln('<error>'.$e->getMessage().'</error>');
+                    }
+                } else {
+                    $output->writeln("There aren't user emails to send");
                 }
             }
-            $output->writeln('Total multimedia object count: ' . count($mmobjExpired));
+            $output->writeln('Total multimedia object count: '.count($mmobjExpired));
         } else {
             $output->writeln('No videos expired in this range');
         }
@@ -92,11 +97,11 @@ EOT
     private function getExpiredVideos($days)
     {
         $now = new \DateTime();
-        $now->sub(new \DateInterval('P' . $days . 'D'));
+        $now->add(new \DateInterval('P' . $days . 'D'));
 
         return $this->mmobjRepo->createQueryBuilder()
             ->field('properties.expiration_date')->exists(true)
-            ->field('properties.expiration_date')->gte($now)
+            ->field('properties.expiration_date')->lte($now)
             ->getQuery()
             ->execute();
     }

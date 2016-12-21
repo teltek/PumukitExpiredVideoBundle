@@ -9,6 +9,7 @@
         <service id="pumukit_expired_video.notification" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService">
             <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
             <argument type="service" id="router"/>
+            <argument type="service" id="logger"/>
             <argument type="service" id="pumukit_notification.sender" on-invalid="ignore"/>
             <argument type="service" id="translator"/>
         </service>
