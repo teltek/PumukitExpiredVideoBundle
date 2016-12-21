@@ -4,16 +4,16 @@
 
     <div class="col-md-6 col-md-offset-3 text-center" style="margin-top:30px">
         {% if message == 0 %}
-            <h4>{% trans %}El objeto multimedia ha sido renovado correctamente.{% endtrans %}</h4>
+            <h4>{% trans %}The multimedia object has been successfully renewed.{% endtrans %}</h4>
         {% elseif message == 1  %}
-            <h4>{% trans %}No eres el propietario de este objeto multimedia.{% endtrans %}</h4>
+            <h4>{% trans %}You aren't the owner of this multimedia object.{% endtrans %}</h4>
         {% elseif message == 2 %}
             <h4>
-                {% trans %}El objeto multimedia al que accedes cumple uno de los siguientes casos{% endtrans %} :
+                {% trans %}This multimedia object accomplishes one of these cases{% endtrans %} :
             </h4>
             <ul>
-                <li>{% trans %}Ha sido renovado{% endtrans %}</li>
-                <li>{% trans %}No existe el objeto multimedia{% endtrans %}</li>
+                <li>{% trans %}Has been renewed.{% endtrans %}</li>
+                <li>{% trans %}Multimedia object doesn't exists.{% endtrans %}</li>
             </ul>
         {% endif %}
     </div>
