@@ -52,7 +52,7 @@ class ExpiredVideoService
             );
             $output = $this->senderService->sendNotification(
                 $emailTo,
-                $this->subject[$type],
+                $this->translator->trans($this->subject[$type]),
                 $template,
                 $parameters,
                 false
