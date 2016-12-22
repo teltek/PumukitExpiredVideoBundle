@@ -55,6 +55,7 @@ EOT
 
                 $aMultimediaObject = array();
                 foreach($mmobjExpired as $mmObj) {
+
                     $removeOwner = false;
                     foreach ($mmObj->getRoles() as $role) {
 
@@ -73,7 +74,6 @@ EOT
                         $output->writeln('Remove owner people from multimedia object id - '.$mmObj->getId());
                     }
                 }
-
                 try {
                     $this->expiredVideoService->generateNotification($this->sendMail, $this->type, $mmObj);
                 } catch(\Exception $e) {
@@ -90,9 +90,10 @@ EOT
     private function getExpiredVideos()
     {
         $now = new \DateTime();
+
         return $this->mmobjRepo->createQueryBuilder()
             ->field('properties.expiration_date')->exists(true)
-            ->field('properties.expiration_date')->lte($now)
+            ->field('properties.expiration_date')->lte($now->format('c'))
             ->getQuery()
             ->execute();
     }

@@ -52,7 +52,7 @@ EOT
         $now = new \DateTime();
         return $this->mmobjRepo->createQueryBuilder()
             ->field('properties.expiration_date')->exists(true)
-            ->field('properties.expiration_date')->lte($now)
+            ->field('properties.expiration_date')->lte($now->format('c'))
             ->getQuery()
             ->execute();
     }

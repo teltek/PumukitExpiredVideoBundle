@@ -50,7 +50,7 @@ class ExpiredVideoService
                 'token' => $token,
                 'mmobj' => $mmObj,
             );
-            $output = $this->senderService->sendMultipleNotification($emailTo, $this->subject[$type], $template, $parameters, false);
+            $output = $this->senderService->sendNotification($emailTo, $this->subject[$type], $template, $parameters, false);
 
             $sEmails = '';
             foreach($emailTo as $email) {

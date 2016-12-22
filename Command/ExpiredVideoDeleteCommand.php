@@ -45,6 +45,7 @@ EOT
             $i = 0;
             if ($mmobjExpired) {
                 foreach ($mmobjExpired as $mmObj) {
+
                     if(!$mmObj->getPeopleByRoleCod($this->user_code, true) || empty($mmObj->getPeopleByRoleCod($this->user_code, true))) {
                         $output->writeln('Delete Multimedia Object ID - '.$mmObj->getId());
                         $result = $this->deleteVideos($mmObj);
@@ -56,6 +57,8 @@ EOT
                         } else {
                             $i++;
                         }
+                    } else {
+                        $output->writeln("This video " . $mmObj->getId() . " can't be delete because there are owners");
                     }
                 }
                 $output->writeln('Total delete count: '. $i);
@@ -74,7 +77,7 @@ EOT
 
         $qb = $this->mmobjRepo->createQueryBuilder();
         $qb->field('properties.expiration_date')->exists(true);
-        $qb->field('properties.expiration_date')->lte($now);
+        $qb->field('properties.expiration_date')->lte($now->format('c'));
 
         return $qb->getQuery()->execute();
     }
