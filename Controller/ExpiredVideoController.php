@@ -2,6 +2,7 @@
 
 namespace Pumukit\ExpiredVideoBundle\Controller;
 
+use Pumukit\SchemaBundle\Document\Person;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -14,16 +15,15 @@ use Symfony\Component\HttpFoundation\Response;
 class ExpiredVideoController extends Controller
 {
     private $days = 365;
-    private $roleCod = "owner";
+    private $roleCod;
     /**
-     * @Route("/renew/{key}", name="pumukit_expired_video_renew",  defaults={"key": null})
+     * @Route("/renew/{key}/", name="pumukit_expired_video_renew",  defaults={"key": null})
      * @Template()
      */
     public function renewExpiredVideoAction(Request $request, $key)
     {
-        $user = $this->get('security.context')->getToken()->getUser();
-
-        if(!$key) {
+        $regex = '/^[0-9a-z]{24}$/';
+        if(!$key || !preg_match($regex, $key)) {
             return $this->redirectToRoute('homepage', array(), 301);
         }
 
@@ -31,6 +31,9 @@ class ExpiredVideoController extends Controller
         $mmObj = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findOneBy(
             array('properties.expiration_key' => new \MongoId($key))
         );
+
+        $user = $this->get('security.context')->getToken()->getUser();
+        $this->roleCod = $this->container->getParameter('pumukitschema.personal_scope_role_code');
 
         if($mmObj) {
             $people = $mmObj->getPeopleByRoleCod($this->roleCod, true);

@@ -16,7 +16,7 @@
 
         <service id="pumukit_expired_video.init_date" class="Pumukit\ExpiredVideoBundle\EventListener\InitDateListener">
             <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
-            <argument>365</argument>
+            <argument>%pumukit_expired_video.expiration_date_days%</argument>
             <tag name="kernel.event_listener" event="multimediaobject.create" method="onMultimediaobjectCreate" />
         </service>
 

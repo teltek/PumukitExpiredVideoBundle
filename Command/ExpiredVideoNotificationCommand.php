@@ -12,7 +12,7 @@ class ExpiredVideoNotificationCommand extends ContainerAwareCommand
     private $dm = null;
     private $mmobjRepo = null;
     private $type = "expired";
-    private $user_code = 'owner';
+    private $user_code;
     private $factoryService;
     private $logger;
 
@@ -36,6 +36,7 @@ EOT
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.notification');
+        $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
 
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
     }
@@ -50,7 +51,7 @@ EOT
 
         $mmObj = $this->findExpiredVideos($days);
 
-        $this->getOwnerEmails($output, $mmObj);
+        $this->sendNotification($output, $mmObj);
 
         return;
     }
@@ -63,7 +64,7 @@ EOT
         return $mmobjExpired;
     }
 
-    private function getOwnerEmails(OutputInterface $output, $mmobjExpired)
+    private function sendNotification(OutputInterface $output, $mmobjExpired)
     {
         if ($mmobjExpired) {
             foreach ($mmobjExpired as $mmObj) {

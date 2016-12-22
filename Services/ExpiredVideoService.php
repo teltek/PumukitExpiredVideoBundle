@@ -63,12 +63,11 @@ class ExpiredVideoService
                 $sEmails .= $email." - ";
             }
 
-            if ($output["verified"]) {
+            if (0 < $output) {
                 $infoLog = __CLASS__.' ['.__FUNCTION__.'] Sent notification email to "'.$sEmails.'"';
                 $this->logger->addInfo($infoLog);
-            }
-            if ($output["error"]) {
-                $infoLog = __CLASS__.' ['.__FUNCTION__.'] Unable to send notification email to "' . $sEmails . '", ' . $output["error"] . 'email(s) were sent.';
+            } else {
+                $infoLog = __CLASS__.' ['.__FUNCTION__.'] Unable to send notification email to "' . $sEmails . '", ' . $output . 'email(s) were sent.';
                 $this->logger->addInfo($infoLog);
             }
 

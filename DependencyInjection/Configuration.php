@@ -23,6 +23,13 @@ class Configuration implements ConfigurationInterface
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
+        $rootNode
+            ->children()
+                ->scalarNode('expiration_date_days')
+                    ->defaultValue(365)
+                    ->info('Time of the first expiration_date')
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }

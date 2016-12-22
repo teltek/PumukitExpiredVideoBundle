@@ -12,7 +12,7 @@ class ExpiredVideoRemoveOwnerCommand extends ContainerAwareCommand
 {
     private $dm = null;
     private $mmobjRepo = null;
-    private $user_code = "owner";
+    private $user_code;
     private $type = "removeOwner";
 
     private $factoryService;
@@ -35,10 +35,11 @@ EOT
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.notification');
 
+        $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
+
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
         $this->notificationParameters = $this->getContainer()->getParameter('pumukit_notification');
         $this->sendMail = $this->notificationParameters["sender_email"];
-
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
