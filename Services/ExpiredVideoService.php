@@ -50,19 +50,28 @@ class ExpiredVideoService
                 'token' => $token,
                 'mmobj' => $mmObj,
             );
-            $output = $this->senderService->sendNotification($emailTo, $this->subject[$type], $template, $parameters, false);
+            $output = $this->senderService->sendNotification(
+                $emailTo,
+                $this->subject[$type],
+                $template,
+                $parameters,
+                false
+            );
 
             $sEmails = '';
-            foreach($emailTo as $email) {
-                $sEmails .= $email . " - ";
+            foreach ($emailTo as $email) {
+                $sEmails .= $email." - ";
             }
-            if (0 < $output) {
+
+            if ($output["verified"]) {
                 $infoLog = __CLASS__.' ['.__FUNCTION__.'] Sent notification email to "'.$sEmails.'"';
                 $this->logger->addInfo($infoLog);
-            } else {
-                $infoLog = __CLASS__.' ['.__FUNCTION__.'] Unable to send notification email to "'.$sEmails.'", '.$output.'email(s) were sent.';
+            }
+            if ($output["error"]) {
+                $infoLog = __CLASS__.' ['.__FUNCTION__.'] Unable to send notification email to "' . $sEmails . '", ' . $output["error"] . 'email(s) were sent.';
                 $this->logger->addInfo($infoLog);
             }
+
             return $output;
         }
     }
