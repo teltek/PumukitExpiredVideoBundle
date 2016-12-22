@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="es" target-language="en" datatype="plaintext" original="file.ext">
+    <body>
+      <trans-unit id="391441114d7c5041df58a65297703c27" resname="This video is out of date:">
+        <source>This video is out of date:</source>
+        <target>This video is out of date:</target>
+      </trans-unit>
+      <trans-unit id="0b9c082a84d013c9c1b2ae143bb06aff" resname="The owner of this video has been deleted.">
+        <source>The owner of this video has been deleted.</source>
+        <target>The owner of this video has been deleted.</target>
+      </trans-unit>
+      <trans-unit id="d0c0ff02cf9695af05daf48c697dbf7c" resname="This video will be expire soon">
+        <source>This video will be expire soon</source>
+        <target>This video will be expire soon</target>
+      </trans-unit>
+      <trans-unit id="1914693b9aa44c18207a1b3bf2c2bd02" resname="Access this url to renew the video:">
+        <source>Access this url to renew the video:</source>
+        <target>Access this url to renew the video:</target>
+      </trans-unit>
+      <trans-unit id="1120da170a28f2d3430ceba63e213a44" resname="The multimedia object has been successfully renewed.">
+        <source>The multimedia object has been successfully renewed.</source>
+        <target>The multimedia object has been successfully renewed.</target>
+      </trans-unit>
+      <trans-unit id="d2350e41a5ef5e861c81467064e4160a" resname="You aren't the owner of this multimedia object.">
+        <source>You aren't the owner of this multimedia object.</source>
+        <target>You aren't the owner of this multimedia object.</target>
+      </trans-unit>
+      <trans-unit id="babf8027d0878519b37554584a590eca" resname="This multimedia object accomplishes one of these cases">
+        <source>This multimedia object accomplishes one of these cases</source>
+        <target>This multimedia object accomplishes one of these cases</target>
+      </trans-unit>
+      <trans-unit id="49069212093b514819d342cde75e5d1c" resname="Has been renewed.">
+        <source>Has been renewed.</source>
+        <target>Has been renewed.</target>
+      </trans-unit>
+      <trans-unit id="d34bd0d087c6ce7df469256589363c18" resname="Multimedia object doesn't exists.">
+        <source>Multimedia object doesn't exists.</source>
+        <target>Multimedia object doesn't exists.</target>
+      </trans-unit>
+      <trans-unit id="988fd738de9c6d177440c5dcf69e73ce" resname="Return">
+        <source>Return</source>
+        <target>Return</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

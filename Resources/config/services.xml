@@ -4,13 +4,21 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <!--
     <services>
-        <service id="pumukit_expired_video.example" class="Pumukit\ExpiredVideoBundle\Example">
-            <argument type="service" id="service_id" />
-            <argument>plain_value</argument>
-            <argument>%parameter_name%</argument>
+
+        <service id="pumukit_expired_video.notification" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService">
+            <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="pumukit_notification.sender" on-invalid="ignore"/>
+            <argument type="service" id="translator"/>
         </service>
+
+        <service id="pumukit_expired_video.init_date" class="Pumukit\ExpiredVideoBundle\EventListener\InitDateListener">
+            <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
+            <argument>%pumukit_expired_video.expiration_date_days%</argument>
+            <tag name="kernel.event_listener" event="multimediaobject.create" method="onMultimediaobjectCreate" />
+        </service>
+
     </services>
-    -->
 </container>
