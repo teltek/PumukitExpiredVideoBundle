@@ -16,6 +16,7 @@ class ExpiredVideoService
     private $senderService;
     private $translator;
     private $logger;
+    private $videos = "videos";
     private $subject = array(
         "removeOwner" => "PuMuKIT2 - Remove owner of the following video.",
         "expired" => "PuMuKIT2 - This video will be expired coming soon.",
@@ -35,55 +36,73 @@ class ExpiredVideoService
         $this->logger = $logger;
     }
 
-    public function generateNotification($emails, $type, $mmObj)
+    public function generateNotification($aEmails, $sType)
     {
         if ($this->senderService && $this->senderService->isEnabled()) {
 
-            $token = $this->addKeyToMMO($mmObj);
-
-            $emailTo = $emails;
             $template = 'PumukitExpiredVideoBundle:Email:notification.html.twig';
             $parameters = array(
-                'subject' => $this->subject[$type],
-                'type' => $type,
-                'sender_name' => $this->senderService->getSenderName(),
-                'token' => $token,
-                'mmobj' => $mmObj,
-            );
-            $output = $this->senderService->sendNotification(
-                $emailTo,
-                $this->translator->trans($this->subject[$type]),
-                $template,
-                $parameters,
-                false
+                'subject' => $this->subject[$sType],
+                'type' => $sType,
+                'sender_name' => $this->senderService->getSenderName()
             );
 
-            $sEmails = '';
-            foreach ($emailTo as $email) {
-                $sEmails .= $email." - ";
-            }
+            foreach ($aEmails as $sUserId => $aData) {
 
-            if (0 < $output) {
-                $infoLog = __CLASS__.' ['.__FUNCTION__.'] Sent notification email to "'.$sEmails.'"';
-                $this->logger->addInfo($infoLog);
-            } else {
-                $infoLog = __CLASS__.' ['.__FUNCTION__.'] Unable to send notification email to "' . $sEmails . '", ' . $output . 'email(s) were sent.';
-                $this->logger->addInfo($infoLog);
+                $aUserKeys = $this->addRenewUniqueKeys($sUserId, $aData);
+                $parameters['data'] = $aUserKeys;
+
+                var_dump($parameters);
+                die;
+                /*$output = $this->senderService->sendNotification(
+                    $aData['email'],
+                    $this->translator->trans($this->subject[$sType]),
+                    $template,
+                    $parameters,
+                    false
+                );*/
+
+                if (0 < $output) {
+                    $infoLog = __CLASS__ .' [' . __FUNCTION__ . '] Sent notification email to "' . $aData['email'] . '"';
+                    $this->logger->addInfo($infoLog);
+                } else {
+                    $infoLog = __CLASS__ . ' [' . __FUNCTION__ . '] Unable to send notification email to "' . $aData['email'] . '", ' . $output . 'email(s) were sent.';
+                    $this->logger->addInfo($infoLog);
+                }
             }
 
             return $output;
         }
     }
 
-    private function addKeyToMMO($mmObj)
+    /**
+     * @param $sUserId
+     * @param $aData
+     * @return array
+     */
+    private function addRenewUniqueKeys($sUserId, $aData)
     {
-        $token = new \MongoId();
+        $aUserKeys = array();
 
-        $mmObj->setProperty('expiration_key', $token);
+        $sTokenUser = new \MongoId();
+        $aUserKeys["all"] = $sTokenUser;
+        $user = $this->dm->getRepository('SchemaBundle:User')->findOneBy(array('_id' => new \MongoId($sUserId)));
+        $user->setProperty('expiration_key', $sTokenUser);
 
-        $this->dm->flush();
+        foreach ($aData[$this->videos] as $sObjectId) {
 
-        return $token;
+            $sTokenMO = new \MongoId();
+
+            $mmObj = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findOneBy(array('_id' => new \MongoId($sObjectId)));
+            $mmObj->setProperty('expiration_key', $sTokenMO);
+
+            $aUserKeys["videos"][$mmObj->getId()]['token'] = $sTokenMO;
+            $aUserKeys["videos"][$mmObj->getId()]['title'] = $mmObj->getTitle();
+            $aUserKeys["videos"][$mmObj->getId()]['expired'] = $mmObj->getPropetyAsDateTime('expiration_date');
+
+            $this->dm->flush();
+        }
+
+        return $aUserKeys;
     }
-
 }

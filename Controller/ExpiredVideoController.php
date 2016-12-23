@@ -16,14 +16,14 @@ class ExpiredVideoController extends Controller
 {
     private $days = 365;
     private $roleCod;
+    private $regex = '/^[0-9a-z]{24}$/';
     /**
      * @Route("/renew/{key}/", name="pumukit_expired_video_renew",  defaults={"key": null})
      * @Template()
      */
     public function renewExpiredVideoAction(Request $request, $key)
     {
-        $regex = '/^[0-9a-z]{24}$/';
-        if(!$key || !preg_match($regex, $key)) {
+        if(!$key || !preg_match($this->regex, $key)) {
             return $this->redirectToRoute('homepage', array(), 301);
         }
 

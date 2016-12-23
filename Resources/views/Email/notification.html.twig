@@ -11,7 +11,7 @@
     <p>{% trans %}This video will be expire soon{% endtrans %}: {{ mmobj.title }}</p>
     <p>{% trans %}Access this url to renew the video: {% endtrans %}</p>
     <ul>
-        <li><a href="{{ url('homepage') }}admin/expired/video/renew/{{ token }}">{{ url('homepage') }}admin/expired/video/renew/{{ token }}</a></li>
+        <li><a href="{{ url('homepage') }}admin/expired/video/renew/{{ token }}">{{ url('homepage') }}admin/expired/video/renew/{{ token }}/{{ mmobj.id }}</a></li>
     </ul>
 {% endif %}
 

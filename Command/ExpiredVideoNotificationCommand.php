@@ -49,13 +49,16 @@ EOT
             $output->writeln('Please, write an integer number');
         }
 
-        $mmObj = $this->findExpiredVideos($days);
-
-        $this->sendNotification($output, $mmObj);
+        $aMultimediaObject = $this->findExpiredVideos($days);
+        $this->sendNotification($output, $aMultimediaObject);
 
         return;
     }
 
+    /**
+     * @param $days
+     * @return mixed
+     */
     private function findExpiredVideos($days)
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
@@ -64,46 +67,55 @@ EOT
         return $mmobjExpired;
     }
 
-    private function sendNotification(OutputInterface $output, $mmobjExpired)
-    {
-        if ($mmobjExpired) {
-            foreach ($mmobjExpired as $mmObj) {
-                $sendMail = array();
-                foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
-                    if ($person->getEmail()) {
-                        $sendMail[] = $person->getEmail();
-                    }
-                }
-
-                $output->writeln(' ***** Send notification email for ****** ');
-                $output->writeln('Multimedia Object ID - '.$mmObj->getId());
-                $output->writeln('Owners count - '.count($sendMail));
-
-                if (!empty($sendMail)) {
-                    try {
-                        $this->expiredVideoService->generateNotification($sendMail, $this->type, $mmObj);
-                    } catch (\Exception $e) {
-                        $output->writeln('<error>'.$e->getMessage().'</error>');
-                    }
-                } else {
-                    $output->writeln("There aren't user emails to send");
-                }
-            }
-            $output->writeln('Total multimedia object count: '.count($mmobjExpired));
-        } else {
-            $output->writeln('No videos expired in this range');
-        }
-    }
-
+    /**
+     * @param $days
+     * @return mixed
+     */
     private function getExpiredVideos($days)
     {
         $now = new \DateTime();
         $now->add(new \DateInterval('P' . $days . 'D'));
+        $now = $now->format('c');
 
         return $this->mmobjRepo->createQueryBuilder()
             ->field('properties.expiration_date')->exists(true)
-            ->field('properties.expiration_date')->lte($now->format('c'))
+            ->field('properties.expiration_date')->lte(date('Y-m-d H:i:s'))
             ->getQuery()
             ->execute();
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param $aMultimediaObject array of multimedia objects
+     */
+    private function sendNotification(OutputInterface $output, $aMultimediaObject)
+    {
+        if ($aMultimediaObject) {
+
+            foreach ($aMultimediaObject as $mmObj) {
+                $sendMail = array();
+                foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
+                    if ($person->getEmail()) {
+                        $sendMail[$person->getId()]['videos'][] = $mmObj->getId();
+                        $sendMail[$person->getId()]['email'] = $person->getEmail();
+                    }
+                }
+
+                $output->writeln(' ***** Expired videos ****** ');
+                $output->writeln('Multimedia Object ID - '.$mmObj->getId());
+            }
+
+            if ($sendMail) {
+                try {
+                    $this->expiredVideoService->generateNotification($sendMail, $this->type);
+                } catch (\Exception $e) {
+                    $output->writeln('<error>'.$e->getMessage().'</error>');
+                }
+            } else {
+                $output->writeln("There aren't user emails to send");
+            }
+        } else {
+            $output->writeln('No videos expired in this range');
+        }
     }
 }
