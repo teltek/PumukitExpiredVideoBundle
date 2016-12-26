@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/admin/expired/video")
@@ -25,7 +24,7 @@ class ExpiredVideoController extends Controller
     public function renewExpiredVideoAction(Request $request, $key)
     {
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
-        if(!$key || !preg_match($this->regex, $key)) {
+        if (!$key || !preg_match($this->regex, $key)) {
             return $this->redirectToRoute('homepage', array(), 301);
         }
 
@@ -37,7 +36,7 @@ class ExpiredVideoController extends Controller
         $user = $this->get('security.context')->getToken()->getUser();
         $this->roleCod = $this->container->getParameter('pumukitschema.personal_scope_role_code');
 
-        if($mmObj) {
+        if ($mmObj) {
             $people = $mmObj->getPeopleByRoleCod($this->roleCod, true);
             $isOwner = false;
             if (isset($people) and !empty($people) and is_array($people)) {
@@ -80,7 +79,7 @@ class ExpiredVideoController extends Controller
     {
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
 
-        if(!$key || !preg_match($this->regex, $key)) {
+        if (!$key || !preg_match($this->regex, $key)) {
             return $this->redirectToRoute('homepage', array(), 301);
         }
 
@@ -88,8 +87,7 @@ class ExpiredVideoController extends Controller
         $person = $dm->getRepository('PumukitSchemaBundle:Person')->findOneBy(array('properties.expiration_key' => new \MongoId($key)));
 
         $user = $this->get('security.context')->getToken()->getUser();
-        if($user->getEmail() == $person->getEmail()) {
-
+        if ($user->getEmail() == $person->getEmail()) {
             $aObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(
                 array('people.people._id' => $person->getId(), 'properties.expiration_key' => array('$exists' => true))
             );
@@ -106,7 +104,6 @@ class ExpiredVideoController extends Controller
                 $mmObj->setProperty('expiration_date', $date->format('c'));
 
                 $person->removeProperty('expiration_date');
-
             }
             $dm->flush();
             $error = 0;

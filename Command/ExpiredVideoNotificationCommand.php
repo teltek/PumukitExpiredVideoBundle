@@ -11,7 +11,7 @@ class ExpiredVideoNotificationCommand extends ContainerAwareCommand
 {
     private $dm = null;
     private $mmobjRepo = null;
-    private $type = "expired";
+    private $type = 'expired';
     private $user_code;
     private $factoryService;
     private $logger;
@@ -23,7 +23,7 @@ class ExpiredVideoNotificationCommand extends ContainerAwareCommand
             ->setDescription('Automatically sending notifications to users who have a video about to expire.')
             ->addArgument('days', InputArgument::REQUIRED, 'days')
             ->setHelp(
-                <<<EOT
+                <<<'EOT'
 Automatic email sending to owners who have videos that expire soon
 
 Arguments: 
@@ -57,6 +57,7 @@ EOT
 
     /**
      * @param $days
+     *
      * @return mixed
      */
     private function findExpiredVideos($days)
@@ -69,6 +70,7 @@ EOT
 
     /**
      * @param $days
+     *
      * @return mixed
      */
     private function getExpiredVideos($days)
@@ -91,13 +93,10 @@ EOT
     private function sendNotification(OutputInterface $output, $aMultimediaObject)
     {
         if ($aMultimediaObject) {
-
             foreach ($aMultimediaObject as $mmObj) {
-
                 $output->writeln('Expired Video ====> Multimedia Object ID - '.$mmObj->getId());
 
                 if (count($mmObj->getPeopleByRoleCod($this->user_code, true)) > 0) {
-
                     foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
                         if ($person->getEmail()) {
                             $sendMail[$person->getId()]['videos'][] = $mmObj->getId();

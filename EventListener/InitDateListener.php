@@ -13,12 +13,11 @@ class InitDateListener
     public function __construct(DocumentManager $documentManager, $inteval = 365)
     {
         $this->dm = $documentManager;
-        $this->interval = (int)$inteval;
+        $this->interval = (int) $inteval;
 
         //TODO Move to configuration.
-        new \DateTime("+" . $this->interval . " days");
+        new \DateTime('+'.$this->interval.' days');
     }
-
 
     public function onMultimediaobjectCreate(MultimediaObjectEvent $event)
     {
@@ -28,7 +27,7 @@ class InitDateListener
             return;
         }
 
-        $date = new \DateTime("+" . $this->interval . " days");
+        $date = new \DateTime('+'.$this->interval.' days');
         $mm->setProperty('expiration_date', $date->format('c'));
         $mm->setProperty('renew_expiration_date', $this->interval);
 

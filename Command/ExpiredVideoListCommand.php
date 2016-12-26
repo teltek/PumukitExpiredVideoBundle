@@ -19,7 +19,7 @@ class ExpiredVideoListCommand extends ContainerAwareCommand
         $this
             ->setName('video:expired:list')
             ->setDescription('Expired video list')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 Expired video list returns a list of multimedia object ID when the expiration_date is less than now
 EOT
             );
@@ -30,12 +30,12 @@ EOT
         $this->initParameters();
 
         $mmobjExpired = $this->getExpiredVideos();
-        if($mmobjExpired) {
+        if ($mmobjExpired) {
             foreach ($mmobjExpired as $mmObj) {
-                $output->writeln('Multimedia Object ID - ' . $mmObj->getId());
+                $output->writeln('Multimedia Object ID - '.$mmObj->getId());
             }
 
-            $output->writeln('Total count: ' . count($mmobjExpired));
+            $output->writeln('Total count: '.count($mmobjExpired));
         } else {
             $output->writeln('No videos expired.');
         }
@@ -50,6 +50,7 @@ EOT
     private function getExpiredVideos()
     {
         $now = new \DateTime();
+
         return $this->mmobjRepo->createQueryBuilder()
             ->field('properties.expiration_date')->exists(true)
             ->field('properties.expiration_date')->lte($now->format('c'))
