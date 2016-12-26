@@ -46,9 +46,13 @@
         <source>PuMuKIT2 - Remove owner of the following video.</source>
         <target>PuMuKIT2 - Remove owner of the following video.</target>
       </trans-unit>
-      <trans-unit id="a58f028aa856474b80f59d6c5fc0d61d" resname="PuMuKIT2 - This video will be expired coming soon.">
-        <source>PuMuKIT2 - This video will be expired coming soon.</source>
-        <target>PuMuKIT2 - This video will be expired coming soon.</target>
+      <trans-unit id="a58f028aa856474b80f59d6c5fc0d61d" resname="PuMuKIT2 - These videos will be expired coming soon.">
+        <source>PuMuKIT2 - These videos will be expired coming soon.</source>
+        <target>PuMuKIT2 - These videos will be expired coming soon.</target>
+      </trans-unit>
+      <trans-unit id="291dde514bcc4e84bdea49ca07394cb6" resname="To renew all your videos access this url:">
+         <source>To renew all your videos access this url:</source>
+         <target>To renew all your videos access this url:</target>
       </trans-unit>
     </body>
   </file>

@@ -11,7 +11,7 @@ class ExpiredVideoDeleteCommand extends ContainerAwareCommand
 {
     private $dm = null;
     private $mmobjRepo = null;
-    private $days = 365;
+    private $days;
     private $user_code;
 
     private $factoryService;
@@ -34,6 +34,7 @@ EOT
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
         $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
+        $this->days = $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

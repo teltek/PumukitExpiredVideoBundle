@@ -44,7 +44,7 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->initParameters();
-        $days = intval($input->getArgument('days'));
+        $days = abs(intval($input->getArgument('days')));
         if (!is_int($days)) {
             $output->writeln('Please, write an integer number');
         }
@@ -74,12 +74,12 @@ EOT
     private function getExpiredVideos($days)
     {
         $now = new \DateTime();
-        $now->add(new \DateInterval('P' . $days . 'D'));
+        $now->add(new \DateInterval('P'.$days.'D'));
         $now = $now->format('c');
 
         return $this->mmobjRepo->createQueryBuilder()
             ->field('properties.expiration_date')->exists(true)
-            ->field('properties.expiration_date')->lte(date('Y-m-d H:i:s'))
+            ->field('properties.expiration_date')->lte($now)
             ->getQuery()
             ->execute();
     }
@@ -93,16 +93,20 @@ EOT
         if ($aMultimediaObject) {
 
             foreach ($aMultimediaObject as $mmObj) {
-                $sendMail = array();
-                foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
-                    if ($person->getEmail()) {
-                        $sendMail[$person->getId()]['videos'][] = $mmObj->getId();
-                        $sendMail[$person->getId()]['email'] = $person->getEmail();
-                    }
-                }
 
-                $output->writeln(' ***** Expired videos ****** ');
-                $output->writeln('Multimedia Object ID - '.$mmObj->getId());
+                $output->writeln('Expired Video ====> Multimedia Object ID - '.$mmObj->getId());
+
+                if (count($mmObj->getPeopleByRoleCod($this->user_code, true)) > 0) {
+
+                    foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
+                        if ($person->getEmail()) {
+                            $sendMail[$person->getId()]['videos'][] = $mmObj->getId();
+                            $sendMail[$person->getId()]['email'] = $person->getEmail();
+                        }
+                    }
+                } else {
+                    $output->writeln("There aren't owners on this video");
+                }
             }
 
             if ($sendMail) {

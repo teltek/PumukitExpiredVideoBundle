@@ -7,7 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Translation\TranslatorInterface;
 use Pumukit\NotificationBundle\Services\SenderService;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Pumukit\SchemaBundle\Document\Person;
+use Pumukit\SchemaBundle\Document\MultimediaObject;
 
 class ExpiredVideoService
 {
@@ -19,7 +20,7 @@ class ExpiredVideoService
     private $videos = "videos";
     private $subject = array(
         "removeOwner" => "PuMuKIT2 - Remove owner of the following video.",
-        "expired" => "PuMuKIT2 - This video will be expired coming soon.",
+        "expired" => "PuMuKIT2 - These videos will be expired coming soon.",
     );
 
     public function __construct(
@@ -34,6 +35,8 @@ class ExpiredVideoService
         $this->senderService = $senderService;
         $this->translator = $translator;
         $this->logger = $logger;
+        $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
+        $this->personRepo = $this->dm->getRepository('PumukitSchemaBundle:Person');
     }
 
     public function generateNotification($aEmails, $sType)
@@ -52,15 +55,13 @@ class ExpiredVideoService
                 $aUserKeys = $this->addRenewUniqueKeys($sUserId, $aData);
                 $parameters['data'] = $aUserKeys;
 
-                var_dump($parameters);
-                die;
-                /*$output = $this->senderService->sendNotification(
+                $output = $this->senderService->sendNotification(
                     $aData['email'],
                     $this->translator->trans($this->subject[$sType]),
                     $template,
                     $parameters,
                     false
-                );*/
+                );
 
                 if (0 < $output) {
                     $infoLog = __CLASS__ .' [' . __FUNCTION__ . '] Sent notification email to "' . $aData['email'] . '"';
@@ -86,19 +87,20 @@ class ExpiredVideoService
 
         $sTokenUser = new \MongoId();
         $aUserKeys["all"] = $sTokenUser;
-        $user = $this->dm->getRepository('SchemaBundle:User')->findOneBy(array('_id' => new \MongoId($sUserId)));
-        $user->setProperty('expiration_key', $sTokenUser);
+        $person = $this->personRepo->findOneBy(array('_id' => new \MongoId($sUserId)));
+
+        $person->setProperty('expiration_key', $sTokenUser);
 
         foreach ($aData[$this->videos] as $sObjectId) {
 
             $sTokenMO = new \MongoId();
 
-            $mmObj = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findOneBy(array('_id' => new \MongoId($sObjectId)));
+            $mmObj = $this->mmobjRepo->findOneBy(array('_id' => new \MongoId($sObjectId)));
             $mmObj->setProperty('expiration_key', $sTokenMO);
 
             $aUserKeys["videos"][$mmObj->getId()]['token'] = $sTokenMO;
             $aUserKeys["videos"][$mmObj->getId()]['title'] = $mmObj->getTitle();
-            $aUserKeys["videos"][$mmObj->getId()]['expired'] = $mmObj->getPropetyAsDateTime('expiration_date');
+            $aUserKeys["videos"][$mmObj->getId()]['expired'] = $mmObj->getPropertyAsDateTime('expiration_date');
 
             $this->dm->flush();
         }

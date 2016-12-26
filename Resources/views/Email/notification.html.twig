@@ -2,19 +2,30 @@
 <h2>{{ subject }}</h2>
 
 <br/>
+
 {% if type == "removeOwner" %}
 
-    <p>{% trans %}This video is out of date: {% endtrans %} {{ mmobj.title }}</p>
+    <p>{% trans %}This video is out of date: {% endtrans %}</p>
     <p>{% trans %}The owner of this video has been deleted.{% endtrans %}</p>
 
 {% elseif type == "expired" %}
-    <p>{% trans %}This video will be expire soon{% endtrans %}: {{ mmobj.title }}</p>
-    <p>{% trans %}Access this url to renew the video: {% endtrans %}</p>
+    <p>{% trans %}To renew all your videos access this url:{% endtrans %}</p>
     <ul>
-        <li><a href="{{ url('homepage') }}admin/expired/video/renew/{{ token }}">{{ url('homepage') }}admin/expired/video/renew/{{ token }}/{{ mmobj.id }}</a></li>
+        <li><a href="{{ url('homepage') }}admin/expired/video/all/renew/{{ data.all }}/">{{ url('homepage') }}admin/expired/video/all/renew/{{ data.all }}/</a></li>
     </ul>
+
+    {% for video in data.videos %}
+        <p>{% trans %}This video will be expire soon{% endtrans %}: {{ video.title }}</p>
+        <p>{% trans %}Access this url to renew the video: {% endtrans %}</p>
+        <ul>
+            <li><a href="{{ url('homepage') }}admin/expired/video/renew/{{ video.token }}">{{ url('homepage') }}admin/expired/video/renew/{{ video.token }}/</a></li>
+        </ul>
+        <br/>
+    {% endfor %}
 {% endif %}
 
 <br/>
 <br/>
 {{ sender_name }}
+
+
