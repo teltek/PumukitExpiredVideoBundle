@@ -40,6 +40,8 @@ EOT
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
         $this->notificationParameters = $this->getContainer()->getParameter('pumukit_notification');
         $this->sendMail = $this->notificationParameters['sender_email'];
+
+        $this->roleRepo = $this->dm->getRepository('PumukitSchemaBundle:Role');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -52,6 +54,7 @@ EOT
             $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
             $mmobjExpired = $this->getExpiredVideos();
 
+            $expiredOwnerRole = $this->getRoleWithCode('expired_owner');
             if ($mmobjExpired) {
                 $aMultimediaObject = array();
                 foreach ($mmobjExpired as $mmObj) {
@@ -59,6 +62,8 @@ EOT
                     foreach ($mmObj->getRoles() as $role) {
                         if ($role->getCod() == $this->user_code) {
                             foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
+
+                                $mmObj->addPersonWithRole($person, $expiredOwnerRole);
                                 $mmObj->removePersonWithRole($person, $role);
                             }
                             $removeOwner = true;
@@ -67,7 +72,6 @@ EOT
                     }
                     if ($removeOwner) {
                         $aMultimediaObject[] = $mmObj->getId();
-                        $subject = 'Remove owner people from '.$mmObj->getTitle();
                         $output->writeln('Remove owner people from multimedia object id - '.$mmObj->getId());
                     }
                 }
