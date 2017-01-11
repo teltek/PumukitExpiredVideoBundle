@@ -20,5 +20,9 @@
             <tag name="kernel.event_listener" event="multimediaobject.create" method="onMultimediaobjectCreate" />
         </service>
 
+        <service id="pumukit_expired_video.menu" class="Pumukit\ExpiredVideoBundle\Services\MenuService">
+            <tag name="pumukitnewadmin.menuitem"></tag>
+        </service>
+
     </services>
 </container>
