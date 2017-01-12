@@ -1,0 +1,3 @@
+pumukit_expired_video_bundle:
+    resource: "@PumukitExpiredVideoBundle/Controller/"
+    type:     annotation
