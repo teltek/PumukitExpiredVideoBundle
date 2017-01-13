@@ -28,7 +28,7 @@ class PumukitExpiredVideoExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-        $permissions = array(array('role' => 'ROLE_ACCESS_EXPIRED_VIDEO', 'description' => 'Expired video'));
+        $permissions = array(array('role' => 'ROLE_ACCESS_EXPIRED_VIDEO', 'description' => 'Access expired video'));
         $newPermissions = array_merge($container->getParameter('pumukitschema.external_permissions'), $permissions);
         $container->setParameter('pumukitschema.external_permissions', $newPermissions);
 
