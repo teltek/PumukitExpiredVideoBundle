@@ -5,9 +5,10 @@ namespace Pumukit\ExpiredVideoBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+
 
 /**
  * @Route("/admin/expired/video")
@@ -18,6 +19,8 @@ class ExpiredVideoController extends Controller
     private $regex = '/^[0-9a-z]{24}$/';
 
     /**
+     * List all expired multimedia object and the mmo that will be expired on range warning days
+     *
      * @Route("/list/", name="pumukit_expired_video_list_all")
      * @Template()
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
@@ -38,6 +41,8 @@ class ExpiredVideoController extends Controller
     }
 
     /**
+     * Delete multimedia object
+     *
      * @Route("/delete/{key}/", name="pumukit_expired_video_delete", defaults={"key": null})
      * @Template("PumukitExpiredVideoBundle:ExpiredVideo:listAll.html.twig")
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
@@ -51,7 +56,6 @@ class ExpiredVideoController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $multimediaObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findOneById(new \MongoId($key));
-
         if(isset($multimediaObject)) {
             $sResult = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->createQueryBuilder()
                 ->remove()
@@ -64,10 +68,11 @@ class ExpiredVideoController extends Controller
     }
 
     /**
+     * Renew expired multimedia object and change rol of expired owner to owner.
+     *
      * @Route("/renew/admin/{key}/", name="pumukit_expired_video_update", defaults={"key": null})
      * @Template("PumukitExpiredVideoBundle:ExpiredVideo:listAll.html.twig")
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
-     *
      */
     public function renewExpiredVideoAdminAction(Request $request, $key)
     {
@@ -76,11 +81,23 @@ class ExpiredVideoController extends Controller
         }
 
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
+        $ownerKey = $this->container->getParameter('pumukitschema.personal_scope_role_code');
 
         $dm = $this->get('doctrine_mongodb')->getManager();
         $mmObj = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findOneById(new \MongoId($key));
 
         if ($mmObj) {
+
+            $roleOwner = $dm->getRepository('PumukitSchemaBundle:Role')->findOneByCod($ownerKey);
+            foreach ($mmObj->getRoles() as $role) {
+                if ($role->getCod() == 'expired_owner') {
+                    foreach ($mmObj->getPeopleByRoleCod($ownerKey, true) as $person) {
+                        $mmObj->addPersonWithRole($person, $roleOwner);
+                        $mmObj->removePersonWithRole($person, $role);
+                    }
+                }
+            }
+
             $aRenew = $mmObj->getProperty('renew_expiration_date');
             $aRenew[] = $days;
             $mmObj->setProperty('renew_expiration_date', $aRenew);
