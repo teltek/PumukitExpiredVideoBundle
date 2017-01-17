@@ -49,7 +49,6 @@ EOT
         $this->initParameters();
 
         if ($input->getOption('force')) {
-
             $mmobjExpired = $this->getExpiredVideos();
             $expiredOwnerRole = $this->roleRepo->getRoleWithCode('expired_owner');
 
@@ -60,7 +59,6 @@ EOT
                     foreach ($mmObj->getRoles() as $role) {
                         if ($role->getCod() == $this->user_code) {
                             foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
-
                                 $mmObj->addPersonWithRole($person, $expiredOwnerRole);
                                 $mmObj->removePersonWithRole($person, $role);
                             }

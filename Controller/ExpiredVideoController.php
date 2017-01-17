@@ -7,8 +7,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
 
 /**
  * @Route("/admin/expired/video")
@@ -19,7 +17,7 @@ class ExpiredVideoController extends Controller
     private $regex = '/^[0-9a-z]{24}$/';
 
     /**
-     * List all expired multimedia object and the mmo that will be expired on range warning days
+     * List all expired multimedia object and the mmo that will be expired on range warning days.
      *
      * @Route("/list/", name="pumukit_expired_video_list_all")
      * @Template()
@@ -34,14 +32,14 @@ class ExpiredVideoController extends Controller
         $ownerKey = $this->container->getParameter('pumukitschema.personal_scope_role_code');
 
         $now = new \DateTime();
-        $date = $now->add(new \DateInterval('P' . $range_days . 'D'));
-        $aMultimediaObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(array('properties.expiration_date' => array('$exists' => true), 'properties.expiration_date' => array('$lte' => $date->format('c'))),array('properties.expiration_date' => -1));
+        $date = $now->add(new \DateInterval('P'.$range_days.'D'));
+        $aMultimediaObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(array('properties.expiration_date' => array('$exists' => true), 'properties.expiration_date' => array('$lte' => $date->format('c'))), array('properties.expiration_date' => -1));
 
         return array('days' => $days, 'ownerKey' => $ownerKey, 'multimediaObjects' => $aMultimediaObject);
     }
 
     /**
-     * Delete multimedia object
+     * Delete multimedia object.
      *
      * @Route("/delete/{key}/", name="pumukit_expired_video_delete", defaults={"key": null})
      * @Template("PumukitExpiredVideoBundle:ExpiredVideo:listAll.html.twig")
@@ -56,7 +54,7 @@ class ExpiredVideoController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $multimediaObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findOneById(new \MongoId($key));
-        if(isset($multimediaObject)) {
+        if (isset($multimediaObject)) {
             $sResult = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->createQueryBuilder()
                 ->remove()
                 ->field('_id')->equals(new \MongoId($multimediaObject->getId()))
@@ -87,7 +85,6 @@ class ExpiredVideoController extends Controller
         $mmObj = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findOneById(new \MongoId($key));
 
         if ($mmObj) {
-
             $roleOwner = $dm->getRepository('PumukitSchemaBundle:Role')->findOneByCod($ownerKey);
             foreach ($mmObj->getRoles() as $role) {
                 if ($role->getCod() == 'expired_owner') {
