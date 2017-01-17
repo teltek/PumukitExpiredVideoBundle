@@ -31,6 +31,5 @@ class PumukitExpiredVideoExtension extends Extension
         $permissions = array(array('role' => 'ROLE_ACCESS_EXPIRED_VIDEO', 'description' => 'Access expired video'));
         $newPermissions = array_merge($container->getParameter('pumukitschema.external_permissions'), $permissions);
         $container->setParameter('pumukitschema.external_permissions', $newPermissions);
-
     }
 }

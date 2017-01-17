@@ -33,14 +33,14 @@ EOT
     private function initParameters()
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.notification');
-
         $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
-
-        $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
         $this->notificationParameters = $this->getContainer()->getParameter('pumukit_notification');
+
         $this->sendMail = $this->notificationParameters['sender_email'];
 
+        $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
         $this->roleRepo = $this->dm->getRepository('PumukitSchemaBundle:Role');
     }
 
@@ -49,12 +49,9 @@ EOT
         $this->initParameters();
 
         if ($input->getOption('force')) {
-            $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-
-            $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
             $mmobjExpired = $this->getExpiredVideos();
+            $expiredOwnerRole = $this->roleRepo->getRoleWithCode('expired_owner');
 
-            $expiredOwnerRole = $this->getRoleWithCode('expired_owner');
             if ($mmobjExpired) {
                 $aMultimediaObject = array();
                 foreach ($mmobjExpired as $mmObj) {
@@ -62,7 +59,6 @@ EOT
                     foreach ($mmObj->getRoles() as $role) {
                         if ($role->getCod() == $this->user_code) {
                             foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
-
                                 $mmObj->addPersonWithRole($person, $expiredOwnerRole);
                                 $mmObj->removePersonWithRole($person, $role);
                             }

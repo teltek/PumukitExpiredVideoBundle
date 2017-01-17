@@ -27,7 +27,7 @@
                     {% endif %}
                     <tr>
                         <td><a href="{{ multimediaObject.id }}" target="_blank"/>{{ loop.index }}</a></td>
-                        <td><img class="img-responsive" src="{{ multimediaObject.getPic() }}" /></td>
+                        <td><img src="{{ multimediaObject.getPic() }}" style="max-width:75px"/></td>
                         <td style="color:{{ color }}">{{ multimediaObject.title }}</td>
                         <td style="color:{{ color }}">{{ multimediaObject.getPublicDate()|date("d/m/Y") }}</td>
                         <td style="color:{{ color }}">{{ multimediaObject.properties.expiration_date|date("d/m/Y") }}</td>
