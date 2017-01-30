@@ -13,8 +13,6 @@ class ExpiredVideoNotificationCommand extends ContainerAwareCommand
     private $mmobjRepo = null;
     private $type = 'expired';
     private $user_code;
-    private $factoryService;
-    private $logger;
 
     protected function configure()
     {
@@ -22,6 +20,7 @@ class ExpiredVideoNotificationCommand extends ContainerAwareCommand
             ->setName('video:expired:notification')
             ->setDescription('Automatically sending notifications to users who have a video about to expire.')
             ->addArgument('days', InputArgument::REQUIRED, 'days')
+            ->addArgument('range', InputArgument::REQUIRED, 'range')
             ->setHelp(
                 <<<'EOT'
 Automatic email sending to owners who have videos that expire soon
@@ -45,45 +44,65 @@ EOT
     {
         $this->initParameters();
         $days = abs(intval($input->getArgument('days')));
+        $range = $input->getArgument('range');
         if (!is_int($days)) {
             $output->writeln('Please, write an integer number');
         }
 
-        $aMultimediaObject = $this->findExpiredVideos($days);
-        $this->sendNotification($output, $aMultimediaObject);
+        $aMultimediaObject = $this->findExpiredVideos($days, $range);
+
+        if (count($aMultimediaObject) > 0) {
+            $this->sendNotification($output, $aMultimediaObject);
+        } else {
+            $date = new \DateTime(date('Y-m-d'));
+            $date->add(new \DateInterval('P'.$days.'D'));
+            $date = $date->format('Y-m-d H:i:s');
+            $output->writeln('No videos to expired on date '.$date);
+        }
 
         return;
     }
 
     /**
      * @param $days
+     * @param $range
      *
      * @return mixed
      */
-    private function findExpiredVideos($days)
+    private function findExpiredVideos($days, $range)
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-        $mmobjExpired = $this->getExpiredVideos($days);
+        $mmobjExpired = $this->getExpiredVideos($days, $range);
 
         return $mmobjExpired;
     }
 
     /**
      * @param $days
+     * @param $range
      *
      * @return mixed
      */
-    private function getExpiredVideos($days)
+    private function getExpiredVideos($days, $range)
     {
-        $now = new \DateTime();
-        $now->add(new \DateInterval('P'.$days.'D'));
-        $now = $now->format('c');
+        $date = new \DateTime(date('Y-m-d'));
+        $date->add(new \DateInterval('P'.$days.'D'));
+        $date = $date->format('Y-m-d H:i:s');
 
-        return $this->mmobjRepo->createQueryBuilder()
-            ->field('properties.expiration_date')->exists(true)
-            ->field('properties.expiration_date')->lte($now)
-            ->getQuery()
-            ->execute();
+        if ($range === 'false') {
+            $oTomorrow = new \DateTime(date('Y-m-d'));
+            $oTomorrow->add(new \DateInterval('P'.($days + 1).'D'));
+            $oTomorrow = $oTomorrow->format('Y-m-d H:i:s');
+        }
+
+        $qb = $this->mmobjRepo->createQueryBuilder()->field('properties.expiration_date')->exists(true);
+        if ($range === 'false') {
+            $qb->field('properties.expiration_date')->equals(array('$gte' => $date, '$lt' => $oTomorrow));
+        } else {
+            $qb->field('properties.expiration_date')->equals(array('$gte' => new \DateTime(date('Y-m-d')), '$lte' => $date));
+        }
+
+        return $qb->getQuery()->execute();
     }
 
     /**
