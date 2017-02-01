@@ -28,7 +28,7 @@
                     <tr>
                         <td><span data-id="{{ multimediaObject.id }}" />{{ loop.index }}</span></td>
                         <td><img src="{{ multimediaObject.getPic() }}" style="max-width:75px"/></td>
-                        <td style="color:{{ color }}">{{ multimediaObject.title }}</td>
+                        <td style="color:{{ color }}">{{ multimediaObject.title }} - {{ multimediaObject.series.title }}</td>
                         <td style="color:{{ color }}">{{ multimediaObject.getPublicDate()|date("d/m/Y") }}</td>
                         <td style="color:{{ color }}">{{ multimediaObject.properties.expiration_date|date("d/m/Y") }}</td>
                         <td>
