@@ -10,7 +10,7 @@
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th>{% trans %}Nº{% endtrans %}</th>
+                    <th>{% trans %}Id{% endtrans %}</th>
                     <th>{% trans %}Img{% endtrans %}</th>
                     <th>{% trans %}Title{% endtrans %}</th>
                     <th>{% trans %}Publication{% endtrans %}</th>
@@ -26,7 +26,7 @@
                         {% set color = "black" %}
                     {% endif %}
                     <tr>
-                        <td><span data-id="{{ multimediaObject.id }}" />{{ loop.index }}</span></td>
+                        <td><span data-id="{{ multimediaObject.id }}" /><a href="{{ path('pumukitnewadmin_mms_shortener', {'id': multimediaObject.id }) }}">{{ multimediaObject.id }}</a></span></td>
                         <td><img src="{{ multimediaObject.getPic() }}" style="max-width:75px"/></td>
                         <td style="color:{{ color }}">{{ multimediaObject.title }} - {{ multimediaObject.series.title }}</td>
                         <td style="color:{{ color }}">{{ multimediaObject.getPublicDate()|date("d/m/Y") }}</td>
