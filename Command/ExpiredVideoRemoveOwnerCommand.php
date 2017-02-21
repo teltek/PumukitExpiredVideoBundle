@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputOption;
-use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 
 class ExpiredVideoRemoveOwnerCommand extends ContainerAwareCommand
 {
@@ -14,9 +13,6 @@ class ExpiredVideoRemoveOwnerCommand extends ContainerAwareCommand
     private $mmobjRepo = null;
     private $user_code;
     private $type = 'removeOwner';
-
-    private $factoryService;
-    private $logger;
 
     protected function configure()
     {
@@ -50,13 +46,13 @@ EOT
 
         if ($input->getOption('force')) {
             $mmobjExpired = $this->getExpiredVideos();
-            $expiredOwnerRole = $this->roleRepo->getRoleWithCode('expired_owner');
 
-            if ($mmobjExpired) {
+            $expiredOwnerRole = $this->getRoleWithCode('expired_owner');
+
+            if (count($mmobjExpired) > 0) {
                 $aMultimediaObject = array();
                 foreach ($mmobjExpired as $mmObj) {
                     $removeOwner = false;
-
                     if (count($mmObj->getRoles()) > 0) {
                         foreach ($mmObj->getRoles() as $role) {
                             if ($role->getCod() === $this->user_code) {
@@ -68,10 +64,12 @@ EOT
                                 $this->dm->flush();
                             }
                         }
-                    }
-                    if ($removeOwner) {
-                        $aMultimediaObject[] = $mmObj->getId();
-                        $output->writeln('Remove owner people from multimedia object id - '.$mmObj->getId());
+                        if ($removeOwner) {
+                            $aMultimediaObject[] = $mmObj->getId();
+                            $output->writeln('Remove owner people from multimedia object id - '.$mmObj->getId());
+                        }
+                    } else {
+                        $output->writeln('There aren\'t roles on multimedia object id - '.$mmObj->getId());
                     }
                 }
                 try {
@@ -96,5 +94,15 @@ EOT
             ->field('properties.expiration_date')->lte($now->format('c'))
             ->getQuery()
             ->execute();
+    }
+
+    private function getRoleWithCode($code)
+    {
+        $role = $this->roleRepo->findOneByCod($code);
+        if (null == $role) {
+            throw new \Exception("Role with code '".$code."' not found. Please, init pumukit roles.");
+        }
+
+        return $role;
     }
 }
