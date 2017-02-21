@@ -18,6 +18,7 @@
             <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
             <argument>%pumukit_expired_video.expiration_date_days%</argument>
             <tag name="kernel.event_listener" event="multimediaobject.create" method="onMultimediaobjectCreate" />
+            <tag name="kernel.event_listener" event="multimediaobject.clone" method="onMultimediaobjectClone" />
         </service>
 
         <service id="pumukit_expired_video.menu" class="Pumukit\ExpiredVideoBundle\Services\MenuService">
