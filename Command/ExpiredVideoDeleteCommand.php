@@ -14,9 +14,6 @@ class ExpiredVideoDeleteCommand extends ContainerAwareCommand
     private $days;
     private $user_code;
 
-    private $factoryService;
-    private $logger;
-
     protected function configure()
     {
         $this
