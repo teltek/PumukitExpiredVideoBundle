@@ -53,7 +53,7 @@ EOT
                 $aMultimediaObject = array();
                 foreach ($mmobjExpired as $mmObj) {
                     $removeOwner = false;
-                    if(count($mmObj->getRoles()) > 0) {
+                    if (count($mmObj->getRoles()) > 0) {
                         foreach ($mmObj->getRoles() as $role) {
                             if ($role->getCod() === $this->user_code) {
                                 foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
