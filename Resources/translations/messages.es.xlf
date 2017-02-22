@@ -1,78 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
+  <file source-language="en" target-language="es-ES" datatype="plaintext" original="file.ext">
     <body>
       <trans-unit id="391441114d7c5041df58a65297703c27" resname="This video is out of date:">
         <source>This video is out of date:</source>
-        <target xml:lang="en" state="needs-translation">This video is out of date:</target>
+        <target xml:lang="es-ES" state="translated">Este video está caducado:</target>
       </trans-unit>
       <trans-unit id="0b9c082a84d013c9c1b2ae143bb06aff" resname="The owner of this video has been deleted.">
         <source>The owner of this video has been deleted.</source>
-        <target xml:lang="en" state="needs-translation">The owner of this video has been deleted.</target>
+        <target xml:lang="es-ES" state="translated">El propietario de este video ha sido borrado.</target>
       </trans-unit>
       <trans-unit id="d0c0ff02cf9695af05daf48c697dbf7c" resname="This video will be expire soon">
         <source>This video will be expire soon</source>
-        <target xml:lang="en" state="needs-translation">This video will be expire soon</target>
+        <target xml:lang="es-ES" state="translated">Este video caduca proximamente</target>
       </trans-unit>
       <trans-unit id="1914693b9aa44c18207a1b3bf2c2bd02" resname="Access this url to renew the video:">
         <source>Access this url to renew the video:</source>
-        <target xml:lang="en" state="needs-translation">Access this url to renew the video:</target>
+        <target xml:lang="es-ES" state="translated">Acceder a esta url para renovar el video:</target>
       </trans-unit>
       <trans-unit id="1120da170a28f2d3430ceba63e213a44" resname="The multimedia object has been successfully renewed.">
         <source>The multimedia object has been successfully renewed.</source>
-        <target xml:lang="en" state="needs-translation">The multimedia object has been successfully renewed.</target>
+        <target xml:lang="es-ES" state="translated">El objeto multimedia ha sido renovado con éxito.</target>
       </trans-unit>
       <trans-unit id="d2350e41a5ef5e861c81467064e4160a" resname="You aren't the owner of this multimedia object.">
         <source>You aren't the owner of this multimedia object.</source>
-        <target xml:lang="en" state="needs-translation">You aren't the owner of this multimedia object.</target>
+        <target xml:lang="es-ES" state="translated">No eres el propietario de este objeto multimedia.</target>
       </trans-unit>
       <trans-unit id="babf8027d0878519b37554584a590eca" resname="This multimedia object accomplishes one of these cases">
         <source>This multimedia object accomplishes one of these cases</source>
-        <target xml:lang="en" state="needs-translation">This multimedia object accomplishes one of these cases</target>
+        <target xml:lang="es-ES" state="translated">Este objeto multimedia logra uno de estos casos</target>
       </trans-unit>
       <trans-unit id="49069212093b514819d342cde75e5d1c" resname="Has been renewed.">
         <source>Has been renewed.</source>
-        <target xml:lang="en" state="needs-translation">Has been renewed.</target>
+        <target xml:lang="es-ES" state="translated">Se ha renovado.</target>
       </trans-unit>
       <trans-unit id="d34bd0d087c6ce7df469256589363c18" resname="Multimedia object doesn't exists.">
         <source>Multimedia object doesn't exists.</source>
-        <target xml:lang="en" state="needs-translation">Multimedia object doesn't exists.</target>
+        <target xml:lang="es-ES" state="translated">No existe el objeto multimedia.</target>
       </trans-unit>
       <trans-unit id="988fd738de9c6d177440c5dcf69e73ce" resname="Return">
         <source>Return</source>
-        <target xml:lang="en" state="needs-translation">Return</target>
+        <target xml:lang="es-ES" state="translated">Volver</target>
       </trans-unit>
       <trans-unit id="13153631d908409ea931f8ada3f79bdb" resname="PuMuKIT2 - Remove owner of the following video.">
         <source>PuMuKIT2 - Remove owner of the following video.</source>
-        <target xml:lang="en" state="needs-translation">PuMuKIT2 - Remove owner of the following video.</target>
+        <target xml:lang="es-ES" state="translated">PuMuKIT2 - Eliminado propietario del siguiente video.</target>
       </trans-unit>
       <trans-unit id="a58f028aa856474b80f59d6c5fc0d61d" resname="PuMuKIT2 - These videos will be expired coming soon.">
         <source>PuMuKIT2 - These videos will be expired coming soon.</source>
-        <target xml:lang="en" state="needs-translation">PuMuKIT2 - These videos will be expired coming soon.</target>
+        <target xml:lang="es-ES" state="translated">PuMuKIT2 - Estos videos caducarán próximamente.</target>
+        <alt-trans>
+          <target xml:lang="es-ES">PuMuKIT2 - estos videos será terminado muy pronto.</target>
+        </alt-trans>
       </trans-unit>
       <trans-unit id="291dde514bcc4e84bdea49ca07394cb6" resname="To renew all your videos access this url:">
         <source>To renew all your videos access this url:</source>
-        <target xml:lang="en" state="needs-translation">To renew all your videos access this url:</target>
+        <target xml:lang="es-ES" state="translated">Para renovar todos sus videos acceder a esta url:</target>
       </trans-unit>
       <trans-unit id="1cb73556f8e711e6bc6492361f002671" resname="Delete">
         <source>Delete</source>
-        <target xml:lang="en" state="needs-translation">Delete</target>
+        <target xml:lang="es-ES" state="translated">Eliminar</target>
       </trans-unit>
       <trans-unit id="1cb738eef8e711e6bc6492361f002671" resname="Update another year with the same owners">
         <source>Update another year with the same owners</source>
-        <target xml:lang="en" state="needs-translation">Update another year with the same owners</target>
+        <target xml:lang="es-ES" state="translated">Actualizar otro año con los mismos dueños</target>
       </trans-unit>
       <trans-unit id="1cb73bf0f8e711e6bc6492361f002671" resname="Multimedia objects coming to expire">
         <source>Multimedia objects coming to expire</source>
-        <target xml:lang="en" state="needs-translation">Multimedia objects coming to expire</target>
+        <target xml:lang="es-ES" state="translated">Objetos multimedia a punto de caducar</target>
       </trans-unit>
       <trans-unit id="67c9288af8ea11e6bc6492361f002671" resname="Expiration">
         <source>Expiration</source>
-        <target xml:lang="en" state="needs-translation">Expiration</target>
+        <target xml:lang="es-ES" state="translated">Caducidad</target>
       </trans-unit>
       <trans-unit id="67c92b0af8ea11e6bc6492361f002671" resname="Owners">
         <source>Owners</source>
-        <target xml:lang="en" state="needs-translation">Owners</target>
+        <target xml:lang="es-ES" state="translated">Propietarios</target>
       </trans-unit>
     </body>
   </file>
