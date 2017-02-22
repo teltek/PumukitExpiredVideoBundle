@@ -98,6 +98,7 @@ class ExpiredVideoService
 
             $aUserKeys['videos'][$mmObj->getId()]['token'] = $sTokenMO;
             $aUserKeys['videos'][$mmObj->getId()]['title'] = $mmObj->getTitle();
+            $aUserKeys['videos'][$mmObj->getId()]['obj'] = $mmObj;
             $aUserKeys['videos'][$mmObj->getId()]['expired'] = $mmObj->getPropertyAsDateTime('expiration_date');
 
             $this->dm->flush();
