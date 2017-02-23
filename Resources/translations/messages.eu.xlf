@@ -80,6 +80,22 @@
         <source>Owners</source>
         <target xml:lang="eu" state="translated">Jabeak</target>
       </trans-unit>
+      <trans-unit id="ac80a188f9a311e6bc6492361f002671" resname="Are you sure to delete this video?">
+        <source>Are you sure to delete this video?</source>
+        <target xml:lang="eu" state="translated">Bideo hau ezabatzea seguru zaude?</target>
+      </trans-unit>
+      <trans-unit id="ac80a444f9a311e6bc6492361f002671" resname="Are you sure to update this video?">
+        <source>Are you sure to update this video?</source>
+        <target xml:lang="eu" state="translated">Bideo hau eguneratzea seguru zaude?</target>
+      </trans-unit>
+      <trans-unit id="171d2afcf9a411e6bc6492361f002671" resname="Accept">
+        <source>Accept</source>
+        <target xml:lang="eu" state="translated">Onartzea</target>
+      </trans-unit>
+      <trans-unit id="171d2d5ef9a411e6bc6492361f002671" resname="Expired video">
+        <source>Expired video</source>
+        <target xml:lang="eu" state="translated">Iraungitako bideoa</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
