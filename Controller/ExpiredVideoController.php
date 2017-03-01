@@ -31,11 +31,13 @@ class ExpiredVideoController extends Controller
         $range_days = $this->container->getParameter('pumukit_expired_video.range_warning_days');
         $ownerKey = $this->container->getParameter('pumukitschema.personal_scope_role_code');
 
+        $ownerRol = $dm->getRepository('PumukitSchemaBundle:Role')->findOneBy(array('code' => $ownerKey));
+
         $now = new \DateTime();
         $date = $now->add(new \DateInterval('P'.$range_days.'D'));
         $aMultimediaObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(array('properties.expiration_date' => array('$exists' => true), 'properties.expiration_date' => array('$lte' => $date->format('c'))), array('properties.expiration_date' => -1));
 
-        return array('days' => $days, 'ownerKey' => $ownerKey, 'multimediaObjects' => $aMultimediaObject);
+        return array('days' => $days, 'ownerRol' => $ownerRol, 'multimediaObjects' => $aMultimediaObject);
     }
 
     /**
