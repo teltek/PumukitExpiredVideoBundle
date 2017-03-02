@@ -83,7 +83,7 @@
       </trans-unit>
       <trans-unit id="ac80a444f9a311e6bc6492361f002671" resname="Are you sure to update this video?">
         <source>Are you sure to update this video?</source>
-        <target xml:lang="es-ES" state="translated">¿Es seguro actualizar este video?</target>
+        <target xml:lang="es-ES" state="translated">¿Está seguro actualizar este video?</target>
       </trans-unit>
       <trans-unit id="171d2afcf9a411e6bc6492361f002671" resname="Accept">
         <source>Accept</source>
