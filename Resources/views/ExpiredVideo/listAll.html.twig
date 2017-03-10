@@ -27,7 +27,12 @@
                     {% endif %}
                     <tr>
                         <td><span data-id="{{ multimediaObject.id }}" /><a href="{{ path('pumukitnewadmin_mms_shortener', {'id': multimediaObject.id }) }}">{{ multimediaObject.id }}</a></span></td>
-                        <td><img src="{{ multimediaObject.getPic() }}" style="max-width:75px"/></td>
+                        {% set pic = multimediaObject.getPic() %}
+                        {% if pic.getUrl() is defined and pic.getUrl() is not empty %}
+                            <td><img src="{{ multimediaObject.getPic() }}" style="max-width:75px"/></td>
+                        {% else %}
+                            <td><img src="{{ asset('/bundles/pumukitwebtv/images/no_pic.jpg') }}" style="max-width:75px"></td>
+                        {% endif %}
                         <td style="color:{{ color }}">{{ multimediaObject.title }} - {{ multimediaObject.series.title }}</td>
                         <td style="color:{{ color }}">{{ multimediaObject.getPublicDate()|date("d/m/Y") }}</td>
                         <td style="color:{{ color }}">{{ multimediaObject.properties.expiration_date|date("d/m/Y") }}</td>
