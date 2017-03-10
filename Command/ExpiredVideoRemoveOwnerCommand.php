@@ -32,9 +32,7 @@ EOT
 
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.notification');
         $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
-        $this->notificationParameters = $this->getContainer()->getParameter('pumukit_notification');
-
-        $this->sendMail = $this->notificationParameters['sender_email'];
+        $this->sendMail = $this->getContainer()->getParameter('pumukit_notification.sender_email');
 
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
         $this->roleRepo = $this->dm->getRepository('PumukitSchemaBundle:Role');
