@@ -90,6 +90,10 @@
         <source>Expired video</source>
         <target xml:lang="en" state="needs-translation">Expired video</target>
       </trans-unit>
+      <trans-unit id="da51381f8a7cdd66fcacc1566013321e" resname="Show expiration date">
+        <source>Show expiration date</source>
+        <target>Show expiration date</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

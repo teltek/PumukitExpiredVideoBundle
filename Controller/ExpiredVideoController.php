@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Pumukit\SchemaBundle\Document\MultimediaObject;
 
 /**
  * @Route("/admin/expired/video")
@@ -209,4 +210,23 @@ class ExpiredVideoController extends Controller
 
         return array('message' => $error);
     }
+
+
+
+    /**
+     * Used for modal window in MultimediaObjectMenuService
+     *
+     * @Route("/info/{id}", name="pumukit_expired_video_info")
+     * @Template()
+     * @Security("is_granted('ROLE_ACCESS_MULTIMEDIA_SERIES')")
+     */
+    public function infoAction(MultimediaObject $multimediaObject)
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $user = $this->getUser();
+
+        $canEdit = $this->isGranted('ROLE_ACCESS_EXPIRED_VIDEO');
+        return array('edit' => $canEdit, 'multimediaObject' => $multimediaObject);
+    }
+
 }
