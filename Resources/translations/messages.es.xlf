@@ -133,6 +133,10 @@
         <source>Cancel</source>
         <target>Cancelar</target>
       </trans-unit>
+      <trans-unit id="3ac340832f29c11538fbe2d6f75e8bcc" resname="Update">
+        <source>Update</source>
+        <target>Actualizar</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

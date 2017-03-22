@@ -211,10 +211,8 @@ class ExpiredVideoController extends Controller
         return array('message' => $error);
     }
 
-
-
     /**
-     * Used for modal window in MultimediaObjectMenuService
+     * Used for modal window in MultimediaObjectMenuService.
      *
      * @Route("/info/{id}", name="pumukit_expired_video_info")
      * @Template()
@@ -226,7 +224,26 @@ class ExpiredVideoController extends Controller
         $user = $this->getUser();
 
         $canEdit = $this->isGranted('ROLE_ACCESS_EXPIRED_VIDEO');
-        return array('edit' => $canEdit, 'multimediaObject' => $multimediaObject);
+
+        return array('can_edit' => $canEdit, 'multimediaObject' => $multimediaObject);
     }
 
+    /**
+     * Update expiration date of a multimedia object (used in info modal).
+     *
+     * @Route("/update/date/{id}", name="pumukit_expired_video_update_date")
+     * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
+     */
+    public function updateDateAction(MultimediaObject $multimediaObject, Request $request)
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $newDate = new \DateTime($request->get('date'));
+        $multimediaObject->setPropertyAsDateTime('expiration_date', $newDate);
+
+        $dm->persist($multimediaObject);
+        $dm->flush();
+
+        return $this->redirectToRoute('pumukit_expired_video_info', array('id' => $multimediaObject->getId()));
+    }
 }
