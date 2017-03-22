@@ -95,7 +95,43 @@
       </trans-unit>
       <trans-unit id="da51381f8a7cdd66fcacc1566013321e" resname="Show expiration date">
         <source>Show expiration date</source>
-        <target>Show expiration date</target>
+        <target>Mostrar fecha de caducidad</target>
+      </trans-unit>
+      <trans-unit id="200ef7a3b363bc27577081b10436a4a4" resname="Multimedia object expiration date">
+        <source>Multimedia object expiration date</source>
+        <target>Fecha de caducidad del objeto multimedia</target>
+      </trans-unit>
+      <trans-unit id="23bb788d31600ae781a4d26b4aa619b9" resname="The expiration date for this video is %date%">
+        <source>The expiration date for this video is %date%</source>
+        <target>La fecha de caducidad es %date%</target>
+      </trans-unit>
+      <trans-unit id="d3d2e617335f08df83599665eef8a418" resname="Close">
+        <source>Close</source>
+        <target>Cerrar</target>
+      </trans-unit>
+      <trans-unit id="490aa6e856ccf208a054389e47ce0d06" resname="Id">
+        <source>Id</source>
+        <target>Id</target>
+      </trans-unit>
+      <trans-unit id="21133d71a056222fa2096906538e4e04" resname="Img">
+        <source>Img</source>
+        <target>Img</target>
+      </trans-unit>
+      <trans-unit id="b78a3223503896721cca1303f776159b" resname="Title">
+        <source>Title</source>
+        <target>Título</target>
+      </trans-unit>
+      <trans-unit id="6bd6beac1da76b2d2a9c3b7914ba034c" resname="Publication">
+        <source>Publication</source>
+        <target>Publicación</target>
+      </trans-unit>
+      <trans-unit id="06df33001c1d7187fdd81ea1f5b277aa" resname="Actions">
+        <source>Actions</source>
+        <target>Acciones</target>
+      </trans-unit>
+      <trans-unit id="ea4788705e6873b424c65e91c2846b19" resname="Cancel">
+        <source>Cancel</source>
+        <target>Cancelar</target>
       </trans-unit>
     </body>
   </file>
