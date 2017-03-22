@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Pumukit\SchemaBundle\Document\MultimediaObject;
 
 /**
  * @Route("/admin/expired/video")
@@ -212,5 +213,41 @@ class ExpiredVideoController extends Controller
         }
 
         return array('message' => $error);
+    }
+
+    /**
+     * Used for modal window in MultimediaObjectMenuService.
+     *
+     * @Route("/info/{id}", name="pumukit_expired_video_info")
+     * @Template()
+     * @Security("is_granted('ROLE_ACCESS_MULTIMEDIA_SERIES')")
+     */
+    public function infoAction(MultimediaObject $multimediaObject)
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $user = $this->getUser();
+
+        $canEdit = $this->isGranted('ROLE_ACCESS_EXPIRED_VIDEO');
+
+        return array('can_edit' => $canEdit, 'multimediaObject' => $multimediaObject);
+    }
+
+    /**
+     * Update expiration date of a multimedia object (used in info modal).
+     *
+     * @Route("/update/date/{id}", name="pumukit_expired_video_update_date")
+     * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
+     */
+    public function updateDateAction(MultimediaObject $multimediaObject, Request $request)
+    {
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $newDate = new \DateTime($request->get('date'));
+        $multimediaObject->setPropertyAsDateTime('expiration_date', $newDate);
+
+        $dm->persist($multimediaObject);
+        $dm->flush();
+
+        return $this->redirectToRoute('pumukit_expired_video_info', array('id' => $multimediaObject->getId()));
     }
 }

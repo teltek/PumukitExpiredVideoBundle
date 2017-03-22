@@ -25,5 +25,8 @@
             <tag name="pumukitnewadmin.menuitem"></tag>
         </service>
 
+        <service id="pumukit_expired_video.mmobj_menu" class="Pumukit\ExpiredVideoBundle\Services\MultimediaObjectMenuService">
+            <tag name="pumukitnewadmin.mmobjmenuitem"></tag>
+        </service>
     </services>
 </container>
