@@ -33,13 +33,14 @@
                         <td style="color:{{ color }}">{{ multimediaObject.properties.expiration_date|date("d/m/Y") }}</td>
                         <td>
                             <ul>
-                                {% for person in multimediaObject.getPeopleByRole(ownerRol) %}
+                                {% for person in multimediaObject.getPeopleByRole(ownerRol,true) %}
+
                                         <li><a href="mailto:{{ person.email }}">{{ person.name }}</a></li>
                                 {% endfor %}
                             </ul>
                         </td>
                         <td>
-                            {% if multimediaObject.properties.expiration_date|date("Y/m/d") < "now"|date("Y/m/d") %}
+                            {% if multimediaObject.properties.expiration_date|date("Y/m/d") <= "now"|date("Y/m/d") %}
                             <ul>
                                 <li>
                                     <a class="deleteVideo" href="#" data-text="{% trans %}Are you sure to delete this video? {% endtrans %}" data-title="{{ multimediaObject.title }}" data-url="{{ path('pumukit_expired_video_delete', {'key' : multimediaObject.id}) }}" style="color:blue" data-toggle="modal" data-target="#actionsModal">{% trans %}Delete{% endtrans %}</a>
