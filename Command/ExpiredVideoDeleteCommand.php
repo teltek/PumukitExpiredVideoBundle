@@ -30,6 +30,7 @@ EOT
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
+        $this->seriesRepo = $this->dm->getRepository('PumukitSchemaBundle:Series');
         $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
         $this->days = $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
     }
@@ -46,6 +47,10 @@ EOT
                     if (!$mmObj->getPeopleByRoleCod($this->user_code, true) || empty($mmObj->getPeopleByRoleCod($this->user_code, true))) {
                         $output->writeln('Delete Multimedia Object ID - '.$mmObj->getId());
                         $result = $this->deleteVideos($mmObj);
+
+                        if(0 === count($mmObj->getSeries()->getMultimediaObjects())) {
+                            $this->deleteSeries($mmObj->getSeries()->getId());
+                        }
 
                         $output->writeln('Status remove - '.$result['ok']);
                         if ($result['errmsg'] && $result['err']) {
@@ -84,6 +89,15 @@ EOT
         return $this->mmobjRepo->createQueryBuilder()
             ->remove()
             ->field('_id')->equals(new \MongoId($mmObj->getId()))
+            ->getQuery()
+            ->execute();
+    }
+
+    private function deleteSeries($sSeriesId)
+    {
+        return $this->seriesRepo->createQueryBuilder()
+            ->remove()
+            ->field('_id')->equals(new \MongoId($sSeriesId))
             ->getQuery()
             ->execute();
     }
