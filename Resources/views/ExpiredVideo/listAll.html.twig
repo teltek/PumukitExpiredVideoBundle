@@ -27,7 +27,8 @@
                     {% endif %}
                     <tr>
                         <td><span data-id="{{ multimediaObject.id }}" /><a href="{{ path('pumukitnewadmin_mms_shortener', {'id': multimediaObject.id }) }}">{{ multimediaObject.id }}</a></span></td>
-                        <td><img src="{{ multimediaObject.getPic() }}" style="max-width:75px"/></td>
+                        {% set pic = multimediaObject.getPic() %}
+                        <td><img src="{{ multimediaObject|first_url_pic(true, false) }}" style="max-width:75px"/></td>
                         <td style="color:{{ color }}">{{ multimediaObject.title }} - {{ multimediaObject.series.title }}</td>
                         <td style="color:{{ color }}">{{ multimediaObject.getPublicDate()|date("d/m/Y") }}</td>
                         <td style="color:{{ color }}">{{ multimediaObject.properties.expiration_date|date("d/m/Y") }}</td>
