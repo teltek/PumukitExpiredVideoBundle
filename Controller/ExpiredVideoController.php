@@ -182,6 +182,10 @@ class ExpiredVideoController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $person = $dm->getRepository('PumukitSchemaBundle:Person')->findOneBy(array('properties.expiration_key' => new \MongoId($key)));
 
+        if(!$person) {
+            $error = 2;
+            return array('message', $error);
+        }
         $user = $this->get('security.context')->getToken()->getUser();
         if ($user->getEmail() == $person->getEmail()) {
             $aObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(
