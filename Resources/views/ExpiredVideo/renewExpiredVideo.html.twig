@@ -15,6 +15,10 @@
                 <li>{% trans %}Has been renewed.{% endtrans %}</li>
                 <li>{% trans %}Multimedia object doesn't exists.{% endtrans %}</li>
             </ul>
+        {% elseif message == 3 %}
+            <h4>{% trans %}Multimedia object doesn't exists.{% endtrans %}</h4>
+        {% elseif message == 4 %}
+            <h4>{% trans %}You aren't the owner of this multimedia object.{% endtrans %}</h4>
         {% endif %}
     </div>
     <div class="col-md-4 col-md-offset-4" style="margin-top:40px">
