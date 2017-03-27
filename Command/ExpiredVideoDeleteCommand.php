@@ -48,7 +48,7 @@ EOT
                         $output->writeln('Delete Multimedia Object ID - '.$mmObj->getId());
                         $result = $this->deleteVideos($mmObj);
 
-                        if(0 === count($mmObj->getSeries()->getMultimediaObjects())) {
+                        if (0 === count($mmObj->getSeries()->getMultimediaObjects())) {
                             $this->deleteSeries($mmObj->getSeries()->getId());
                         }
 

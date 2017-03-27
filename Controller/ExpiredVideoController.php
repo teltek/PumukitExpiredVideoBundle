@@ -183,8 +183,9 @@ class ExpiredVideoController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $person = $dm->getRepository('PumukitSchemaBundle:Person')->findOneBy(array('properties.expiration_key' => new \MongoId($key)));
 
-        if(!$person) {
-            $error = 2;
+        if (!$person) {
+            $error = 4;
+
             return array('message', $error);
         }
         $user = $this->get('security.context')->getToken()->getUser();
@@ -193,21 +194,25 @@ class ExpiredVideoController extends Controller
                 array('people.people._id' => $person->getId(), 'properties.expiration_key' => array('$exists' => true))
             );
 
-            foreach ($aObject as $mmObj) {
-                $aRenew = $mmObj->getProperty('renew_expiration_date');
-                $aRenew[] = $days;
-                $mmObj->setProperty('renew_expiration_date', $aRenew);
+            if (count($aObject) >= 1) {
+                foreach ($aObject as $mmObj) {
+                    $aRenew = $mmObj->getProperty('renew_expiration_date');
+                    $aRenew[] = $days;
+                    $mmObj->setProperty('renew_expiration_date', $aRenew);
 
-                $mmObj->removeProperty('expiration_key');
+                    $mmObj->removeProperty('expiration_key');
 
-                $date = new \DateTime();
-                $date->add(new \DateInterval('P'.$days.'D'));
-                $mmObj->setPropertyAsDateTime('expiration_date', $date);
+                    $date = new \DateTime();
+                    $date->add(new \DateInterval('P'.$days.'D'));
+                    $mmObj->setPropertyAsDateTime('expiration_date', $date);
 
-                $person->removeProperty('expiration_date');
+                    $person->removeProperty('expiration_date');
+                }
+                $dm->flush();
+                $error = 0;
+            } else {
+                $error = 3;
             }
-            $dm->flush();
-            $error = 0;
         } else {
             $error = 1;
         }
