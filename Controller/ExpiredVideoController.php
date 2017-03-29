@@ -118,7 +118,7 @@ class ExpiredVideoController extends Controller
      * @Route("/renew/{key}/", name="pumukit_expired_video_renew",  defaults={"key": null})
      * @Template()
      */
-    public function renewExpiredVideoAction(Request $request, $key)
+    public function renewExpiredVideoAction($key)
     {
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
         if (!$key || !preg_match($this->regex, $key)) {
@@ -162,7 +162,7 @@ class ExpiredVideoController extends Controller
                 $error = 1;
             }
         } else {
-            $error = 0;
+            $error = 3;
         }
 
         return array('message' => $error);
@@ -186,8 +186,9 @@ class ExpiredVideoController extends Controller
         if (!$person) {
             $error = 4;
 
-            return array('message', $error);
+            return array('message' => $error);
         }
+
         $user = $this->get('security.context')->getToken()->getUser();
         if ($user->getEmail() == $person->getEmail()) {
             $aObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(
