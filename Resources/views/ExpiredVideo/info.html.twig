@@ -13,7 +13,7 @@
           <div class="form-group" style="width: 250px">
             <label class="control-label required">{% trans %}Update{% endtrans %}</label>
             <input type="date" class="form-control" pattern="(\d\d\d\d)-(\d\d)-(\d\d)" title="Format YYYY-MM-DD" name="date" id="expiration_date_from" value="{{ multimediaObject.properties.expiration_date|date('Y-m-d') }}">
-            <a href="javascript:$('.modal-content').load('{{ path('pumukit_expired_video_update_date', {id: multimediaObject.id}) }}', {'date': $('#expiration_date_from').val()})" class="btn btn-pumukit btn-raised btn-xs">{% trans %}Save{% endtrans %}</a>
+            <a href="#" onclick="$('.modal-content').load('{{ path('pumukit_expired_video_update_date', {id: multimediaObject.id}) }}', {'date': $('#expiration_date_from').val()}, function(){$('#myModal').modal('hide')}); return false" class="btn btn-pumukit btn-raised btn-xs">{% trans %}Save{% endtrans %}</a>
           </div>
         </div>
         {% endif %}
