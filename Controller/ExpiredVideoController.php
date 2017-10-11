@@ -162,7 +162,7 @@ class ExpiredVideoController extends Controller
                 $error = 1;
             }
         } else {
-            $error = 3;
+            $error = 2;
         }
 
         return array('message' => $error);
@@ -212,7 +212,7 @@ class ExpiredVideoController extends Controller
                 $dm->flush();
                 $error = 0;
             } else {
-                $error = 3;
+                $error = 2;
             }
         } else {
             $error = 1;
