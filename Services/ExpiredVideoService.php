@@ -28,7 +28,8 @@ class ExpiredVideoService
         Router $router,
         LoggerInterface $logger,
         SenderService $senderService = null,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        array $subject = null
     ) {
         $this->dm = $documentManager;
         $this->router = $router;
@@ -37,6 +38,9 @@ class ExpiredVideoService
         $this->logger = $logger;
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
         $this->personRepo = $this->dm->getRepository('PumukitSchemaBundle:Person');
+        if ($subject) {
+            $this->subject = $subject;
+        }
     }
 
     public function generateNotification($aEmails, $sType)

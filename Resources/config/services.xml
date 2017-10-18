@@ -12,6 +12,8 @@
             <argument type="service" id="logger"/>
             <argument type="service" id="pumukit_notification.sender" on-invalid="ignore"/>
             <argument type="service" id="translator"/>
+            <argument type="expression">container.hasParameter('pumukit_expired_video.notification_subject') ? parameter('pumukit_expired_video.notification_subject') : null</argument>
+
         </service>
 
         <service id="pumukit_expired_video.init_date" class="Pumukit\ExpiredVideoBundle\EventListener\InitDateListener">
