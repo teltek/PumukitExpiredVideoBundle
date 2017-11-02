@@ -31,7 +31,7 @@ EOT
             );
     }
 
-    private function initParameters()
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.notification');
@@ -42,11 +42,16 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->initParameters();
         $days = abs(intval($input->getArgument('days')));
         $range = $input->getArgument('range');
         if (!is_int($days)) {
             $output->writeln('Please, write an integer number');
+        }
+
+        if (0 == $days) {
+            $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
+
+            return;
         }
 
         $aMultimediaObject = $this->findExpiredVideos($days, $range);

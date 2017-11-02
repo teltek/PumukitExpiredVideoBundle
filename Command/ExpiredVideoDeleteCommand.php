@@ -26,7 +26,7 @@ EOT
             );
     }
 
-    private function initParameters()
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
@@ -37,9 +37,13 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->initParameters();
-
         if ($input->getOption('force')) {
+            if (0 === $this->days) {
+                $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
+
+                return;
+            }
+
             $mmobjExpired = $this->getDeleteExpiredVideos($this->days);
             $i = 0;
             if ($mmobjExpired) {
