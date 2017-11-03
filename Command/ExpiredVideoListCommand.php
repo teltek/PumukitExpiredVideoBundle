@@ -11,9 +11,6 @@ class ExpiredVideoListCommand extends ContainerAwareCommand
     private $dm = null;
     private $mmobjRepo = null;
 
-    private $factoryService;
-    private $logger;
-
     protected function configure()
     {
         $this
@@ -27,8 +24,6 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->initParameters();
-
         $mmobjExpired = $this->getExpiredVideos();
         if ($mmobjExpired) {
             foreach ($mmobjExpired as $mmObj) {
@@ -41,7 +36,7 @@ EOT
         }
     }
 
-    private function initParameters()
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');

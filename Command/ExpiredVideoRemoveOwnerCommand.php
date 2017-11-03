@@ -26,7 +26,7 @@ EOT
             );
     }
 
-    private function initParameters()
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
@@ -36,13 +36,19 @@ EOT
 
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
         $this->roleRepo = $this->dm->getRepository('PumukitSchemaBundle:Role');
+
+        $this->days = $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->initParameters();
-
         if ($input->getOption('force')) {
+            if (0 === $this->days) {
+                $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
+
+                return;
+            }
+
             $mmobjExpired = $this->getExpiredVideos();
 
             $expiredOwnerRole = $this->getRoleWithCode('expired_owner');

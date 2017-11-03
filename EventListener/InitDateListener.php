@@ -9,28 +9,32 @@ use Pumukit\SchemaBundle\Event\MultimediaObjectCloneEvent;
 class InitDateListener
 {
     private $dm;
-    private $inteval;
+    private $days;
 
-    public function __construct(DocumentManager $documentManager, $inteval = 365)
+    public function __construct(DocumentManager $documentManager, $days = 365)
     {
         $this->dm = $documentManager;
-        $this->interval = (int) $inteval;
+        $this->days = (int) $days;
 
         //TODO Move to configuration.
-        new \DateTime('+'.$this->interval.' days');
+        new \DateTime('+'.$this->days.' days');
     }
 
     public function onMultimediaobjectCreate(MultimediaObjectEvent $event)
     {
+        if (0 === $this->days) {
+            return;
+        }
+
         $mm = $event->getMultimediaObject();
 
         if ($mm->isPrototype()) {
             return;
         }
 
-        $date = new \DateTime('+'.$this->interval.' days');
+        $date = new \DateTime('+'.$this->days.' days');
         $mm->setPropertyAsDateTime('expiration_date', $date);
-        $mm->setProperty('renew_expiration_date', $this->interval);
+        $mm->setProperty('renew_expiration_date', $this->days);
 
         $this->dm->persist($mm);
         $this->dm->flush();
@@ -38,6 +42,10 @@ class InitDateListener
 
     public function onMultimediaobjectClone(MultimediaObjectCloneEvent $event)
     {
+        if (0 === $this->days) {
+            return;
+        }
+
         $aMultimediaObjects = $event->getMultimediaObjects();
 
         if ($aMultimediaObjects['origin']->isPrototype() or $aMultimediaObjects['clon']->isPrototype()) {
