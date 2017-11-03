@@ -60,7 +60,6 @@ EOT
                     if (count($mmObj->getRoles()) > 0) {
                         foreach ($mmObj->getRoles() as $role) {
                             if ($role->getCod() === $this->user_code) {
-                                var_dump('antes foreach');
                                 foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
                                     $mmObj->addPersonWithRole($person, $expiredOwnerRole);
                                     $mmObj->removePersonWithRole($person, $role);
