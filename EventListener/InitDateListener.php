@@ -9,12 +9,14 @@ use Pumukit\SchemaBundle\Event\MultimediaObjectCloneEvent;
 class InitDateListener
 {
     private $dm;
-    private $inteval;
+    private $interval;
+    private $days;
 
-    public function __construct(DocumentManager $documentManager, $inteval = 365)
+    public function __construct(DocumentManager $documentManager, $interval = 365, $days)
     {
         $this->dm = $documentManager;
-        $this->interval = (int) $inteval;
+        $this->interval = (int) $interval;
+        $this->days = $days;
 
         //TODO Move to configuration.
         new \DateTime('+'.$this->interval.' days');
@@ -22,6 +24,10 @@ class InitDateListener
 
     public function onMultimediaobjectCreate(MultimediaObjectEvent $event)
     {
+        if (0 === $this->days) {
+            return;
+        }
+
         $mm = $event->getMultimediaObject();
 
         if ($mm->isPrototype()) {
@@ -38,6 +44,10 @@ class InitDateListener
 
     public function onMultimediaobjectClone(MultimediaObjectCloneEvent $event)
     {
+        if (0 === $this->days) {
+            return;
+        }
+
         $aMultimediaObjects = $event->getMultimediaObjects();
 
         if ($aMultimediaObjects['origin']->isPrototype() or $aMultimediaObjects['clon']->isPrototype()) {
