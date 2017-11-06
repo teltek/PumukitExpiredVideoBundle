@@ -48,11 +48,12 @@ EOT
             return;
         }
 
-        $days = abs(intval($input->getArgument('days')));
-        $range = $input->getArgument('range');
-        if (!is_int($days)) {
-            $output->writeln('Please, write an integer number');
+        if (!is_int($input->getArgument('days'))) {
+            throw new \Exception('Please, write an integer number');
         }
+
+        $days = $input->getArgument('days');
+        $range = $input->getArgument('range');
 
         $aMultimediaObject = $this->findExpiredVideos($days, $range);
 
