@@ -94,8 +94,7 @@ EOT
         $date = $date->format('Y-m-d H:i:s');
 
         $qb = $this->mmobjRepo->createQueryBuilder()
-            ->field('properties.expiration_date')->exists(true)
-            ->field('properties.expiration_key')->exists(true);
+            ->field('properties.expiration_date')->exists(true);
 
         if ($range === 'false') {
             $oTomorrow = new \DateTime(date('Y-m-d'));
