@@ -9,10 +9,6 @@ pumukit_expired_video:
     range_warning_days: 90
 ```
 
-Expiration date days are the days that the Multimedia Object have to expired. If an Multimedia object is renewed the
-expiration day will be increase this number of days.
+`expiration_date_days`: number of days in which the Multimedia Object is active from the day of creation. When reaching these number of date days, the Multimedia Object will expire. If a Multimedia Object is renewed, the expiration day will be incresead in this number of days. If you set `expiration_date_days` to `0`, the Expired Video Bundle won't work and commands won't be executed.
 
-If you set expiration_date_days at 0, the expired video bundle will not work and commands don't will be execute.
-
-Range warning days is used on administration panel list expired video to see in an easy way the multimedia objects that
- will be expired in this range.
+`range_warning_days`: used on the administration panel where the list of expired videos to see in an easy way the Multimedia Objects that will be expired in this range of days.
