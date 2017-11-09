@@ -140,6 +140,10 @@
         <source>Update</source>
         <target>Actualizar</target>
       </trans-unit>
+      <trans-unit id="d2844ef4c46c11e7abc4cec278b6b50a" resname="Expired video list">
+        <source>Expired video list</source>
+        <target>Listado videos caducados</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
