@@ -26,6 +26,10 @@ EOT
             );
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
@@ -35,6 +39,12 @@ EOT
         $this->days = $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('force')) {
@@ -76,6 +86,12 @@ EOT
         }
     }
 
+    /**
+     * @param $days
+     *
+     * @return mixed
+     * @throws \Exception
+     */
     private function getDeleteExpiredVideos($days)
     {
         $now = new \DateTime();
@@ -88,6 +104,11 @@ EOT
         return $qb->getQuery()->execute();
     }
 
+    /**
+     * @param $mmObj
+     *
+     * @return mixed
+     */
     private function deleteVideos($mmObj)
     {
         return $this->mmobjRepo->createQueryBuilder()
@@ -97,6 +118,11 @@ EOT
             ->execute();
     }
 
+    /**
+     * @param $sSeriesId
+     *
+     * @return mixed
+     */
     private function deleteSeries($sSeriesId)
     {
         return $this->seriesRepo->createQueryBuilder()
