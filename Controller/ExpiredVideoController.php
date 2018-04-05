@@ -90,7 +90,7 @@ class ExpiredVideoController extends Controller
         if ($mmObj) {
             $roleOwner = $dm->getRepository('PumukitSchemaBundle:Role')->findOneByCod($ownerKey);
             foreach ($mmObj->getRoles() as $role) {
-                if ($role->getCod() == 'expired_owner') {
+                if ('expired_owner' == $role->getCod()) {
                     foreach ($mmObj->getPeopleByRoleCod('expired_owner', true) as $person) {
                         $mmObj->addPersonWithRole($person, $roleOwner);
                         $mmObj->removePersonWithRole($person, $role);

@@ -22,12 +22,18 @@ EOT
             );
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $mmobjExpired = $this->getExpiredVideos();
         if ($mmobjExpired) {
             foreach ($mmobjExpired as $mmObj) {
-                $output->writeln('Multimedia Object ID - '.$mmObj->getId());
+                $output->writeln('Multimedia Object ID: '.$mmObj->getId().' - Expiration date: '.$mmObj->getProperty('expiration_date'));
             }
 
             $output->writeln('Total count: '.count($mmobjExpired));
@@ -36,12 +42,19 @@ EOT
         }
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
     }
 
+    /**
+     * @return mixed
+     */
     private function getExpiredVideos()
     {
         $now = new \DateTime();

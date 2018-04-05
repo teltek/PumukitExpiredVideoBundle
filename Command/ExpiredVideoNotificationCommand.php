@@ -13,6 +13,8 @@ class ExpiredVideoNotificationCommand extends ContainerAwareCommand
     private $mmobjRepo = null;
     private $type = 'expired';
     private $user_code;
+    private $expiredVideoService;
+    private $days;
 
     protected function configure()
     {
@@ -27,10 +29,23 @@ Automatic email sending to owners who have videos that expire soon
 
 Arguments: 
     days : Videos that expire in the next X days
+    range: Send email for all videos that expired from today to date that pass on option days in these command.
+    
+If only use days option, will send email for all users that have video expired in this day. Example:
+
+   php app/console video:expired:notification 7 ( if today is 01/01/2018 will send to all video that expired in 08/01/2018 )
+   
+If use range days:
+
+   php app/console video:expired:notification 7 true  ( if today is 01/01/2018 will send to all video that expired in the range beetween  01/01/2018 - 08/01/2018)
 EOT
             );
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
@@ -40,6 +55,13 @@ EOT
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int|null|void
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if (0 == $this->days) {
@@ -48,11 +70,12 @@ EOT
             return;
         }
 
-        $days = abs(intval($input->getArgument('days')));
-        $range = $input->getArgument('range');
-        if (!is_int($days)) {
-            $output->writeln('Please, write an integer number');
+        if (!is_int($input->getArgument('days'))) {
+            throw new \Exception('Please, write an integer number');
         }
+
+        $days = $input->getArgument('days');
+        $range = $input->getArgument('range');
 
         $aMultimediaObject = $this->findExpiredVideos($days, $range);
 
@@ -73,6 +96,7 @@ EOT
      * @param $range
      *
      * @return mixed
+     * @throws \Exception
      */
     private function findExpiredVideos($days, $range)
     {
@@ -86,6 +110,7 @@ EOT
      * @param $range
      *
      * @return mixed
+     * @throws \Exception
      */
     private function getExpiredVideos($days, $range)
     {
@@ -96,7 +121,7 @@ EOT
         $qb = $this->mmobjRepo->createQueryBuilder()
             ->field('properties.expiration_date')->exists(true);
 
-        if ($range === 'false') {
+        if ('false' === $range) {
             $oTomorrow = new \DateTime(date('Y-m-d'));
             $oTomorrow->add(new \DateInterval('P'.($days + 1).'D'));
             $oTomorrow = $oTomorrow->format('Y-m-d H:i:s');
