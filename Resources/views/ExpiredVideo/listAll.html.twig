@@ -1,47 +1,56 @@
 {% extends 'PumukitNewAdminBundle::layout.html.twig' %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-md-8">
-            <h2>{% trans %}Multimedia objects coming to expire{% endtrans %}</h2>
-        </div>
-    </div>
+    <h3 class="cab_body_div">
+        <ul class="breadcrumb" style="margin-bottom: 5px;">
+            <li class="active">{% trans %}Multimedia objects coming to expire{% endtrans %}</li>
+        </ul>
+    </h3>
     <div class="table-responsive well" style="overflow:visible;font-size:12px">
         <table class="table table-striped table-hover">
             <thead>
-                <tr>
-                    <th>{% trans %}Id{% endtrans %}</th>
-                    <th>{% trans %}Img{% endtrans %}</th>
-                    <th>{% trans %}Title{% endtrans %}</th>
-                    <th>{% trans %}Publication{% endtrans %}</th>
-                    <th>{% trans %}Expiration{% endtrans %}</th>
-                    <th>{% trans %}Owners{% endtrans %}</th>
-                    <th>{% trans %}Actions{% endtrans %}</th>
-                </tr>
+            <tr>
+                <th>{% trans %}Id{% endtrans %}</th>
+                <th>{% trans %}Img{% endtrans %}</th>
+                <th>{% trans %}Title{% endtrans %}</th>
+                <th>{% trans %}Publication{% endtrans %}</th>
+                <th>{% trans %}Expiration{% endtrans %}</th>
+                <th>{% trans %}Owners{% endtrans %}</th>
+                <th>{% trans %}Actions{% endtrans %}</th>
+            </tr>
             </thead>
             <tbody>
-                {% for multimediaObject in multimediaObjects %}
-                    {% set color = "red" %}
-                    {% if multimediaObject.properties.expiration_date|date("Y/m/d") > "now"|date("Y/m/d") %}
-                        {% set color = "black" %}
-                    {% endif %}
-                    <tr>
-                        <td><span data-id="{{ multimediaObject.id }}" /><a href="{{ path('pumukitnewadmin_mms_shortener', {'id': multimediaObject.id }) }}">{{ multimediaObject.id }}</a></span></td>
-                        {% set pic = multimediaObject.getPic() %}
-                        <td><img src="{{ multimediaObject|first_url_pic(true, false) }}" style="max-width:75px"/></td>
-                        <td style="color:{{ color }}">{{ multimediaObject.title }} - {{ multimediaObject.series.title }}</td>
-                        <td style="color:{{ color }}">{{ multimediaObject.getPublicDate()|date("d/m/Y") }}</td>
-                        <td style="color:{{ color }}">{{ multimediaObject.properties.expiration_date|date("d/m/Y") }}</td>
-                        <td>
-                            <ul>
-                                {% for person in multimediaObject.getPeopleByRole(ownerRol,true) %}
+            {% for multimediaObject in multimediaObjects %}
+                {% set color = "red" %}
+                {% if multimediaObject.properties.expiration_date|date("Y/m/d") > "now"|date("Y/m/d") %}
+                    {% set color = "black" %}
+                {% endif %}
+                <tr>
+                    <td>
+                        <span data-id="{{ multimediaObject.id }}"/><a href="{{ path('pumukitnewadmin_mms_shortener', {'id': multimediaObject.id }) }}">{{ multimediaObject.id }}</a></span>
+                    </td>
+                    {% set pic = multimediaObject.getPic() %}
+                    <td>
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <div class="embed-responsive-item text-center">
+                                <img class="img-responsive pic-{{ multimediaObject.id }} preview" src="{{ multimediaObject|first_url_pic(true, false) }}" style="max-height:100%" alt="{% trans %}Multimedia object picture{% endtrans %}"/>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="color:{{ color }}">{{ multimediaObject.title }}
+                        - {{ multimediaObject.series.title }}</td>
+                    <td style="color:{{ color }}">{{ multimediaObject.getPublicDate()|date("d/m/Y") }}</td>
+                    <td style="color:{{ color }}">{{ multimediaObject.properties.expiration_date|date("d/m/Y") }}</td>
+                    <td>
+                        <ul>
+                            {% for person in multimediaObject.getPeopleByRole(ownerRol,true) %}
 
-                                        <li><a href="mailto:{{ person.email }}">{{ person.name }}</a></li>
-                                {% endfor %}
-                            </ul>
-                        </td>
-                        <td>
-                            {% if multimediaObject.properties.expiration_date|date("Y/m/d") <= "now"|date("Y/m/d") %}
+                                <li><a href="mailto:{{ person.email }}">{{ person.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        {% if multimediaObject.properties.expiration_date|date("Y/m/d") <= "now"|date("Y/m/d") %}
                             <ul>
                                 <li>
                                     <a class="deleteVideo" href="#" data-text="{% trans %}Are you sure to delete this video? {% endtrans %}" data-title="{{ multimediaObject.title }}" data-url="{{ path('pumukit_expired_video_delete', {'key' : multimediaObject.id}) }}" style="color:blue" data-toggle="modal" data-target="#actionsModal">{% trans %}Delete{% endtrans %}</a>
@@ -50,10 +59,10 @@
                                     <a class="updateVideo" href="#" data-text="{% trans %}Are you sure to update this video? {% endtrans %}" data-title="{{ multimediaObject.title }}" data-url="{{ path('pumukit_expired_video_update', {'key' : multimediaObject.id}) }}" style="color:blue" data-toggle="modal" data-target="#actionsModal">{% trans %}Update another year with the same owners{% endtrans %}</a>
                                 </li>
                             </ul>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
@@ -62,12 +71,13 @@
         <div class="modal-dialog modal-xs" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">{% trans %}Expired video{% endtrans %}</h4>
                 </div>
                 <div class="modal-body">
                     <span id="type_text"></span>
-                    <br /><br />
+                    <br/><br/>
                     <span id="mmobj_title"></span>
                 </div>
                 <div class="modal-footer">
@@ -79,14 +89,14 @@
     </div>
 
     <script type="text/javascript">
-        $('.deleteVideo').on('click', function(event) {
+        $('.deleteVideo').on('click', function (event) {
             event.preventDefault();
             $('#videoAccept').attr('href', $(this).data('url'));
             $('#mmobj_title').html($(this).data('title'));
             $('#type_text').html($(this).data('text'));
         });
 
-        $('.updateVideo').on('click', function(event) {
+        $('.updateVideo').on('click', function (event) {
             event.preventDefault();
             $('#videoAccept').attr('href', $(this).data('url'));
             $('#mmobj_title').html($(this).data('title'));
