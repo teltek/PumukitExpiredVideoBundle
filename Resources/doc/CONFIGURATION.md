@@ -1,6 +1,5 @@
-Configuration
-=============
-
+Configuration Guide
+===================
 
 ### Step 1: Add or import the role
 
@@ -11,9 +10,9 @@ x;"expired_owner";"expired_owner";1;"Antiguo propietario";"Antiguo propietario";
 ```
 
 where X is the number of last role to be added.
-=======
-Configuration Guide
-===================
+
+
+### Step 2: Add configuration
 
 The following parameters are necessary to configure the expired video bundle.
 
