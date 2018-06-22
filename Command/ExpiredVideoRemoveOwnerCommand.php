@@ -26,6 +26,10 @@ EOT
             );
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
@@ -40,6 +44,13 @@ EOT
         $this->days = $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return int|null|void
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('force')) {
@@ -89,6 +100,9 @@ EOT
         }
     }
 
+    /**
+     * @return mixed
+     */
     private function getExpiredVideos()
     {
         $now = new \DateTime();
@@ -100,6 +114,12 @@ EOT
             ->execute();
     }
 
+    /**
+     * @param $code
+     *
+     * @return mixed
+     * @throws \Exception
+     */
     private function getRoleWithCode($code)
     {
         $role = $this->roleRepo->findOneByCod($code);

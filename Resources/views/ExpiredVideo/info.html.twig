@@ -23,7 +23,7 @@
                         <input type="date" class="form-control" pattern="(\d\d\d\d)-(\d\d)-(\d\d)" title="Format YYYY-MM-DD" name="date" id="expiration_date_from" {% if multimediaObject.getProperty('expiration_date') %}value="{{ multimediaObject.properties.expiration_date|date('Y-m-d') }}"{% endif %}>
                         <a href="#" class="btn btn-pumukit btn-raised btn-xs" onclick="
                                 $('.modal-content').load(
-                            '{{ path('pumukit_expired_video_update_date', {id: multimediaObject.id}) }}', {'date': $('#expiration_date_from').val()}, function(){$('#myModal').modal('hide')}); return false">
+                                '{{ path('pumukit_expired_video_update_date', {id: multimediaObject.id}) }}', {'date': $('#expiration_date_from').val()}, function(){$('#myModal').modal('hide')}); return false">
                             {% trans %}Save{% endtrans %}
                         </a>
                     </div>
