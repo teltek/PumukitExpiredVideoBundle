@@ -90,6 +90,7 @@ EOT
      * @param $days
      *
      * @return mixed
+     *
      * @throws \Exception
      */
     private function getDeleteExpiredVideos($days)
