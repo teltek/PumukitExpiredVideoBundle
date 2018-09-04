@@ -2,6 +2,7 @@
 
 namespace Pumukit\ExpiredVideoBundle\Controller;
 
+use Pumukit\NewAdminBundle\Controller\NewAdminController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -12,7 +13,7 @@ use Pumukit\SchemaBundle\Document\MultimediaObject;
 /**
  * @Route("/admin/expired/video")
  */
-class ExpiredVideoController extends Controller
+class ExpiredVideoController extends Controller implements NewAdminController
 {
     private $roleCod;
     private $regex = '/^[0-9a-z]{24}$/';
