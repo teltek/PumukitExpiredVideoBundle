@@ -58,9 +58,9 @@
         <source>Delete</source>
         <target xml:lang="en" state="needs-translation">Delete</target>
       </trans-unit>
-      <trans-unit id="1cb738eef8e711e6bc6492361f002671" resname="Update another year with the same owners">
-        <source>Update another year with the same owners</source>
-        <target xml:lang="en" state="needs-translation">Update another year with the same owners</target>
+      <trans-unit id="1cb738eef8e711e6bc6492361f002671" resname="Renew with the same owners">
+        <source>Renew with the same owners</source>
+        <target xml:lang="en" state="needs-translation">Renew with the same owners</target>
       </trans-unit>
       <trans-unit id="1cb73bf0f8e711e6bc6492361f002671" resname="Multimedia objects coming to expire">
         <source>Multimedia objects coming to expire</source>
