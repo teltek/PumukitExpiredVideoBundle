@@ -25,3 +25,16 @@ pumukit_expired_video:
 `expiration_date_days`: number of days in which the Multimedia Object is active from the day of creation. When reaching these number of date days, the Multimedia Object will expire. If a Multimedia Object is renewed, the expiration day will be incresead in this number of days. If you set `expiration_date_days` to `0`, the Expired Video Bundle won't work and commands won't be executed.
 
 `range_warning_days`: used on the administration panel where the list of expired videos to see in an easy way the Multimedia Objects that will be expired in this range of days.
+
+
+### Step 3: Configuring subject
+
+If you want change the subject of the email you can override default setting the following parameters:
+
+
+```bash
+parameters:
+  pumukit_expired_video.notification_subject:
+        removeOwner: 'My new subject for remove Owner'
+        expired:  'My new subject for expired notification'
+```
