@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Translation\TranslatorInterface;
 use Pumukit\NotificationBundle\Services\SenderService;
-use Symfony\Component\HttpKernel\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 use Pumukit\SchemaBundle\Document\Person;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 
@@ -67,10 +67,10 @@ class ExpiredVideoService
 
                 if (0 < $output) {
                     $infoLog = __CLASS__.' ['.__FUNCTION__.'] Sent notification email to "'.$aData['email'].'"';
-                    $this->logger->addInfo($infoLog);
+                    $this->logger->info($infoLog);
                 } else {
                     $infoLog = __CLASS__.' ['.__FUNCTION__.'] Unable to send notification email to "'.$aData['email'].'", '.$output.'email(s) were sent.';
-                    $this->logger->addInfo($infoLog);
+                    $this->logger->info($infoLog);
                 }
             }
 
