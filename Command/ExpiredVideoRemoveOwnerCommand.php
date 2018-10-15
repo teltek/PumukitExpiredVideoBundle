@@ -13,6 +13,10 @@ class ExpiredVideoRemoveOwnerCommand extends ContainerAwareCommand
     private $mmobjRepo = null;
     private $user_code;
     private $type = 'removeOwner';
+    private $expiredVideoService;
+    private $sendMail;
+    private $roleRepo;
+    private $days;
 
     protected function configure()
     {
@@ -34,7 +38,7 @@ EOT
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
-        $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.notification');
+        $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
         $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
         $this->sendMail = $this->getContainer()->getParameter('pumukit_notification.sender_email');
 
@@ -49,6 +53,7 @@ EOT
      * @param OutputInterface $output
      *
      * @return int|null|void
+     *
      * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -60,7 +65,7 @@ EOT
                 return;
             }
 
-            $mmobjExpired = $this->getExpiredVideos();
+            $mmobjExpired = $this->expiredVideoService->getExpiredVideos();
 
             $expiredOwnerRole = $this->getRoleWithCode('expired_owner');
 
@@ -101,23 +106,10 @@ EOT
     }
 
     /**
-     * @return mixed
-     */
-    private function getExpiredVideos()
-    {
-        $now = new \DateTime();
-
-        return $this->mmobjRepo->createQueryBuilder()
-            ->field('properties.expiration_date')->exists(true)
-            ->field('properties.expiration_date')->lte($now->format('c'))
-            ->getQuery()
-            ->execute();
-    }
-
-    /**
      * @param $code
      *
      * @return mixed
+     *
      * @throws \Exception
      */
     private function getRoleWithCode($code)

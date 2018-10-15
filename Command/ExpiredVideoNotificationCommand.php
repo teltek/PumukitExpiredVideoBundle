@@ -15,6 +15,7 @@ class ExpiredVideoNotificationCommand extends ContainerAwareCommand
     private $user_code;
     private $expiredVideoService;
     private $days;
+    private $output;
 
     protected function configure()
     {
@@ -25,7 +26,7 @@ class ExpiredVideoNotificationCommand extends ContainerAwareCommand
             ->addArgument('range', InputArgument::REQUIRED, 'range')
             ->setHelp(
                 <<<'EOT'
-Automatic email sending to owners who have videos that expire soon
+Automatic email sending to owners who have videos that expire soon.
 
 Arguments: 
     days : Videos that expire in the next X days
@@ -37,7 +38,8 @@ If only use days option, will send email for all users that have video expired i
    
 If use range days:
 
-   php app/console video:expired:notification 7 true  ( if today is 01/01/2018 will send to all video that expired in the range beetween  01/01/2018 - 08/01/2018)
+   php app/console video:expired:notification 7 true  ( if today is 01/01/2018 will send to all video that expired in the range between 01/01/2018 - 08/01/2018)
+   
 EOT
             );
     }
@@ -49,100 +51,70 @@ EOT
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-        $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.notification');
+        $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
         $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
         $this->days = $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
+
+        $this->output = $output;
     }
 
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return int|null|void
+     * @return bool|int|null|void
+     *
      * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $message = array(
+            '',
+            '<info>Expired video notification</info>',
+            '<info>==========================</info>',
+        );
+
         if (0 == $this->days) {
-            $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
+            array_push($message, '<error>Expiration date days is 0, it means deactivate expired video functionality.</error>');
+            $this->output->writeln($message);
 
             return;
-        }
-
-        if (!is_int($input->getArgument('days'))) {
-            throw new \Exception('Please, write an integer number');
         }
 
         $days = $input->getArgument('days');
         $range = $input->getArgument('range');
 
-        $aMultimediaObject = $this->findExpiredVideos($days, $range);
+        $expiredVideos = $this->expiredVideoService->getExpiredVideosByDateAndRange($days, $range);
 
-        if (count($aMultimediaObject) > 0) {
-            $this->sendNotification($output, $aMultimediaObject);
-        } else {
+        if (!$expiredVideos) {
             $date = new \DateTime(date('Y-m-d'));
             $date->add(new \DateInterval('P'.$days.'D'));
             $date = $date->format('Y-m-d H:i:s');
-            $output->writeln('No videos to expired on date '.$date);
+            array_push($message, 'No videos to expired on date '.$date);
+            $this->output->writeln($message);
+
+            return;
         }
 
-        return;
+        array_push($message, '<comment>Expired videos to notify: '.count($expiredVideos).'</comment>');
+
+        $this->output->writeln($message);
+
+        $this->sendNotification($expiredVideos);
+
+        $this->output->writeln('');
     }
 
     /**
-     * @param $days
-     * @param $range
-     *
-     * @return mixed
-     * @throws \Exception
-     */
-    private function findExpiredVideos($days, $range)
-    {
-        $mmobjExpired = $this->getExpiredVideos($days, $range);
-
-        return $mmobjExpired;
-    }
-
-    /**
-     * @param $days
-     * @param $range
-     *
-     * @return mixed
-     * @throws \Exception
-     */
-    private function getExpiredVideos($days, $range)
-    {
-        $date = new \DateTime(date('Y-m-d'));
-        $date->add(new \DateInterval('P'.$days.'D'));
-        $date = $date->format('Y-m-d H:i:s');
-
-        $qb = $this->mmobjRepo->createQueryBuilder()
-            ->field('properties.expiration_date')->exists(true);
-
-        if ('false' === $range) {
-            $oTomorrow = new \DateTime(date('Y-m-d'));
-            $oTomorrow->add(new \DateInterval('P'.($days + 1).'D'));
-            $oTomorrow = $oTomorrow->format('Y-m-d H:i:s');
-            $qb->field('properties.expiration_date')->equals(array('$gte' => $date, '$lt' => $oTomorrow));
-        } else {
-            $qb->field('properties.expiration_date')->equals(array('$gte' => new \DateTime(date('Y-m-d')), '$lte' => $date));
-        }
-
-        return $qb->getQuery()->execute();
-    }
-
-    /**
-     * @param OutputInterface $output
      * @param $aMultimediaObject array of multimedia objects
      */
-    private function sendNotification(OutputInterface $output, $aMultimediaObject)
+    private function sendNotification($aMultimediaObject)
     {
         $sendMail = array();
         if ($aMultimediaObject) {
             foreach ($aMultimediaObject as $mmObj) {
-                $output->writeln('Expired Video ====> Multimedia Object ID - '.$mmObj->getId());
+                $this->output->writeln(' * Multimedia Object ID: '.$mmObj->getId().' - Expiration date: '.$mmObj->getProperty('expiration_date'));
 
                 $people = $mmObj->getPeopleByRoleCod($this->user_code, true);
                 if (count($people) > 0) {
@@ -153,7 +125,7 @@ EOT
                         }
                     }
                 } else {
-                    $output->writeln("There aren't owners on this video");
+                    $this->output->writeln("There aren't owners on this video");
                 }
             }
 
@@ -161,13 +133,13 @@ EOT
                 try {
                     $this->expiredVideoService->generateNotification($sendMail, $this->type);
                 } catch (\Exception $e) {
-                    $output->writeln('<error>'.$e->getMessage().'</error>');
+                    $this->output->writeln('<error>'.$e->getMessage().'</error>');
                 }
             } else {
-                $output->writeln("There aren't user emails to send");
+                $this->output->writeln("There aren't user emails to send");
             }
         } else {
-            $output->writeln('No videos expired in this range');
+            $this->output->writeln('No videos expired in this range');
         }
     }
 }

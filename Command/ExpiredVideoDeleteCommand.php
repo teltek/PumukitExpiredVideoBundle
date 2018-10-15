@@ -13,6 +13,8 @@ class ExpiredVideoDeleteCommand extends ContainerAwareCommand
     private $mmobjRepo = null;
     private $days;
     private $user_code;
+    private $seriesRepo;
+    private $expiredVideoService;
 
     protected function configure()
     {
@@ -37,6 +39,7 @@ EOT
         $this->seriesRepo = $this->dm->getRepository('PumukitSchemaBundle:Series');
         $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
         $this->days = $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
+        $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
     }
 
     /**
@@ -54,7 +57,7 @@ EOT
                 return;
             }
 
-            $mmobjExpired = $this->getDeleteExpiredVideos($this->days);
+            $mmobjExpired = $this->expiredVideoService->getExpiredVideosToDelete($this->days);
             $i = 0;
             if ($mmobjExpired) {
                 foreach ($mmobjExpired as $mmObj) {
@@ -84,24 +87,6 @@ EOT
         } else {
             $output->writeln('The option force must be set to delete videos timed out');
         }
-    }
-
-    /**
-     * @param $days
-     *
-     * @return mixed
-     * @throws \Exception
-     */
-    private function getDeleteExpiredVideos($days)
-    {
-        $now = new \DateTime();
-        $now->sub(new \DateInterval('P'.$days.'D'));
-
-        $qb = $this->mmobjRepo->createQueryBuilder();
-        $qb->field('properties.expiration_date')->exists(true);
-        $qb->field('properties.expiration_date')->lte($now->format('c'));
-
-        return $qb->getQuery()->execute();
     }
 
     /**

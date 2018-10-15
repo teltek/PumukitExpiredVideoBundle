@@ -6,9 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Translation\TranslatorInterface;
 use Pumukit\NotificationBundle\Services\SenderService;
-use Symfony\Component\HttpKernel\Log\LoggerInterface;
-use Pumukit\SchemaBundle\Document\Person;
-use Pumukit\SchemaBundle\Document\MultimediaObject;
+use Psr\Log\LoggerInterface;
 
 class ExpiredVideoService
 {
@@ -17,20 +15,17 @@ class ExpiredVideoService
     private $senderService;
     private $translator;
     private $logger;
+    private $mmobjRepo;
+    private $personRepo;
+    private $template = 'PumukitExpiredVideoBundle:Email:notification.html.twig';
     private $videos = 'videos';
     private $subject = array(
         'removeOwner' => 'PuMuKIT2 - Remove owner of the following video.',
         'expired' => 'PuMuKIT2 - These videos will be expired coming soon.',
     );
 
-    public function __construct(
-        DocumentManager $documentManager,
-        Router $router,
-        LoggerInterface $logger,
-        SenderService $senderService = null,
-        TranslatorInterface $translator,
-        array $subject = null
-    ) {
+    public function __construct(DocumentManager $documentManager, Router $router, LoggerInterface $logger, SenderService $senderService, TranslatorInterface $translator, array $subject = null)
+    {
         $this->dm = $documentManager;
         $this->router = $router;
         $this->senderService = $senderService;
@@ -38,6 +33,7 @@ class ExpiredVideoService
         $this->logger = $logger;
         $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
         $this->personRepo = $this->dm->getRepository('PumukitSchemaBundle:Person');
+
         if ($subject) {
             $this->subject = $subject;
         }
@@ -45,8 +41,9 @@ class ExpiredVideoService
 
     public function generateNotification($aEmails, $sType)
     {
+        $output = '';
+
         if ($this->senderService && $this->senderService->isEnabled()) {
-            $template = 'PumukitExpiredVideoBundle:Email:notification.html.twig';
             $parameters = array(
                 'subject' => $this->subject[$sType],
                 'type' => $sType,
@@ -60,22 +57,22 @@ class ExpiredVideoService
                 $output = $this->senderService->sendNotification(
                     $aData['email'],
                     $this->translator->trans($this->subject[$sType]),
-                    $template,
+                    $this->template,
                     $parameters,
                     false
                 );
 
                 if (0 < $output) {
                     $infoLog = __CLASS__.' ['.__FUNCTION__.'] Sent notification email to "'.$aData['email'].'"';
-                    $this->logger->addInfo($infoLog);
+                    $this->logger->info($infoLog);
                 } else {
                     $infoLog = __CLASS__.' ['.__FUNCTION__.'] Unable to send notification email to "'.$aData['email'].'", '.$output.'email(s) were sent.';
-                    $this->logger->addInfo($infoLog);
+                    $this->logger->info($infoLog);
                 }
             }
-
-            return $output;
         }
+
+        return $output;
     }
 
     /**
@@ -88,14 +85,14 @@ class ExpiredVideoService
     {
         $aUserKeys = array();
 
-        $sTokenUser = new \MongoId();
+        $sTokenUser = $this->generateExpiredToken();
+
         $aUserKeys['all'] = $sTokenUser;
         $person = $this->personRepo->findOneBy(array('_id' => new \MongoId($sUserId)));
-
         $person->setProperty('expiration_key', $sTokenUser);
 
         foreach ($aData[$this->videos] as $sObjectId) {
-            $sTokenMO = new \MongoId();
+            $sTokenMO = $this->generateExpiredToken();
 
             $mmObj = $this->mmobjRepo->findOneBy(array('_id' => new \MongoId($sObjectId)));
             $mmObj->setProperty('expiration_key', $sTokenMO);
@@ -109,5 +106,74 @@ class ExpiredVideoService
         }
 
         return $aUserKeys;
+    }
+
+    /**
+     * @return \MongoId
+     */
+    public function generateExpiredToken()
+    {
+        return new \MongoId();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExpiredVideos()
+    {
+        $now = new \DateTime();
+
+        $expiredVideos = $this->mmobjRepo->createQueryBuilder()
+            ->field('properties.expiration_date')->exists(true)
+            ->field('properties.expiration_date')->lte($now->format('c'))
+            ->getQuery()
+            ->execute();
+
+        return $expiredVideos;
+    }
+
+    public function getExpiredVideosToDelete($days)
+    {
+        $now = new \DateTime();
+        $now->sub(new \DateInterval('P'.$days.'D'));
+
+        $qb = $this->mmobjRepo->createQueryBuilder();
+        $qb->field('properties.expiration_date')->exists(true);
+        $qb->field('properties.expiration_date')->lte($now->format('c'));
+
+        $expiredVideos = $qb->getQuery()->execute();
+
+        return $expiredVideos;
+    }
+
+    /**
+     * @param $days
+     * @param $range
+     *
+     * @return mixed
+     *
+     * @throws \Exception
+     */
+    public function getExpiredVideosByDateAndRange($days, $range)
+    {
+        $date = new \DateTime(date('Y-m-d H:i:s'));
+        $date->add(new \DateInterval('P'.$days.'D'));
+        $date = $date->format('c');
+
+        $qb = $this->mmobjRepo->createQueryBuilder()->field('properties.expiration_date')->exists(true);
+
+        if ('false' === $range) {
+            $oTomorrow = new \DateTime(date('Y-m-d'));
+            $oTomorrow->add(new \DateInterval('P'.($days + 1).'D'));
+            $oTomorrow = $oTomorrow->format('c');
+            $qb->field('properties.expiration_date')->equals(array('$gte' => $date, '$lt' => $oTomorrow));
+        } else {
+            $now = new \DateTime(date('Y-m-d H:i:s'));
+            $qb->field('properties.expiration_date')->equals(array('$gte' => $now->format('c'), '$lte' => $date));
+        }
+
+        $expiredVideos = $qb->getQuery()->execute();
+
+        return $expiredVideos;
     }
 }
