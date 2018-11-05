@@ -83,7 +83,7 @@ EOT
         }
 
         $days = $input->getArgument('days');
-        $range = $input->getArgument('range');
+        $range = 'true' === $input->getArgument('range');
 
         $expiredVideos = $this->expiredVideoService->getExpiredVideosByDateAndRange($days, $range);
 

@@ -154,22 +154,20 @@ class ExpiredVideoService
      *
      * @throws \Exception
      */
-    public function getExpiredVideosByDateAndRange($days, $range)
+    public function getExpiredVideosByDateAndRange($days, $range = true)
     {
-        $date = new \DateTime(date('Y-m-d H:i:s'));
-        $date->add(new \DateInterval('P'.$days.'D'));
-        $date = $date->format('c');
 
         $qb = $this->mmobjRepo->createQueryBuilder()->field('properties.expiration_date')->exists(true);
 
-        if ('false' === $range) {
-            $oTomorrow = new \DateTime(date('Y-m-d'));
-            $oTomorrow->add(new \DateInterval('P'.($days + 1).'D'));
-            $oTomorrow = $oTomorrow->format('c');
-            $qb->field('properties.expiration_date')->equals(array('$gte' => $date, '$lt' => $oTomorrow));
-        } else {
+        if ($range) {       
+            $date = new \DateTime(date('Y-m-d H:i:s'));
+            $date->add(new \DateInterval('P'.$days.'D'));
             $now = new \DateTime(date('Y-m-d H:i:s'));
-            $qb->field('properties.expiration_date')->equals(array('$gte' => $now->format('c'), '$lte' => $date));
+            $qb->field('properties.expiration_date')->equals(array('$gte' => $now->format('c'), '$lte' => $date->format('c')));
+        } else {
+            $today = new \DateTimeImmutable(date('Y-m-d'));
+            $tomorrow = $today->add(new \DateInterval('P'.($days + 1).'D'));
+            $qb->field('properties.expiration_date')->equals(array('$gte' => $today->format('c'), '$lt' => $tomorrow->format('c')));
         }
 
         $expiredVideos = $qb->getQuery()->execute();
