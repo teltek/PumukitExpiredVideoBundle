@@ -92,11 +92,6 @@ EOT
                         $output->writeln('There aren\'t roles on multimedia object id - '.$mmObj->getId());
                     }
                 }
-                try {
-                    $this->expiredVideoService->generateNotification($this->sendMail, $this->type, $mmObj);
-                } catch (\Exception $e) {
-                    $output->writeln('<error>'.$e->getMessage().'</error>');
-                }
             } else {
                 $output->writeln('No videos timed out.');
             }
