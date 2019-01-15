@@ -17,17 +17,18 @@
 
         <service id="pumukit_expired_video.init_date" class="Pumukit\ExpiredVideoBundle\EventListener\InitDateListener">
             <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
+            <argument type="service" id="security.authorization_checker" />
             <argument>%pumukit_expired_video.expiration_date_days%</argument>
-            <tag name="kernel.event_listener" event="multimediaobject.create" method="onMultimediaobjectCreate" />
-            <tag name="kernel.event_listener" event="multimediaobject.clone" method="onMultimediaobjectClone" />
+            <tag name="kernel.event_listener" event="multimediaobject.create" method="onMultimediaObjectCreate" />
+            <tag name="kernel.event_listener" event="multimediaobject.clone" method="onMultimediaObjectClone" />
         </service>
 
         <service id="pumukit_expired_video.menu" class="Pumukit\ExpiredVideoBundle\Services\MenuService">
-            <tag name="pumukitnewadmin.menuitem"></tag>
+            <tag name="pumukitnewadmin.menuitem" />
         </service>
 
         <service id="pumukit_expired_video.mmobj_menu" class="Pumukit\ExpiredVideoBundle\Services\MultimediaObjectMenuService">
-            <tag name="pumukitnewadmin.mmobjmenuitem"></tag>
+            <tag name="pumukitnewadmin.mmobjmenuitem" />
         </service>
     </services>
 </container>
