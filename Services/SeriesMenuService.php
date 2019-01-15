@@ -5,16 +5,16 @@ namespace Pumukit\ExpiredVideoBundle\Services;
 use Pumukit\NewAdminBundle\Menu\ItemInterface;
 
 /**
- * Class MultimediaObjectMenuService.
+ * Class SeriesMenuService.
  */
-class MultimediaObjectMenuService implements ItemInterface
+class SeriesMenuService implements ItemInterface
 {
     /**
      * @return string
      */
     public function getName()
     {
-        return 'Show expiration date';
+        return 'Renew all videos';
     }
 
     /**
@@ -22,7 +22,7 @@ class MultimediaObjectMenuService implements ItemInterface
      */
     public function getUri()
     {
-        return 'pumukit_expired_video_info';
+        return 'pumukit_expired_video_renew_list';
     }
 
     /**
@@ -30,7 +30,7 @@ class MultimediaObjectMenuService implements ItemInterface
      */
     public function getAccessRole()
     {
-        return 'ROLE_ACCESS_MULTIMEDIA_SERIES';
+        return 'ROLE_ACCESS_EXPIRED_VIDEO';
     }
 
     /**

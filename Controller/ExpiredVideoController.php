@@ -3,10 +3,12 @@
 namespace Pumukit\ExpiredVideoBundle\Controller;
 
 use Pumukit\NewAdminBundle\Controller\NewAdminController;
+use Pumukit\SchemaBundle\Document\Series;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 
@@ -256,5 +258,52 @@ class ExpiredVideoController extends Controller implements NewAdminController
         $dm->flush();
 
         return $this->redirectToRoute('pumukit_expired_video_info', array('id' => $multimediaObject->getId()));
+    }
+
+    /**
+     * Modal to show all renewed videos.
+     *
+     * @Route("/renew/series/info/{id}", name="pumukit_expired_video_renew_list")
+     * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
+     * @Template("PumukitExpiredVideoBundle:Modal:index.html.twig")
+     *
+     * @param Series $series
+     *
+     * @return array
+     */
+    public function renewAllSeriesMenuAction(Series $series)
+    {
+        $dm = $this->get('doctrine_mongodb.odm.document_manager');
+        $multimediaObjects = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(array('series' => $series->getId()));
+
+        return array(
+            'multimediaObjects' => $multimediaObjects,
+            'series' => $series,
+        );
+    }
+
+    /**
+     * Renew all series.
+     *
+     * @Route("/renew/all/series/{id}", name="pumukit_expired_series_renew_all")
+     * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
+     *
+     * @param Series $series
+     *
+     * @return JsonResponse
+     *
+     * @throws \Exception
+     */
+    public function renewAllSeriesAction(Series $series)
+    {
+        $dm = $this->get('doctrine_mongodb.odm.document_manager');
+        $multimediaObjects = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(array('series' => $series->getId()));
+
+        $expiredVideoService = $this->get('pumukit_expired_video.expired_video');
+        foreach ($multimediaObjects as $multimediaObject) {
+            $expiredVideoService->renewMultimediaObject($multimediaObject);
+        }
+
+        return new JsonResponse(array('success'));
     }
 }
