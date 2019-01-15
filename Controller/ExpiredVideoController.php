@@ -37,7 +37,7 @@ class ExpiredVideoController extends Controller implements NewAdminController
 
         $now = new \DateTime();
         $date = $now->add(new \DateInterval('P'.$range_days.'D'));
-        $aMultimediaObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(array('properties.expiration_date' => array('$exists' => true), 'properties.expiration_date' => array('$lte' => $date->format('c'))), array('properties.expiration_date' => -1));
+        $aMultimediaObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(array('properties.expiration_date' => array('$lte' => $date->format('c'))), array('properties.expiration_date' => -1));
 
         return array('days' => $days, 'ownerRol' => $ownerRol, 'multimediaObjects' => $aMultimediaObject);
     }
