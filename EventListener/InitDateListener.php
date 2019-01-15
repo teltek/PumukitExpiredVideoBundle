@@ -36,6 +36,7 @@ class InitDateListener
         if ($authorizationChecker->isGranted('ROLE_UNLIMITED_EXPIRED_VIDEO')) {
             $date = new \DateTime();
             $date->setDate(9999, 01, 01);
+            $this->days = 3649635;
             $this->newRenovationDate = $date;
         } else {
             $this->newRenovationDate = new \DateTime('+'.$this->days.' days');
