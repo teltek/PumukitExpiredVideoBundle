@@ -3,60 +3,132 @@
 namespace Pumukit\ExpiredVideoBundle\EventListener;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Event\MultimediaObjectEvent;
 use Pumukit\SchemaBundle\Event\MultimediaObjectCloneEvent;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
+/**
+ * Class InitDateListener.
+ */
 class InitDateListener
 {
     private $dm;
     private $days;
+    private $authorizationChecker;
+    private $newRenovationDate;
 
-    public function __construct(DocumentManager $documentManager, $days = 365)
+    /**
+     * InitDateListener constructor.
+     *
+     * @param DocumentManager               $documentManager
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param int                           $days
+     *
+     * @throws \Exception
+     */
+    public function __construct(DocumentManager $documentManager, AuthorizationCheckerInterface $authorizationChecker, $days = 365)
     {
         $this->dm = $documentManager;
         $this->days = (int) $days;
+        $this->authorizationChecker = $authorizationChecker;
 
-        //TODO Move to configuration.
-        new \DateTime('+'.$this->days.' days');
+        if ($authorizationChecker->isGranted('ROLE_UNLIMITED_EXPIRED_VIDEO')) {
+            $date = new \DateTime();
+            $date->setDate(9999, 01, 01);
+            $this->days = 3649635;
+            $this->newRenovationDate = $date;
+        } else {
+            $this->newRenovationDate = new \DateTime('+'.$this->days.' days');
+        }
     }
 
-    public function onMultimediaobjectCreate(MultimediaObjectEvent $event)
+    /**
+     * @param MultimediaObjectEvent $event
+     */
+    public function onMultimediaObjectCreate(MultimediaObjectEvent $event)
     {
-        if (0 === $this->days) {
-            return;
+        if ($this->checkConfiguration()) {
+            $multimediaObject = $event->getMultimediaObject();
+            if (!$multimediaObject->isPrototype()) {
+                $properties['expiration_date'] = $this->newRenovationDate;
+                $properties['renew_expiration_date'] = array($this->days);
+                $this->updateProperties($this->dm, $multimediaObject, $properties, true);
+            }
         }
-
-        $mm = $event->getMultimediaObject();
-
-        if ($mm->isPrototype()) {
-            return;
-        }
-
-        $date = new \DateTime('+'.$this->days.' days');
-        $mm->setPropertyAsDateTime('expiration_date', $date);
-        $mm->setProperty('renew_expiration_date', $this->days);
-
-        $this->dm->persist($mm);
-        $this->dm->flush();
     }
 
-    public function onMultimediaobjectClone(MultimediaObjectCloneEvent $event)
+    /**
+     * @param MultimediaObjectCloneEvent $event
+     */
+    public function onMultimediaObjectClone(MultimediaObjectCloneEvent $event)
+    {
+        if ($this->checkConfiguration()) {
+            $multimediaObjects = $event->getMultimediaObjects();
+
+            $validObjects = $this->checkValidMultimediaObject($multimediaObjects['origin'], $multimediaObjects['clon']);
+            if ($validObjects) {
+                $this->updateMultimediaObject($this->dm, $multimediaObjects['origin'], $multimediaObjects['clon']);
+            }
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkConfiguration()
     {
         if (0 === $this->days) {
-            return;
+            return false;
         }
 
-        $aMultimediaObjects = $event->getMultimediaObjects();
+        return true;
+    }
 
-        if ($aMultimediaObjects['origin']->isPrototype() or $aMultimediaObjects['clon']->isPrototype()) {
-            return;
+    /**
+     * @param MultimediaObject $origin
+     * @param MultimediaObject $cloned
+     *
+     * @return bool
+     */
+    private function checkValidMultimediaObject(MultimediaObject $origin, MultimediaObject $cloned)
+    {
+        if ($origin->isPrototype() || $cloned->isPrototype()) {
+            return false;
         }
 
-        $aOriginProperties = $aMultimediaObjects['origin']->getProperties();
+        return true;
+    }
 
-        $aMultimediaObjects['clon']->setProperty('expiration_date', $aOriginProperties['expiration_date']);
-        $aMultimediaObjects['clon']->setProperty('renew_expiration_date', $aOriginProperties['renew_expiration_date']);
-        $this->dm->persist($aMultimediaObjects['clon']);
-        $this->dm->flush();
+    /**
+     * @param DocumentManager  $dm
+     * @param MultimediaObject $origin
+     * @param MultimediaObject $cloned
+     */
+    private function updateMultimediaObject(DocumentManager $dm, MultimediaObject $origin, MultimediaObject $cloned)
+    {
+        $properties = $origin->getProperties();
+        if (is_array($properties)) {
+            $this->updateProperties($dm, $cloned, $properties);
+        }
+    }
+
+    /**
+     * @param DocumentManager  $dm
+     * @param MultimediaObject $multimediaObject
+     * @param array            $properties
+     * @param bool             $format
+     */
+    private function updateProperties(DocumentManager $dm, MultimediaObject $multimediaObject, array $properties, $format = true)
+    {
+        if ($format) {
+            $multimediaObject->setPropertyAsDateTime('expiration_date', $properties['expiration_date']);
+        } else {
+            $multimediaObject->setProperty('expiration_date', $properties['expiration_date']);
+        }
+        $multimediaObject->setProperty('renew_expiration_date', $properties['renew_expiration_date']);
+
+        $dm->persist($multimediaObject);
+        $dm->flush();
     }
 }
