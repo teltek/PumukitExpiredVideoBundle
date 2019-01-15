@@ -8,11 +8,13 @@
 
         <service id="pumukit_expired_video.expired_video" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService">
             <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
+            <argument type="service" id="security.authorization_checker" />
             <argument type="service" id="router"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="pumukit_notification.sender" on-invalid="ignore"/>
             <argument type="service" id="translator"/>
             <argument type="expression">container.hasParameter('pumukit_expired_video.notification_subject') ? parameter('pumukit_expired_video.notification_subject') : null</argument>
+            <argument>%pumukit_expired_video.expiration_date_days%</argument>
         </service>
 
         <service id="pumukit_expired_video.init_date" class="Pumukit\ExpiredVideoBundle\EventListener\InitDateListener">
@@ -29,6 +31,16 @@
 
         <service id="pumukit_expired_video.mmobj_menu" class="Pumukit\ExpiredVideoBundle\Services\MultimediaObjectMenuService">
             <tag name="pumukitnewadmin.mmobjmenuitem" />
+        </service>
+
+        <service id="pumukit_expired_video.series_menu" class="Pumukit\ExpiredVideoBundle\Services\SeriesMenuService">
+            <tag name="pumukitnewadmin.seriesmenuitem" />
+        </service>
+
+        <service id="pumukit_expired_video.multimedia_object_voter" class="Pumukit\ExpiredVideoBundle\Services\MultimediaObjectVoter">
+            <argument type="service" id="pumukitschema.multimedia_object"/>
+            <argument type="service" id="request_stack"/>
+            <tag name="security.voter" />
         </service>
     </services>
 </container>
