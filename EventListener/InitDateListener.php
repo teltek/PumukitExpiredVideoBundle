@@ -45,6 +45,8 @@ class InitDateListener
 
     /**
      * @param MultimediaObjectEvent $event
+     *
+     * @throws \Exception
      */
     public function onMultimediaObjectCreate(MultimediaObjectEvent $event)
     {
@@ -60,15 +62,19 @@ class InitDateListener
 
     /**
      * @param MultimediaObjectCloneEvent $event
+     *
+     * @throws \Exception
      */
     public function onMultimediaObjectClone(MultimediaObjectCloneEvent $event)
     {
         if ($this->checkConfiguration()) {
             $multimediaObjects = $event->getMultimediaObjects();
-
             $validObjects = $this->checkValidMultimediaObject($multimediaObjects['origin'], $multimediaObjects['clon']);
             if ($validObjects) {
                 $this->updateMultimediaObject($this->dm, $multimediaObjects['origin'], $multimediaObjects['clon']);
+                $properties['expiration_date'] = $multimediaObjects['origin']->getProperty('expiration_date');
+                $properties['renew_expiration_date'] = $multimediaObjects['origin']->getProperty('renew_expiration_date');
+                $this->updateProperties($this->dm, $multimediaObjects['clon'], $properties, true);
             }
         }
     }
@@ -104,6 +110,8 @@ class InitDateListener
      * @param DocumentManager  $dm
      * @param MultimediaObject $origin
      * @param MultimediaObject $cloned
+     *
+     * @throws \Exception
      */
     private function updateMultimediaObject(DocumentManager $dm, MultimediaObject $origin, MultimediaObject $cloned)
     {
@@ -118,11 +126,13 @@ class InitDateListener
      * @param MultimediaObject $multimediaObject
      * @param array            $properties
      * @param bool             $format
+     *
+     * @throws \Exception
      */
     private function updateProperties(DocumentManager $dm, MultimediaObject $multimediaObject, array $properties, $format = true)
     {
         if ($format) {
-            $multimediaObject->setPropertyAsDateTime('expiration_date', $properties['expiration_date']);
+            $multimediaObject->setPropertyAsDateTime('expiration_date', new \DateTime($properties['expiration_date']));
         } else {
             $multimediaObject->setProperty('expiration_date', $properties['expiration_date']);
         }
