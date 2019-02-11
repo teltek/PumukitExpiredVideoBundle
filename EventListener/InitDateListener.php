@@ -117,7 +117,7 @@ class InitDateListener
     {
         $properties = $origin->getProperties();
         if (is_array($properties)) {
-            $this->updateProperties($dm, $cloned, $properties);
+            $this->updateProperties($dm, $cloned, $properties, false);
         }
     }
 
