@@ -74,7 +74,7 @@ class InitDateListener
                 $this->updateMultimediaObject($this->dm, $multimediaObjects['origin'], $multimediaObjects['clon']);
                 $properties['expiration_date'] = $multimediaObjects['origin']->getProperty('expiration_date');
                 $properties['renew_expiration_date'] = $multimediaObjects['origin']->getProperty('renew_expiration_date');
-                $this->updateProperties($this->dm, $multimediaObjects['clon'], $properties, true);
+                $this->updateProperties($this->dm, $multimediaObjects['clon'], $properties, false);
             }
         }
     }
@@ -132,7 +132,7 @@ class InitDateListener
     private function updateProperties(DocumentManager $dm, MultimediaObject $multimediaObject, array $properties, $format = true)
     {
         if ($format) {
-            $multimediaObject->setPropertyAsDateTime('expiration_date', new \DateTime($properties['expiration_date']));
+            $multimediaObject->setPropertyAsDateTime('expiration_date', $properties['expiration_date']);
         } else {
             $multimediaObject->setProperty('expiration_date', $properties['expiration_date']);
         }
