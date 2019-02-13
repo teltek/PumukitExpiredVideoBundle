@@ -213,22 +213,14 @@ class ExpiredVideoService
 
     /**
      * @param MultimediaObject $multimediaObject
+     * @param                  $date
      *
      * @throws \Exception
      */
-    public function renewMultimediaObject(MultimediaObject $multimediaObject)
+    public function renewMultimediaObject(MultimediaObject $multimediaObject, $date)
     {
         if ($this->authorizationChecker->isGranted('renew', $multimediaObject) && !$multimediaObject->isPrototype()) {
-            if ($this->authorizationChecker->isGranted('ROLE_UNLIMITED_EXPIRED_VIDEO')) {
-                $date = new \DateTime();
-                $date->setDate(9999, 01, 01);
-                $this->days = 3649635;
-                $newRenovationDate = $date;
-            } else {
-                $newRenovationDate = new \DateTime('+'.$this->days.' days');
-            }
-
-            $this->updateMultimediaObjectExpirationDate($this->dm, $multimediaObject, $this->days, $newRenovationDate);
+            $this->updateMultimediaObjectExpirationDate($this->dm, $multimediaObject, $this->days, $date);
         }
     }
 
@@ -246,5 +238,25 @@ class ExpiredVideoService
         $multimediaObject->setProperty('renew_expiration_date', $renewedExpirationDates);
         $dm->persist($multimediaObject);
         $dm->flush();
+    }
+
+    /**
+     * @return \DateTime|null
+     *
+     * @throws \Exception
+     */
+    public function getExpirationDateByPermission()
+    {
+        $newRenovationDate = null;
+        if ($this->authorizationChecker->isGranted('ROLE_UNLIMITED_EXPIRED_VIDEO')) {
+            $date = new \DateTime();
+            $date->setDate(9999, 01, 01);
+            $this->days = 3649635;
+            $newRenovationDate = $date;
+        } else {
+            $newRenovationDate = new \DateTime('+'.$this->days.' days');
+        }
+
+        return $newRenovationDate;
     }
 }
