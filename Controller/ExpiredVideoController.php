@@ -347,8 +347,6 @@ class ExpiredVideoController extends Controller implements NewAdminController
             $date = \DateTime::createFromFormat('Y-m-d', $date);
         }
 
-        dump($date);
-
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
         $multimediaObjects = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(
             array(
