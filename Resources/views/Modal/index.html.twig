@@ -31,6 +31,14 @@
         </table>
     </fieldset>
 </div>
+<div class="col-md-6 col-md-offset-3">
+    <div class="form-group" style="width: 250px">
+        <label class="control-label required">{% trans %}Update expiration date{% endtrans %}</label>
+        <input type="date" class="form-control" pattern="(\d\d\d\d)-(\d\d)-(\d\d)" title="Format YYYY-MM-DD" name="date" id="expiration_date_from">
+    </div>
+</div>
+<br />
+<br />
 
 <div class="modal-footer">
     <button type="button" class="btn btn-pumukit btn-raised" data-dismiss="modal">
@@ -48,7 +56,7 @@
         $.ajax({
             url: '{{ path('pumukit_expired_series_renew_all',{'id': series.getId()}) }}',
             type: 'POST',
-            data: $(this).serialize(),
+            data: $("#expiration_date_from").serialize(),
             success: function () {
                 success('{% trans %}Multimedia objects updated{% endtrans %}');
             },

@@ -35,7 +35,7 @@ class ExpiredVideoController extends Controller implements NewAdminController
      */
     public function listAll()
     {
-        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm = $this->get('doctrine_mongodb.odm.document_manager');
 
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
         $range_days = $this->container->getParameter('pumukit_expired_video.range_warning_days');
@@ -67,10 +67,10 @@ class ExpiredVideoController extends Controller implements NewAdminController
             return $this->redirectToRoute('homepage', array(), 301);
         }
 
-        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm = $this->get('doctrine_mongodb.odm.document_manager');
 
         $multimediaObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findOneById(new \MongoId($key));
-        if (isset($multimediaObject)) {
+        if ($multimediaObject) {
             $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->createQueryBuilder()
                 ->remove()
                 ->field('_id')->equals(new \MongoId($multimediaObject->getId()))
@@ -103,7 +103,7 @@ class ExpiredVideoController extends Controller implements NewAdminController
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
         $ownerKey = $this->container->getParameter('pumukitschema.personal_scope_role_code');
 
-        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm = $this->get('doctrine_mongodb.odm.document_manager');
         $mmObj = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findOneById(new \MongoId($key));
 
         if ($mmObj) {
@@ -150,7 +150,7 @@ class ExpiredVideoController extends Controller implements NewAdminController
             return $this->redirectToRoute('homepage', array(), 301);
         }
 
-        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm = $this->get('doctrine_mongodb.odm.document_manager');
         $mmObj = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findOneBy(
             array('properties.expiration_key' => new \MongoId($key))
         );
@@ -211,7 +211,7 @@ class ExpiredVideoController extends Controller implements NewAdminController
             return $this->redirectToRoute('homepage', array(), 301);
         }
 
-        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm = $this->get('doctrine_mongodb.odm.document_manager');
         $person = $dm->getRepository('PumukitSchemaBundle:Person')->findOneBy(array('properties.expiration_key' => new \MongoId($key)));
 
         if (!$person) {
@@ -285,7 +285,7 @@ class ExpiredVideoController extends Controller implements NewAdminController
      */
     public function updateDateAction(Request $request, MultimediaObject $multimediaObject)
     {
-        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm = $this->get('doctrine_mongodb.odm.document_manager');
 
         $newDate = new \DateTime($request->get('date'));
         $multimediaObject->setPropertyAsDateTime('expiration_date', $newDate);
@@ -310,7 +310,13 @@ class ExpiredVideoController extends Controller implements NewAdminController
     public function renewAllSeriesMenuAction(Series $series)
     {
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
-        $multimediaObjects = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(array('series' => $series->getId()));
+        $multimediaObjects = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(
+            array(
+                'series' => $series->getId(),
+                'status' => array('$ne' => -2),
+                'islive' => false,
+            )
+        );
 
         return array(
             'multimediaObjects' => $multimediaObjects,
@@ -324,20 +330,36 @@ class ExpiredVideoController extends Controller implements NewAdminController
      * @Route("/renew/all/series/{id}", name="pumukit_expired_series_renew_all")
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
      *
-     * @param Series $series
+     * @param Series  $series
+     * @param Request $request
      *
      * @return JsonResponse
      *
      * @throws \Exception
      */
-    public function renewAllSeriesAction(Series $series)
+    public function renewAllSeriesAction(Request $request, Series $series)
     {
-        $dm = $this->get('doctrine_mongodb.odm.document_manager');
-        $multimediaObjects = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(array('series' => $series->getId()));
-
+        $date = $request->get('date');
         $expiredVideoService = $this->get('pumukit_expired_video.expired_video');
-        foreach ($multimediaObjects as $multimediaObject) {
-            $expiredVideoService->renewMultimediaObject($multimediaObject);
+        if (!$date) {
+            $date = $expiredVideoService->getExpirationDateByPermission();
+        } else {
+            $date = \DateTime::createFromFormat('Y-m-d', $date);
+        }
+
+        $dm = $this->get('doctrine_mongodb.odm.document_manager');
+        $multimediaObjects = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(
+            array(
+                'series' => $series->getId(),
+                'status' => array('$ne' => -2),
+                'islive' => false,
+            )
+        );
+
+        if ($multimediaObjects) {
+            foreach ($multimediaObjects as $multimediaObject) {
+                $expiredVideoService->renewMultimediaObject($multimediaObject, $date);
+            }
         }
 
         return new JsonResponse(array('success'));
