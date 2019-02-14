@@ -138,6 +138,10 @@
         <source>Expired video list</source>
         <target>Expired video list</target>
       </trans-unit>
+      <trans-unit id="895886da303d11e9b210d663bd873d93" resname="Renew all videos">
+        <source>Renew all videos</source>
+        <target>Renew all videos</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
