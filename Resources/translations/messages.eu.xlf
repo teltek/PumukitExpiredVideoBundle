@@ -148,6 +148,10 @@
         <source>Renew all videos</source>
         <target>Berritu bideo guztiak</target>
       </trans-unit>
+      <trans-unit id="0690e28e305011e9b210d663bd873d93" resname="Update expiration date">
+        <source>Update expiration date</source>
+        <target>Eguneratu iraungitze data</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

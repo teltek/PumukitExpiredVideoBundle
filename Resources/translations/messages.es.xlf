@@ -145,6 +145,10 @@
         <source>Renew all videos</source>
         <target>Renovar los videos</target>
       </trans-unit>
+      <trans-unit id="0690e28e305011e9b210d663bd873d93" resname="Update expiration date">
+        <source>Update expiration date</source>
+        <target>Actualizar fecha de expiración</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
