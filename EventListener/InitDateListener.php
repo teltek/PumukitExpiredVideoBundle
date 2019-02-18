@@ -33,12 +33,16 @@ class InitDateListener
         $this->days = (int) $days;
         $this->authorizationChecker = $authorizationChecker;
 
-        if ($authorizationChecker->isGranted('ROLE_UNLIMITED_EXPIRED_VIDEO')) {
-            $date = new \DateTime();
-            $date->setDate(9999, 01, 01);
-            $this->days = 3649635;
-            $this->newRenovationDate = $date;
-        } else {
+        try {
+            if ($authorizationChecker->isGranted('ROLE_UNLIMITED_EXPIRED_VIDEO')) {
+                $date = new \DateTime();
+                $date->setDate(9999, 01, 01);
+                $this->days = 3649635;
+                $this->newRenovationDate = $date;
+            } else {
+                $this->newRenovationDate = new \DateTime('+'.$this->days.' days');
+            }
+        } catch (\Exception $exception) {
             $this->newRenovationDate = new \DateTime('+'.$this->days.' days');
         }
     }
