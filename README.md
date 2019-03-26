@@ -1,7 +1,7 @@
 Installation Guide
 ==================
 
-*This page is updated to the PuMuKIT 2.1.0*
+*This page is updated to the PuMuKIT 2.1.0 or higher * 
 
 Before installing any bundle is necessary to login to your GitHub account. You have different ways of doing it. We recommend to use:
 
