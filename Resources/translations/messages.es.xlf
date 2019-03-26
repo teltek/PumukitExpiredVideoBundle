@@ -42,15 +42,15 @@
         <source>Return</source>
         <target xml:lang="es-ES" state="translated">Volver</target>
       </trans-unit>
-      <trans-unit id="13153631d908409ea931f8ada3f79bdb" resname="PuMuKIT2 - Remove owner of the following video.">
-        <source>PuMuKIT2 - Remove owner of the following video.</source>
-        <target xml:lang="es-ES" state="translated">PuMuKIT2 - Eliminado propietario del siguiente video.</target>
+      <trans-unit id="13153631d908409ea931f8ada3f79bdb" resname="PuMuKIT - Remove owner of the following video.">
+        <source>PuMuKIT - Remove owner of the following video.</source>
+        <target xml:lang="es-ES" state="translated">PuMuKIT - Eliminado propietario del siguiente video.</target>
       </trans-unit>
-      <trans-unit id="a58f028aa856474b80f59d6c5fc0d61d" resname="PuMuKIT2 - These videos will be expired coming soon.">
-        <source>PuMuKIT2 - These videos will be expired coming soon.</source>
-        <target xml:lang="es-ES" state="translated">PuMuKIT2 - Estos videos caducarán próximamente.</target>
+      <trans-unit id="a58f028aa856474b80f59d6c5fc0d61d" resname="PuMuKIT - These videos will be expired coming soon.">
+        <source>PuMuKIT - These videos will be expired coming soon.</source>
+        <target xml:lang="es-ES" state="translated">PuMuKIT - Estos videos caducarán próximamente.</target>
         <alt-trans>
-          <target xml:lang="es-ES">PuMuKIT2 - estos videos será terminado muy pronto.</target>
+          <target xml:lang="es-ES">PuMuKIT - estos videos será terminado muy pronto.</target>
         </alt-trans>
       </trans-unit>
       <trans-unit id="291dde514bcc4e84bdea49ca07394cb6" resname="To renew all your videos access this url:">

@@ -27,8 +27,8 @@ class ExpiredVideoService
     private $videos = 'videos';
     private $days;
     private $subject = array(
-        'removeOwner' => 'PuMuKIT2 - Remove owner of the following video.',
-        'expired' => 'PuMuKIT2 - These videos will be expired coming soon.',
+        'removeOwner' => 'PuMuKIT - Remove owner of the following video.',
+        'expired' => 'PuMuKIT - These videos will be expired coming soon.',
     );
 
     /**

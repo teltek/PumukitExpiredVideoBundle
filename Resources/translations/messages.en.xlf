@@ -42,13 +42,13 @@
         <source>Return</source>
         <target xml:lang="en" state="needs-translation">Return</target>
       </trans-unit>
-      <trans-unit id="13153631d908409ea931f8ada3f79bdb" resname="PuMuKIT2 - Remove owner of the following video.">
-        <source>PuMuKIT2 - Remove owner of the following video.</source>
-        <target xml:lang="en" state="needs-translation">PuMuKIT2 - Remove owner of the following video.</target>
+      <trans-unit id="13153631d908409ea931f8ada3f79bdb" resname="PuMuKIT - Remove owner of the following video.">
+        <source>PuMuKIT - Remove owner of the following video.</source>
+        <target xml:lang="en" state="needs-translation">PuMuKIT - Remove owner of the following video.</target>
       </trans-unit>
-      <trans-unit id="a58f028aa856474b80f59d6c5fc0d61d" resname="PuMuKIT2 - These videos will be expired coming soon.">
-        <source>PuMuKIT2 - These videos will be expired coming soon.</source>
-        <target xml:lang="en" state="needs-translation">PuMuKIT2 - These videos will be expired coming soon.</target>
+      <trans-unit id="a58f028aa856474b80f59d6c5fc0d61d" resname="PuMuKIT - These videos will be expired coming soon.">
+        <source>PuMuKIT - These videos will be expired coming soon.</source>
+        <target xml:lang="en" state="needs-translation">PuMuKIT - These videos will be expired coming soon.</target>
       </trans-unit>
       <trans-unit id="291dde514bcc4e84bdea49ca07394cb6" resname="To renew all your videos access this url:">
         <source>To renew all your videos access this url:</source>
