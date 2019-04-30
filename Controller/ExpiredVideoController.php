@@ -313,8 +313,8 @@ class ExpiredVideoController extends Controller implements NewAdminController
         $multimediaObjects = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(
             array(
                 'series' => $series->getId(),
-                'status' => array('$ne' => -2),
-                'islive' => false,
+                'status' => array('$ne' => MultimediaObject::STATUS_PROTOTYPE),
+                'type' => ['$ne' => MultimediaObject::TYPE_LIVE],
             )
         );
 
@@ -351,8 +351,8 @@ class ExpiredVideoController extends Controller implements NewAdminController
         $multimediaObjects = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(
             array(
                 'series' => $series->getId(),
-                'status' => array('$ne' => -2),
-                'islive' => false,
+                'status' => array('$ne' => MultimediaObject::STATUS_PROTOTYPE),
+                'type' => ['$ne' => MultimediaObject::TYPE_LIVE],
             )
         );
 
