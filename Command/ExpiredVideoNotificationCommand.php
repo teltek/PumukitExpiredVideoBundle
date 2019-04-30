@@ -63,7 +63,7 @@ EOT
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return bool|int|null|void
+     * @return bool|int|void|null
      *
      * @throws \Exception
      */

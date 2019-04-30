@@ -52,7 +52,7 @@ EOT
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return int|null|void
+     * @return int|void|null
      *
      * @throws \Exception
      */
