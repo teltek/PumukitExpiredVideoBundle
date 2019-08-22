@@ -6,9 +6,9 @@ use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\PermissionProfile;
 use Pumukit\SchemaBundle\Document\User;
 use Pumukit\SchemaBundle\Services\MultimediaObjectService;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class MultimediaObjectVoter.
@@ -41,7 +41,7 @@ class MultimediaObjectVoter extends Voter
     protected function supports($attribute, $subject)
     {
         // NOTE: If the attribute isn't one we support, return false
-        if (!in_array($attribute, array(self::RENEW))) {
+        if (!in_array($attribute, [self::RENEW])) {
             return false;
         }
 

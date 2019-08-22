@@ -2,10 +2,10 @@
 
 namespace Pumukit\ExpiredVideoBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -31,11 +31,11 @@ class PumukitExpiredVideoExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-        $permissions = array(array('role' => 'ROLE_ACCESS_EXPIRED_VIDEO', 'description' => 'Access expired video'));
+        $permissions = [['role' => 'ROLE_ACCESS_EXPIRED_VIDEO', 'description' => 'Access expired video']];
         $newPermissions = array_merge($container->getParameter('pumukitschema.external_permissions'), $permissions);
         $container->setParameter('pumukitschema.external_permissions', $newPermissions);
 
-        $permissions = array(array('role' => 'ROLE_UNLIMITED_EXPIRED_VIDEO', 'description' => 'Upload videos without expiration date'));
+        $permissions = [['role' => 'ROLE_UNLIMITED_EXPIRED_VIDEO', 'description' => 'Upload videos without expiration date']];
         $newPermissions = array_merge($container->getParameter('pumukitschema.external_permissions'), $permissions);
         $container->setParameter('pumukitschema.external_permissions', $newPermissions);
     }

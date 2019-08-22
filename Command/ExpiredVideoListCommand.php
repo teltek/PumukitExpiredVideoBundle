@@ -2,14 +2,14 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 class ExpiredVideoListCommand extends ContainerAwareCommand
 {
-    private $dm = null;
-    private $mmobjRepo = null;
+    private $dm;
+    private $mmobjRepo;
     private $expiredVideoService;
 
     protected function configure()
@@ -17,7 +17,8 @@ class ExpiredVideoListCommand extends ContainerAwareCommand
         $this
             ->setName('video:expired:list')
             ->setDescription('Expired video list')
-            ->setHelp(<<<'EOT'
+            ->setHelp(
+                <<<'EOT'
             
 Expired video list returns a list of multimedia object ID and his expiration date when the expiration_date is less than now.
 
@@ -26,7 +27,8 @@ Example:
 php app/console video:expired:list
 
 EOT
-            );
+            )
+        ;
     }
 
     /**
@@ -44,18 +46,18 @@ EOT
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return int|void|null
+     * @return null|int|void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $now = new \DateTime();
 
-        $message = array(
+        $message = [
             '',
             '<info>Expired video list</info>',
             '<info>==================</info>',
             '<comment>Searching videos with expiration date less than '.$now->format('c').'</comment>',
-        );
+        ];
 
         $expiredVideos = $this->expiredVideoService->getExpiredVideos();
 

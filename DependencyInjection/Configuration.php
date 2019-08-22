@@ -22,15 +22,16 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('expiration_date_days')
-                    ->defaultValue(365)
-                    ->info('Time of the first expiration_date')
-                ->end()
-                ->scalarNode('range_warning_days')
-                    ->defaultValue(90)
-                    ->info('Number of days to warning')
-                ->end()
-            ->end();
+            ->scalarNode('expiration_date_days')
+            ->defaultValue(365)
+            ->info('Time of the first expiration_date')
+            ->end()
+            ->scalarNode('range_warning_days')
+            ->defaultValue(90)
+            ->info('Number of days to warning')
+            ->end()
+            ->end()
+        ;
 
         return $treeBuilder;
     }

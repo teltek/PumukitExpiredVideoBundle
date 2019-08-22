@@ -4,8 +4,8 @@ namespace Pumukit\ExpiredVideoBundle\EventListener;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
-use Pumukit\SchemaBundle\Event\MultimediaObjectEvent;
 use Pumukit\SchemaBundle\Event\MultimediaObjectCloneEvent;
+use Pumukit\SchemaBundle\Event\MultimediaObjectEvent;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
@@ -58,7 +58,7 @@ class InitDateListener
             $multimediaObject = $event->getMultimediaObject();
             if (!$multimediaObject->isPrototype()) {
                 $properties['expiration_date'] = $this->newRenovationDate;
-                $properties['renew_expiration_date'] = array($this->days);
+                $properties['renew_expiration_date'] = [$this->days];
                 $this->updateProperties($this->dm, $multimediaObject, $properties, true);
             }
         }

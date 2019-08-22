@@ -3,14 +3,14 @@
 namespace Pumukit\ExpiredVideoBundle\Controller;
 
 use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
+use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Series;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Pumukit\SchemaBundle\Document\MultimediaObject;
 
 /**
  * Class ExpiredVideoController.
@@ -29,9 +29,9 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
      * @Template()
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
      *
-     * @return array
-     *
      * @throws \Exception
+     *
+     * @return array
      */
     public function listAll()
     {
@@ -41,13 +41,13 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
         $range_days = $this->container->getParameter('pumukit_expired_video.range_warning_days');
         $ownerKey = $this->container->getParameter('pumukitschema.personal_scope_role_code');
 
-        $ownerRol = $dm->getRepository('PumukitSchemaBundle:Role')->findOneBy(array('cod' => $ownerKey));
+        $ownerRol = $dm->getRepository('PumukitSchemaBundle:Role')->findOneBy(['cod' => $ownerKey]);
 
         $now = new \DateTime();
         $date = $now->add(new \DateInterval('P'.$range_days.'D'));
-        $aMultimediaObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(array('properties.expiration_date' => array('$lte' => $date->format('c'))), array('properties.expiration_date' => -1));
+        $aMultimediaObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(['properties.expiration_date' => ['$lte' => $date->format('c')]], ['properties.expiration_date' => -1]);
 
-        return array('days' => $days, 'ownerRol' => $ownerRol, 'multimediaObjects' => $aMultimediaObject);
+        return ['days' => $days, 'ownerRol' => $ownerRol, 'multimediaObjects' => $aMultimediaObject];
     }
 
     /**
@@ -64,7 +64,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
     public function deleteVideoAction($key)
     {
         if (!$key || !preg_match($this->regex, $key)) {
-            return $this->redirectToRoute('homepage', array(), 301);
+            return $this->redirectToRoute('homepage', [], 301);
         }
 
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
@@ -75,10 +75,11 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
                 ->remove()
                 ->field('_id')->equals(new \MongoId($multimediaObject->getId()))
                 ->getQuery()
-                ->execute();
+                ->execute()
+            ;
         }
 
-        return $this->redirectToRoute('pumukit_expired_video_list_all', array(), 301);
+        return $this->redirectToRoute('pumukit_expired_video_list_all', [], 301);
     }
 
     /**
@@ -90,14 +91,14 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
      *
      * @param $key
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     *
      * @throws \Exception
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function renewExpiredVideoAdminAction($key)
     {
         if (!$key || !preg_match($this->regex, $key)) {
-            return $this->redirectToRoute('homepage', array(), 301);
+            return $this->redirectToRoute('homepage', [], 301);
         }
 
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
@@ -130,7 +131,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
             $dm->flush();
         }
 
-        return $this->redirectToRoute('pumukit_expired_video_list_all', array(), 301);
+        return $this->redirectToRoute('pumukit_expired_video_list_all', [], 301);
     }
 
     /**
@@ -139,20 +140,20 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
      *
      * @param $key
      *
-     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
-     *
      * @throws \Exception
+     *
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function renewExpiredVideoAction($key)
     {
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
         if (!$key || !preg_match($this->regex, $key)) {
-            return $this->redirectToRoute('homepage', array(), 301);
+            return $this->redirectToRoute('homepage', [], 301);
         }
 
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
         $mmObj = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findOneBy(
-            array('properties.expiration_key' => new \MongoId($key))
+            ['properties.expiration_key' => new \MongoId($key)]
         );
 
         $user = $this->getUser();
@@ -190,7 +191,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
             $error = 2;
         }
 
-        return array('message' => $error);
+        return ['message' => $error];
     }
 
     /**
@@ -199,31 +200,31 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
      *
      * @param $key
      *
-     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
-     *
      * @throws \Exception
+     *
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function renewAllExpiredVideoAction($key)
     {
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
 
         if (!$key || !preg_match($this->regex, $key)) {
-            return $this->redirectToRoute('homepage', array(), 301);
+            return $this->redirectToRoute('homepage', [], 301);
         }
 
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
-        $person = $dm->getRepository('PumukitSchemaBundle:Person')->findOneBy(array('properties.expiration_key' => new \MongoId($key)));
+        $person = $dm->getRepository('PumukitSchemaBundle:Person')->findOneBy(['properties.expiration_key' => new \MongoId($key)]);
 
         if (!$person) {
             $error = 4;
 
-            return array('message' => $error);
+            return ['message' => $error];
         }
 
         $user = $this->getUser();
         if ($user->getEmail() == $person->getEmail()) {
             $aObject = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(
-                array('people.people._id' => $person->getId(), 'properties.expiration_key' => array('$exists' => true))
+                ['people.people._id' => $person->getId(), 'properties.expiration_key' => ['$exists' => true]]
             );
 
             if (count($aObject) >= 1) {
@@ -249,7 +250,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
             $error = 1;
         }
 
-        return array('message' => $error);
+        return ['message' => $error];
     }
 
     /**
@@ -267,7 +268,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
     {
         $canEdit = $this->isGranted('ROLE_ACCESS_EXPIRED_VIDEO');
 
-        return array('can_edit' => $canEdit, 'multimediaObject' => $multimediaObject);
+        return ['can_edit' => $canEdit, 'multimediaObject' => $multimediaObject];
     }
 
     /**
@@ -279,9 +280,9 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
      * @param Request          $request
      * @param MultimediaObject $multimediaObject
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     *
      * @throws \Exception
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function updateDateAction(Request $request, MultimediaObject $multimediaObject)
     {
@@ -293,7 +294,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
         $dm->persist($multimediaObject);
         $dm->flush();
 
-        return $this->redirectToRoute('pumukit_expired_video_info', array('id' => $multimediaObject->getId()));
+        return $this->redirectToRoute('pumukit_expired_video_info', ['id' => $multimediaObject->getId()]);
     }
 
     /**
@@ -311,17 +312,17 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
     {
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
         $multimediaObjects = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(
-            array(
+            [
                 'series' => $series->getId(),
-                'status' => array('$ne' => MultimediaObject::STATUS_PROTOTYPE),
+                'status' => ['$ne' => MultimediaObject::STATUS_PROTOTYPE],
                 'type' => ['$ne' => MultimediaObject::TYPE_LIVE],
-            )
+            ]
         );
 
-        return array(
+        return [
             'multimediaObjects' => $multimediaObjects,
             'series' => $series,
-        );
+        ];
     }
 
     /**
@@ -333,9 +334,9 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
      * @param Series  $series
      * @param Request $request
      *
-     * @return JsonResponse
-     *
      * @throws \Exception
+     *
+     * @return JsonResponse
      */
     public function renewAllSeriesAction(Request $request, Series $series)
     {
@@ -349,11 +350,11 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
 
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
         $multimediaObjects = $dm->getRepository('PumukitSchemaBundle:MultimediaObject')->findBy(
-            array(
+            [
                 'series' => $series->getId(),
-                'status' => array('$ne' => MultimediaObject::STATUS_PROTOTYPE),
+                'status' => ['$ne' => MultimediaObject::STATUS_PROTOTYPE],
                 'type' => ['$ne' => MultimediaObject::TYPE_LIVE],
-            )
+            ]
         );
 
         if ($multimediaObjects) {
@@ -362,6 +363,6 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
             }
         }
 
-        return new JsonResponse(array('success'));
+        return new JsonResponse(['success']);
     }
 }

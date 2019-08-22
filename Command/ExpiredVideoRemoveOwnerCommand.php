@@ -2,15 +2,15 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoRemoveOwnerCommand extends ContainerAwareCommand
 {
-    private $dm = null;
-    private $mmobjRepo = null;
+    private $dm;
+    private $mmobjRepo;
     private $user_code;
     private $type = 'removeOwner';
     private $expiredVideoService;
@@ -24,10 +24,12 @@ class ExpiredVideoRemoveOwnerCommand extends ContainerAwareCommand
             ->setName('video:expired:remove')
             ->setDescription('This command delete role owner when the video was timed out')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
-            ->setHelp(<<<'EOT'
+            ->setHelp(
+                <<<'EOT'
 Expired video remove delete owner people on multimedia object id when the expiration_date is less than now. This command send email to web administrator when delete data.
 EOT
-            );
+            )
+        ;
     }
 
     /**
@@ -52,9 +54,9 @@ EOT
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return int|void|null
-     *
      * @throws \Exception
+     *
+     * @return null|int|void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -70,7 +72,7 @@ EOT
             $expiredOwnerRole = $this->getRoleWithCode('expired_owner');
 
             if (count($mmobjExpired) > 0) {
-                $aMultimediaObject = array();
+                $aMultimediaObject = [];
                 foreach ($mmobjExpired as $mmObj) {
                     $removeOwner = false;
                     if (count($mmObj->getRoles()) > 0) {
@@ -103,9 +105,9 @@ EOT
     /**
      * @param $code
      *
-     * @return mixed
-     *
      * @throws \Exception
+     *
+     * @return mixed
      */
     private function getRoleWithCode($code)
     {

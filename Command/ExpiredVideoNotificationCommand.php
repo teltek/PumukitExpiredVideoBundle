@@ -2,15 +2,15 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoNotificationCommand extends ContainerAwareCommand
 {
-    private $dm = null;
-    private $mmobjRepo = null;
+    private $dm;
+    private $mmobjRepo;
     private $type = 'expired';
     private $user_code;
     private $expiredVideoService;
@@ -41,7 +41,8 @@ If use range days:
    php app/console video:expired:notification 7 true  ( if today is 01/01/2018 will send to all video that expired in the range between 01/01/2018 - 08/01/2018)
    
 EOT
-            );
+            )
+        ;
     }
 
     /**
@@ -63,17 +64,17 @@ EOT
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return bool|int|void|null
-     *
      * @throws \Exception
+     *
+     * @return null|bool|int|void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $message = array(
+        $message = [
             '',
             '<info>Expired video notification</info>',
             '<info>==========================</info>',
-        );
+        ];
 
         if (0 == $this->days) {
             array_push($message, '<error>Expiration date days is 0, it means deactivate expired video functionality.</error>');
@@ -111,7 +112,7 @@ EOT
      */
     private function sendNotification($aMultimediaObject)
     {
-        $sendMail = array();
+        $sendMail = [];
         if ($aMultimediaObject) {
             foreach ($aMultimediaObject as $mmObj) {
                 $this->output->writeln(' * Multimedia Object ID: '.$mmObj->getId().' - Expiration date: '.$mmObj->getProperty('expiration_date'));
