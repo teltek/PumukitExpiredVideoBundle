@@ -2,6 +2,8 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
+use Pumukit\SchemaBundle\Document\MultimediaObject;
+use Pumukit\SchemaBundle\Document\Series;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -16,7 +18,7 @@ class ExpiredVideoDeleteCommand extends ContainerAwareCommand
     private $seriesRepo;
     private $expiredVideoService;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('video:expired:delete')
@@ -30,33 +32,23 @@ EOT
         ;
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     */
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-        $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
-        $this->seriesRepo = $this->dm->getRepository('PumukitSchemaBundle:Series');
+        $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
+        $this->mmobjRepo = $this->dm->getRepository(MultimediaObject::class);
+        $this->seriesRepo = $this->dm->getRepository(Series::class);
         $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
-        $this->days = $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
+        $this->days = (int) $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return null|int|void
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
         if ($input->getOption('force')) {
             if (0 === $this->days) {
                 $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
 
-                return;
+                return null;
             }
 
             $mmobjExpired = $this->expiredVideoService->getExpiredVideosToDelete($this->days);
@@ -89,14 +81,11 @@ EOT
         } else {
             $output->writeln('The option force must be set to delete videos timed out');
         }
+
+        return 0;
     }
 
-    /**
-     * @param $mmObj
-     *
-     * @return mixed
-     */
-    private function deleteVideos($mmObj)
+    private function deleteVideos(MultimediaObject $mmObj)
     {
         return $this->mmobjRepo->createQueryBuilder()
             ->remove()
@@ -106,12 +95,7 @@ EOT
         ;
     }
 
-    /**
-     * @param $sSeriesId
-     *
-     * @return mixed
-     */
-    private function deleteSeries($sSeriesId)
+    private function deleteSeries(string $sSeriesId)
     {
         return $this->seriesRepo->createQueryBuilder()
             ->remove()

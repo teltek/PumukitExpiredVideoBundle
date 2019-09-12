@@ -39,7 +39,6 @@
 
         <service id="pumukit_expired_video.multimedia_object_voter" class="Pumukit\ExpiredVideoBundle\Services\MultimediaObjectVoter">
             <argument type="service" id="pumukitschema.multimedia_object"/>
-            <argument type="service" id="request_stack"/>
             <tag name="security.voter" />
         </service>
     </services>

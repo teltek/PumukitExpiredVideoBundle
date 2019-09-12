@@ -15,23 +15,12 @@ class InitDateListener
 {
     private $dm;
     private $days;
-    private $authorizationChecker;
     private $newRenovationDate;
 
-    /**
-     * InitDateListener constructor.
-     *
-     * @param DocumentManager               $documentManager
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param int                           $days
-     *
-     * @throws \Exception
-     */
-    public function __construct(DocumentManager $documentManager, AuthorizationCheckerInterface $authorizationChecker, $days = 365)
+    public function __construct(DocumentManager $documentManager, AuthorizationCheckerInterface $authorizationChecker, int $days = 365)
     {
         $this->dm = $documentManager;
-        $this->days = (int) $days;
-        $this->authorizationChecker = $authorizationChecker;
+        $this->days = $days;
 
         try {
             if ($authorizationChecker->isGranted('ROLE_UNLIMITED_EXPIRED_VIDEO')) {
@@ -47,29 +36,19 @@ class InitDateListener
         }
     }
 
-    /**
-     * @param MultimediaObjectEvent $event
-     *
-     * @throws \Exception
-     */
-    public function onMultimediaObjectCreate(MultimediaObjectEvent $event)
+    public function onMultimediaObjectCreate(MultimediaObjectEvent $event): void
     {
         if ($this->checkConfiguration()) {
             $multimediaObject = $event->getMultimediaObject();
             if (!$multimediaObject->isPrototype()) {
                 $properties['expiration_date'] = $this->newRenovationDate;
                 $properties['renew_expiration_date'] = [$this->days];
-                $this->updateProperties($this->dm, $multimediaObject, $properties, true);
+                $this->updateProperties($this->dm, $multimediaObject, $properties);
             }
         }
     }
 
-    /**
-     * @param MultimediaObjectCloneEvent $event
-     *
-     * @throws \Exception
-     */
-    public function onMultimediaObjectClone(MultimediaObjectCloneEvent $event)
+    public function onMultimediaObjectClone(MultimediaObjectCloneEvent $event): void
     {
         if ($this->checkConfiguration()) {
             $multimediaObjects = $event->getMultimediaObjects();
@@ -83,41 +62,17 @@ class InitDateListener
         }
     }
 
-    /**
-     * @return bool
-     */
-    private function checkConfiguration()
+    private function checkConfiguration(): bool
     {
-        if (0 === $this->days) {
-            return false;
-        }
-
-        return true;
+        return !(0 === $this->days);
     }
 
-    /**
-     * @param MultimediaObject $origin
-     * @param MultimediaObject $cloned
-     *
-     * @return bool
-     */
-    private function checkValidMultimediaObject(MultimediaObject $origin, MultimediaObject $cloned)
+    private function checkValidMultimediaObject(MultimediaObject $origin, MultimediaObject $cloned): bool
     {
-        if ($origin->isPrototype() || $cloned->isPrototype()) {
-            return false;
-        }
-
-        return true;
+        return !($origin->isPrototype() || $cloned->isPrototype());
     }
 
-    /**
-     * @param DocumentManager  $dm
-     * @param MultimediaObject $origin
-     * @param MultimediaObject $cloned
-     *
-     * @throws \Exception
-     */
-    private function updateMultimediaObject(DocumentManager $dm, MultimediaObject $origin, MultimediaObject $cloned)
+    private function updateMultimediaObject(DocumentManager $dm, MultimediaObject $origin, MultimediaObject $cloned): void
     {
         $properties = $origin->getProperties();
         if (is_array($properties)) {
@@ -125,15 +80,7 @@ class InitDateListener
         }
     }
 
-    /**
-     * @param DocumentManager  $dm
-     * @param MultimediaObject $multimediaObject
-     * @param array            $properties
-     * @param bool             $format
-     *
-     * @throws \Exception
-     */
-    private function updateProperties(DocumentManager $dm, MultimediaObject $multimediaObject, array $properties, $format = true)
+    private function updateProperties(DocumentManager $dm, MultimediaObject $multimediaObject, array $properties, bool $format = true): void
     {
         if ($format) {
             $multimediaObject->setPropertyAsDateTime('expiration_date', $properties['expiration_date']);

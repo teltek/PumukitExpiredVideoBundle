@@ -3,6 +3,7 @@
 namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use phpDocumentor\Reflection\Types\Iterable_;
 use Psr\Log\LoggerInterface;
 use Pumukit\NotificationBundle\Services\SenderService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
@@ -10,9 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
-/**
- * Class ExpiredVideoService.
- */
 class ExpiredVideoService
 {
     private $dm;
@@ -31,18 +29,6 @@ class ExpiredVideoService
         'expired' => 'PuMuKIT - These videos will be expired coming soon.',
     ];
 
-    /**
-     * ExpiredVideoService constructor.
-     *
-     * @param DocumentManager               $documentManager
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param Router                        $router
-     * @param LoggerInterface               $logger
-     * @param SenderService                 $senderService
-     * @param TranslatorInterface           $translator
-     * @param null|array                    $subject
-     * @param int                           $days
-     */
     public function __construct(DocumentManager $documentManager, AuthorizationCheckerInterface $authorizationChecker, Router $router, LoggerInterface $logger, SenderService $senderService, TranslatorInterface $translator, array $subject = null, $days = 365)
     {
         $this->dm = $documentManager;
@@ -61,13 +47,7 @@ class ExpiredVideoService
         $this->days = $days;
     }
 
-    /**
-     * @param $aEmails
-     * @param $sType
-     *
-     * @return bool|string
-     */
-    public function generateNotification($aEmails, $sType)
+    public function generateNotification(Iterable $aEmails, string $sType)
     {
         $output = '';
 
@@ -103,19 +83,11 @@ class ExpiredVideoService
         return $output;
     }
 
-    /**
-     * @return \MongoId
-     */
-    public function generateExpiredToken()
+    public function generateExpiredToken(): \MongoId
     {
         return new \MongoId();
     }
 
-    /**
-     * @throws \Exception
-     *
-     * @return mixed
-     */
     public function getExpiredVideos()
     {
         $now = new \DateTime();
@@ -128,14 +100,7 @@ class ExpiredVideoService
         ;
     }
 
-    /**
-     * @param $days
-     *
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     *
-     * @return mixed
-     */
-    public function getExpiredVideosToDelete($days)
+    public function getExpiredVideosToDelete(int $days)
     {
         $now = new \DateTime();
         $now->sub(new \DateInterval('P'.$days.'D'));
@@ -147,15 +112,7 @@ class ExpiredVideoService
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @param $days
-     * @param $range
-     *
-     * @throws \Exception
-     *
-     * @return mixed
-     */
-    public function getExpiredVideosByDateAndRange($days, $range = true)
+    public function getExpiredVideosByDateAndRange(int $days, bool $range = true)
     {
         $qb = $this->mmobjRepo->createQueryBuilder()->field('properties.expiration_date')->exists(true);
 
@@ -165,7 +122,7 @@ class ExpiredVideoService
             $qb->field('properties.expiration_date')->equals(['$gte' => $now->format('c'), '$lte' => $date->format('c')]);
         } else {
             $today = new \DateTimeImmutable(date('Y-m-d'));
-            $from = $today->add(new \DateInterval('P'.($days).'D'));
+            $from = $today->add(new \DateInterval('P'.$days.'D'));
             $to = $today->add(new \DateInterval('P'.($days + 1).'D'));
             $qb->field('properties.expiration_date')->equals(['$gte' => $from->format('c'), '$lt' => $to->format('c')]);
         }
@@ -173,25 +130,14 @@ class ExpiredVideoService
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * @param MultimediaObject $multimediaObject
-     * @param                  $date
-     *
-     * @throws \Exception
-     */
-    public function renewMultimediaObject(MultimediaObject $multimediaObject, $date)
+    public function renewMultimediaObject(MultimediaObject $multimediaObject, \DateTime $date): void
     {
         if ($this->authorizationChecker->isGranted('renew', $multimediaObject) && !$multimediaObject->isPrototype()) {
             $this->updateMultimediaObjectExpirationDate($this->dm, $multimediaObject, $this->days, $date);
         }
     }
 
-    /**
-     * @throws \Exception
-     *
-     * @return null|\DateTime
-     */
-    public function getExpirationDateByPermission()
+    public function getExpirationDateByPermission(): ?\DateTime
     {
         $newRenovationDate = null;
         if ($this->authorizationChecker->isGranted('ROLE_UNLIMITED_EXPIRED_VIDEO')) {
@@ -206,13 +152,7 @@ class ExpiredVideoService
         return $newRenovationDate;
     }
 
-    /**
-     * @param $sUserId
-     * @param $aData
-     *
-     * @return array
-     */
-    private function addRenewUniqueKeys($sUserId, $aData)
+    private function addRenewUniqueKeys(string $sUserId, array $aData): array
     {
         $aUserKeys = [];
 
@@ -232,20 +172,14 @@ class ExpiredVideoService
             $aUserKeys['videos'][$mmObj->getId()]['title'] = $mmObj->getTitle();
             $aUserKeys['videos'][$mmObj->getId()]['obj'] = $mmObj;
             $aUserKeys['videos'][$mmObj->getId()]['expired'] = $mmObj->getPropertyAsDateTime('expiration_date');
-
-            $this->dm->flush();
         }
+
+        $this->dm->flush();
 
         return $aUserKeys;
     }
 
-    /**
-     * @param DocumentManager  $dm
-     * @param MultimediaObject $multimediaObject
-     * @param                  $days
-     * @param                  $newRenovationDate
-     */
-    private function updateMultimediaObjectExpirationDate(DocumentManager $dm, MultimediaObject $multimediaObject, $days, $newRenovationDate)
+    private function updateMultimediaObjectExpirationDate(DocumentManager $dm, MultimediaObject $multimediaObject, int $days, \DateTime $newRenovationDate): void
     {
         $multimediaObject->setPropertyAsDateTime('expiration_date', $newRenovationDate);
         $renewedExpirationDates = $multimediaObject->getProperty('renew_expiration_date');

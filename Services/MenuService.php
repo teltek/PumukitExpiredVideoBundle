@@ -4,31 +4,19 @@ namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Pumukit\NewAdminBundle\Menu\ItemInterface;
 
-/**
- * Class MenuService.
- */
 class MenuService implements ItemInterface
 {
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'Expired video list';
     }
 
-    /**
-     * @return string
-     */
-    public function getUri()
+    public function getUri(): string
     {
         return 'pumukit_expired_video_list_all';
     }
 
-    /**
-     * @return string
-     */
-    public function getAccessRole()
+    public function getAccessRole(): string
     {
         return 'ROLE_ACCESS_EXPIRED_VIDEO';
     }
