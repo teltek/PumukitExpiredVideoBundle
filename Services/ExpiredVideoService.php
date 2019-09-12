@@ -3,7 +3,6 @@
 namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use phpDocumentor\Reflection\Types\Iterable_;
 use Psr\Log\LoggerInterface;
 use Pumukit\NotificationBundle\Services\SenderService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
@@ -47,7 +46,7 @@ class ExpiredVideoService
         $this->days = $days;
     }
 
-    public function generateNotification(Iterable $aEmails, string $sType)
+    public function generateNotification(iterable $aEmails, string $sType)
     {
         $output = '';
 

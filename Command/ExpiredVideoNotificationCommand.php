@@ -2,7 +2,6 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use phpDocumentor\Reflection\Types\Iterable_;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -97,7 +96,7 @@ EOT
         return 0;
     }
 
-    private function sendNotification(OutputInterface $output, Iterable $aMultimediaObject): void
+    private function sendNotification(OutputInterface $output, iterable $aMultimediaObject): void
     {
         $sendMail = [];
         if ($aMultimediaObject) {

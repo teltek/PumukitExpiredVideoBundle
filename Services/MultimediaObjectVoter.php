@@ -6,7 +6,6 @@ use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\PermissionProfile;
 use Pumukit\SchemaBundle\Document\User;
 use Pumukit\SchemaBundle\Services\MultimediaObjectService;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -23,7 +22,7 @@ class MultimediaObjectVoter extends Voter
 
     protected function supports($attribute, $subject): bool
     {
-        if ($attribute !== self::RENEW) {
+        if (self::RENEW !== $attribute) {
             return false;
         }
 
@@ -39,7 +38,7 @@ class MultimediaObjectVoter extends Voter
     {
         $user = $token->getUser();
 
-        if($attribute === self::RENEW) {
+        if (self::RENEW === $attribute) {
             return $this->canRenew($this->multimediaObjectService, $multimediaObject, $user);
         }
 
