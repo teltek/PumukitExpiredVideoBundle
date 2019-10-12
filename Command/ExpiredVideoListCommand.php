@@ -2,22 +2,24 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
+use Pumukit\SchemaBundle\Document\MultimediaObject;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 class ExpiredVideoListCommand extends ContainerAwareCommand
 {
-    private $dm = null;
-    private $mmobjRepo = null;
+    private $dm;
+    private $mmobjRepo;
     private $expiredVideoService;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('video:expired:list')
             ->setDescription('Expired video list')
-            ->setHelp(<<<'EOT'
+            ->setHelp(
+                <<<'EOT'
             
 Expired video list returns a list of multimedia object ID and his expiration date when the expiration_date is less than now.
 
@@ -26,49 +28,42 @@ Example:
 php app/console video:expired:list
 
 EOT
-            );
+            )
+        ;
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     */
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-        $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
+        $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
+        $this->mmobjRepo = $this->dm->getRepository(MultimediaObject::class);
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int|null|void
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
         $now = new \DateTime();
 
-        $message = array(
+        $message = [
             '',
             '<info>Expired video list</info>',
             '<info>==================</info>',
             '<comment>Searching videos with expiration date less than '.$now->format('c').'</comment>',
-        );
+        ];
 
         $expiredVideos = $this->expiredVideoService->getExpiredVideos();
 
         if ($expiredVideos) {
-            array_push($message, 'Expired videos: '.count($expiredVideos));
+            $message[] = 'Expired videos: '.count($expiredVideos);
             foreach ($expiredVideos as $mmObj) {
-                array_push($message, ' * Multimedia Object ID: '.$mmObj->getId().' - Expiration date: '.$mmObj->getProperty('expiration_date'));
+                $message[] = ' * Multimedia Object ID: '.$mmObj->getId().' - Expiration date: '.$mmObj->getProperty('expiration_date');
             }
         } else {
-            array_push($message, 'No videos expired.');
+            $message[] = 'No videos expired.';
         }
 
-        array_push($message, '');
+        $message[] = '';
         $output->writeln($message);
+
+        return 0;
     }
 }

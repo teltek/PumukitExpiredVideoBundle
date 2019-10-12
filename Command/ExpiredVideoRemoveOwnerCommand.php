@@ -2,15 +2,17 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Pumukit\SchemaBundle\Document\MultimediaObject;
+use Pumukit\SchemaBundle\Document\Role;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoRemoveOwnerCommand extends ContainerAwareCommand
 {
-    private $dm = null;
-    private $mmobjRepo = null;
+    private $dm;
+    private $mmobjRepo;
     private $user_code;
     private $type = 'removeOwner';
     private $expiredVideoService;
@@ -24,45 +26,35 @@ class ExpiredVideoRemoveOwnerCommand extends ContainerAwareCommand
             ->setName('video:expired:remove')
             ->setDescription('This command delete role owner when the video was timed out')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
-            ->setHelp(<<<'EOT'
+            ->setHelp(
+                <<<'EOT'
 Expired video remove delete owner people on multimedia object id when the expiration_date is less than now. This command send email to web administrator when delete data.
 EOT
-            );
+            )
+        ;
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+        $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
 
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
         $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
         $this->sendMail = $this->getContainer()->getParameter('pumukit_notification.sender_email');
 
-        $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
-        $this->roleRepo = $this->dm->getRepository('PumukitSchemaBundle:Role');
+        $this->mmobjRepo = $this->dm->getRepository(MultimediaObject::class);
+        $this->roleRepo = $this->dm->getRepository(Role::class);
 
         $this->days = $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int|null|void
-     *
-     * @throws \Exception
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
         if ($input->getOption('force')) {
             if (0 === $this->days) {
                 $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
 
-                return;
+                return null;
             }
 
             $mmobjExpired = $this->expiredVideoService->getExpiredVideos();
@@ -70,7 +62,6 @@ EOT
             $expiredOwnerRole = $this->getRoleWithCode('expired_owner');
 
             if (count($mmobjExpired) > 0) {
-                $aMultimediaObject = array();
                 foreach ($mmobjExpired as $mmObj) {
                     $removeOwner = false;
                     if (count($mmObj->getRoles()) > 0) {
@@ -85,7 +76,6 @@ EOT
                             }
                         }
                         if ($removeOwner) {
-                            $aMultimediaObject[] = $mmObj->getId();
                             $output->writeln('Remove owner people from multimedia object id - '.$mmObj->getId());
                         }
                     } else {
@@ -98,19 +88,14 @@ EOT
         } else {
             $output->writeln('The option force must be set to remove owner videos timed out');
         }
+
+        return 0;
     }
 
-    /**
-     * @param $code
-     *
-     * @return mixed
-     *
-     * @throws \Exception
-     */
-    private function getRoleWithCode($code)
+    private function getRoleWithCode(string $code): Role
     {
-        $role = $this->roleRepo->findOneByCod($code);
-        if (null == $role) {
+        $role = $this->roleRepo->findOneBy(['cod' => $code]);
+        if (!$role) {
             throw new \Exception("Role with code '".$code."' not found. Please, init pumukit roles.");
         }
 

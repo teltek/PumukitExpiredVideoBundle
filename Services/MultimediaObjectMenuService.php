@@ -4,39 +4,24 @@ namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Pumukit\NewAdminBundle\Menu\ItemInterface;
 
-/**
- * Class MultimediaObjectMenuService.
- */
 class MultimediaObjectMenuService implements ItemInterface
 {
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'Show expiration date';
     }
 
-    /**
-     * @return string
-     */
-    public function getUri()
+    public function getUri(): string
     {
         return 'pumukit_expired_video_info';
     }
 
-    /**
-     * @return string
-     */
-    public function getAccessRole()
+    public function getAccessRole(): string
     {
         return 'ROLE_ACCESS_MULTIMEDIA_SERIES';
     }
 
-    /**
-     * @return string
-     */
-    public function getIcon()
+    public function getIcon(): string
     {
         return 'mdi-device-access-time';
     }

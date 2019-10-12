@@ -2,59 +2,53 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
+use Pumukit\SchemaBundle\Document\MultimediaObject;
+use Pumukit\SchemaBundle\Document\Series;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoDeleteCommand extends ContainerAwareCommand
 {
-    private $dm = null;
-    private $mmobjRepo = null;
+    private $dm;
+    private $mmobjRepo;
     private $days;
     private $user_code;
     private $seriesRepo;
     private $expiredVideoService;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('video:expired:delete')
             ->setDescription('Expired video delete')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
-            ->setHelp(<<<'EOT'
+            ->setHelp(
+                <<<'EOT'
 This command delete all the videos without owner people when this expiration_date is less than a year ago.
 EOT
-            );
+            )
+        ;
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     */
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-        $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
-        $this->seriesRepo = $this->dm->getRepository('PumukitSchemaBundle:Series');
+        $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
+        $this->mmobjRepo = $this->dm->getRepository(MultimediaObject::class);
+        $this->seriesRepo = $this->dm->getRepository(Series::class);
         $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
-        $this->days = $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
+        $this->days = (int) $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int|null|void
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
         if ($input->getOption('force')) {
             if (0 === $this->days) {
                 $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
 
-                return;
+                return null;
             }
 
             $mmobjExpired = $this->expiredVideoService->getExpiredVideosToDelete($this->days);
@@ -87,33 +81,27 @@ EOT
         } else {
             $output->writeln('The option force must be set to delete videos timed out');
         }
+
+        return 0;
     }
 
-    /**
-     * @param $mmObj
-     *
-     * @return mixed
-     */
-    private function deleteVideos($mmObj)
+    private function deleteVideos(MultimediaObject $mmObj)
     {
         return $this->mmobjRepo->createQueryBuilder()
             ->remove()
             ->field('_id')->equals(new \MongoId($mmObj->getId()))
             ->getQuery()
-            ->execute();
+            ->execute()
+        ;
     }
 
-    /**
-     * @param $sSeriesId
-     *
-     * @return mixed
-     */
-    private function deleteSeries($sSeriesId)
+    private function deleteSeries(string $sSeriesId)
     {
         return $this->seriesRepo->createQueryBuilder()
             ->remove()
             ->field('_id')->equals(new \MongoId($sSeriesId))
             ->getQuery()
-            ->execute();
+            ->execute()
+        ;
     }
 }
