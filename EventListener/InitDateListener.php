@@ -8,9 +8,6 @@ use Pumukit\SchemaBundle\Event\MultimediaObjectCloneEvent;
 use Pumukit\SchemaBundle\Event\MultimediaObjectEvent;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
-/**
- * Class InitDateListener.
- */
 class InitDateListener
 {
     private $dm;
@@ -38,28 +35,36 @@ class InitDateListener
 
     public function onMultimediaObjectCreate(MultimediaObjectEvent $event): void
     {
-        if ($this->checkConfiguration()) {
-            $multimediaObject = $event->getMultimediaObject();
-            if (!$multimediaObject->isPrototype()) {
-                $properties['expiration_date'] = $this->newRenovationDate;
-                $properties['renew_expiration_date'] = [$this->days];
-                $this->updateProperties($this->dm, $multimediaObject, $properties);
-            }
+        if (!$this->checkConfiguration()) {
+            return;
         }
+
+        $multimediaObject = $event->getMultimediaObject();
+        if ($multimediaObject->isPrototype()) {
+            return;
+        }
+
+        $properties['expiration_date'] = $this->newRenovationDate;
+        $properties['renew_expiration_date'] = [$this->days];
+        $this->updateProperties($this->dm, $multimediaObject, $properties);
     }
 
     public function onMultimediaObjectClone(MultimediaObjectCloneEvent $event): void
     {
         if ($this->checkConfiguration()) {
-            $multimediaObjects = $event->getMultimediaObjects();
-            $validObjects = $this->checkValidMultimediaObject($multimediaObjects['origin'], $multimediaObjects['clon']);
-            if ($validObjects) {
-                $this->updateMultimediaObject($this->dm, $multimediaObjects['origin'], $multimediaObjects['clon']);
-                $properties['expiration_date'] = $multimediaObjects['origin']->getProperty('expiration_date');
-                $properties['renew_expiration_date'] = $multimediaObjects['origin']->getProperty('renew_expiration_date');
-                $this->updateProperties($this->dm, $multimediaObjects['clon'], $properties, false);
-            }
+            return;
         }
+
+        $multimediaObjects = $event->getMultimediaObjects();
+        $validObjects = $this->checkValidMultimediaObject($multimediaObjects['origin'], $multimediaObjects['clon']);
+        if (!$validObjects) {
+            return;
+        }
+
+        $this->updateMultimediaObject($this->dm, $multimediaObjects['origin'], $multimediaObjects['clon']);
+        $properties['expiration_date'] = $multimediaObjects['origin']->getProperty('expiration_date');
+        $properties['renew_expiration_date'] = $multimediaObjects['origin']->getProperty('renew_expiration_date');
+        $this->updateProperties($this->dm, $multimediaObjects['clon'], $properties, false);
     }
 
     private function checkConfiguration(): bool
