@@ -7,7 +7,6 @@ use Psr\Log\LoggerInterface;
 use Pumukit\NotificationBundle\Services\SenderService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Person;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 

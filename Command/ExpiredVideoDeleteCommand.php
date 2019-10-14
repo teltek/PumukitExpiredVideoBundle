@@ -2,10 +2,8 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use Pumukit\ExpiredVideoBundle\Exception\ExpiredVideoException;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Series;
-use Pumukit\SchemaBundle\Services\PersonService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
