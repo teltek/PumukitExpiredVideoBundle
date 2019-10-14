@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class MultimediaObjectVoter extends Voter
 {
-    const RENEW = 'renew';
+    public const RENEW = 'renew';
 
     private $multimediaObjectService;
 

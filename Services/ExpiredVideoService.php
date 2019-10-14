@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Log\LoggerInterface;
 use Pumukit\NotificationBundle\Services\SenderService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
+use Pumukit\SchemaBundle\Document\Person;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -14,7 +15,6 @@ class ExpiredVideoService
 {
     private $dm;
     private $authorizationChecker;
-    private $router;
     private $senderService;
     private $translator;
     private $logger;
@@ -28,16 +28,15 @@ class ExpiredVideoService
         'expired' => 'PuMuKIT - These videos will be expired coming soon.',
     ];
 
-    public function __construct(DocumentManager $documentManager, AuthorizationCheckerInterface $authorizationChecker, Router $router, LoggerInterface $logger, SenderService $senderService, TranslatorInterface $translator, array $subject = null, $days = 365)
+    public function __construct(DocumentManager $documentManager, AuthorizationCheckerInterface $authorizationChecker, LoggerInterface $logger, SenderService $senderService, TranslatorInterface $translator, array $subject = null, $days = 365)
     {
         $this->dm = $documentManager;
         $this->authorizationChecker = $authorizationChecker;
-        $this->router = $router;
         $this->senderService = $senderService;
         $this->translator = $translator;
         $this->logger = $logger;
-        $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
-        $this->personRepo = $this->dm->getRepository('PumukitSchemaBundle:Person');
+        $this->mmobjRepo = $this->dm->getRepository(MultimediaObject::class);
+        $this->personRepo = $this->dm->getRepository(Person::class);
 
         if ($subject) {
             $this->subject = $subject;
