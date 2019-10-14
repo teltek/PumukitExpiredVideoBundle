@@ -2,7 +2,6 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
@@ -12,7 +11,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoListCommand extends ContainerAwareCommand
 {
-
     /** @var DocumentManager */
     private $dm;
 
