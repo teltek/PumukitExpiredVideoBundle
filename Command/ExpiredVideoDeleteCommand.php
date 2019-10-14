@@ -2,8 +2,12 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Pumukit\ExpiredVideoBundle\Exception\ExpiredVideoException;
+use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Series;
+use Pumukit\SchemaBundle\Services\PersonService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -11,11 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoDeleteCommand extends ContainerAwareCommand
 {
+    /** @var DocumentManager */
     private $dm;
-    private $mmobjRepo;
     private $days;
     private $user_code;
-    private $seriesRepo;
+
+    /** @var ExpiredVideoService */
     private $expiredVideoService;
 
     protected function configure(): void
@@ -35,59 +40,84 @@ EOT
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
-        $this->mmobjRepo = $this->dm->getRepository(MultimediaObject::class);
-        $this->seriesRepo = $this->dm->getRepository(Series::class);
-        $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
+        /** @var PersonService */
+        $personService = $this->getContainer()->get('pumukitschema.person');
+        if (!$personService) {
+            throw new ExpiredVideoException('PersonService not found.');
+        }
+        $this->user_code = $personService->getPersonalScopeRoleCode();
         $this->days = (int) $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): ?int
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('force')) {
-            if (0 === $this->days) {
-                $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
-
-                return null;
-            }
-
-            $mmobjExpired = $this->expiredVideoService->getExpiredVideosToDelete($this->days);
-            $i = 0;
-            if ($mmobjExpired) {
-                foreach ($mmobjExpired as $mmObj) {
-                    if (!$mmObj->getPeopleByRoleCod($this->user_code, true) || empty($mmObj->getPeopleByRoleCod($this->user_code, true))) {
-                        $output->writeln('Delete Multimedia Object ID - '.$mmObj->getId());
-                        $result = $this->deleteVideos($mmObj);
-
-                        if (0 === count($mmObj->getSeries()->getMultimediaObjects())) {
-                            $this->deleteSeries($mmObj->getSeries()->getId());
-                        }
-
-                        $output->writeln('Status remove - '.$result['ok']);
-                        if ($result['errmsg'] && $result['err']) {
-                            $output->writeln('errmsg - '.$result['errmsg']);
-                            $output->writeln('err' - $result['err']);
-                        } else {
-                            ++$i;
-                        }
-                    } else {
-                        $output->writeln('This video '.$mmObj->getId()." can't be delete because there are owners");
-                    }
-                }
-                $output->writeln('Total delete count: '.$i);
-            } else {
-                $output->writeln('No videos to delete.');
-            }
-        } else {
             $output->writeln('The option force must be set to delete videos timed out');
+
+            return;
         }
 
-        return 0;
+        if (0 === $this->days) {
+            $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
+
+            return;
+        }
+
+        $multimediaObjectsExpired = $this->expiredVideoService->getExpiredVideosToDelete($this->days);
+
+        if (!$multimediaObjectsExpired) {
+            $output->writeln('No videos to delete.');
+
+            return;
+        }
+
+        $this->removeExpiredVideos($output, $multimediaObjectsExpired);
+    }
+
+    private function executeRemoveOnVideo(OutputInterface $output, MultimediaObject $multimediaObject, int $counter): int
+    {
+        $result = $this->deleteVideos($multimediaObject);
+
+        $seriesId = $multimediaObject->getSeries()->getId();
+        $this->deleteSeries($seriesId);
+
+        $output->writeln('Status remove - '.$result['ok']);
+
+        if ($result['errmsg'] && $result['err']) {
+            $output->writeln('errmsg - '.$result['errmsg']);
+            $output->writeln('err' - $result['err']);
+        } else {
+            ++$counter;
+        }
+
+        return $counter;
+    }
+
+    private function removeExpiredVideos(OutputInterface $output, iterable $multimediaObjects): void
+    {
+        $i = 0;
+        foreach ($multimediaObjects as $multimediaObject) {
+            $canBeDelete = $this->validateVideoToRemove($output, $multimediaObject);
+            if (!$canBeDelete) {
+                $output->writeln('This video '.$multimediaObject->getId()." can't be delete because there are owners");
+            }
+
+            $output->writeln('Delete Multimedia Object ID - '.$multimediaObject->getId());
+            $this->executeRemoveOnVideo($output, $multimediaObject, $i);
+        }
+
+        $output->writeln('Total delete count: '.$i);
+    }
+
+    private function validateVideoToRemove(OutputInterface $output, MultimediaObject $multimediaObject): bool
+    {
+        return !$multimediaObject->getPeopleByRoleCod($this->user_code, true) || empty($multimediaObject->getPeopleByRoleCod($this->user_code, true));
     }
 
     private function deleteVideos(MultimediaObject $mmObj)
     {
-        return $this->mmobjRepo->createQueryBuilder()
+        return $this->dm->getRepository(MultimediaObject::class)->createQueryBuilder()
             ->remove()
             ->field('_id')->equals(new \MongoId($mmObj->getId()))
             ->getQuery()
@@ -97,11 +127,24 @@ EOT
 
     private function deleteSeries(string $sSeriesId)
     {
-        return $this->seriesRepo->createQueryBuilder()
+        $seriesMongoId = new \MongoId($sSeriesId);
+
+        $multimediaObjectsFromSeries = $this->dm->getRepository(MultimediaObject::class)->findBy([
+            'series' => $seriesMongoId,
+            'status' => ['$nin' => [
+                MultimediaObject::STATUS_PROTOTYPE,
+            ]],
+        ]);
+
+        if (0 !== count($multimediaObjectsFromSeries)) {
+            return false;
+        }
+
+        return $this->dm->getRepository(Series::class)->createQueryBuilder()
             ->remove()
-            ->field('_id')->equals(new \MongoId($sSeriesId))
+            ->field('_id')->equals($seriesMongoId)
             ->getQuery()
             ->execute()
-        ;
+            ;
     }
 }
