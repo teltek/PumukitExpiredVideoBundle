@@ -2,11 +2,8 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use Pumukit\ExpiredVideoBundle\Exception\ExpiredVideoException;
-use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
+use Pumukit\SchemaBundle\Document\EmbeddedPerson;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
-use Pumukit\SchemaBundle\Document\PersonInterface;
-use Pumukit\SchemaBundle\Services\PersonService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,13 +11,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoNotificationCommand extends ContainerAwareCommand
 {
+    public const EXPIRED_VIDEO_TYPE = 'expired';
     private $dm;
-    private $type = 'expired';
     private $user_code;
-    /** @var ExpiredVideoService */
     private $expiredVideoService;
     private $days;
-    private $output;
 
     protected function configure(): void
     {
@@ -54,11 +49,7 @@ EOT
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
-        /** @var PersonService */
         $personService = $this->getContainer()->get('pumukitschema.person');
-        if (!$personService) {
-            throw new ExpiredVideoException('PersonService not found.');
-        }
         $this->user_code = $personService->getPersonalScopeRoleCode();
         $this->days = (int) $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
     }
@@ -104,7 +95,7 @@ EOT
 
     private function sendNotification(OutputInterface $output, iterable $aMultimediaObject): void
     {
-        if ($aMultimediaObject) {
+        if (!$aMultimediaObject) {
             $output->writeln('No videos expired in this range');
 
             return;
@@ -120,7 +111,7 @@ EOT
         }
 
         try {
-            $this->expiredVideoService->generateNotification($sendMail, $this->type);
+            $this->expiredVideoService->generateNotification($sendMail, self::EXPIRED_VIDEO_TYPE);
         } catch (\Exception $exception) {
             $output->writeln('<error>'.$exception->getMessage().'</error>');
         }
@@ -146,7 +137,7 @@ EOT
         return $sendMail;
     }
 
-    private function getPersonEmail(PersonInterface $person, MultimediaObject $multimediaObject): ?array
+    private function getPersonEmail(EmbeddedPerson $person, MultimediaObject $multimediaObject): ?array
     {
         $personEmail = $person->getEmail();
         if (!$personEmail) {

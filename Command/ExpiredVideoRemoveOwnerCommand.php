@@ -2,12 +2,9 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Pumukit\ExpiredVideoBundle\Exception\ExpiredVideoException;
-use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Role;
-use Pumukit\SchemaBundle\Services\PersonService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -16,10 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ExpiredVideoRemoveOwnerCommand extends ContainerAwareCommand
 {
     public const EXPIRED_OWNER_CODE = 'expired_owner';
-    /** @var DocumentManager */
     private $dm;
     private $user_code;
-    /** @var ExpiredVideoService */
     private $expiredVideoService;
     private $sendMail;
     private $days;
@@ -42,11 +37,7 @@ EOT
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
-        /** @var PersonService */
         $personService = $this->getContainer()->get('pumukitschema.person');
-        if (!$personService) {
-            throw new ExpiredVideoException('PersonService not found.');
-        }
         $this->user_code = $personService->getPersonalScopeRoleCode();
         $this->sendMail = $this->getContainer()->getParameter('pumukit_notification.sender_email');
 
@@ -58,13 +49,13 @@ EOT
         if ($input->getOption('force')) {
             $output->writeln('The option force must be set to remove owner videos timed out');
 
-            return;
+            return -1;
         }
 
         if (0 === $this->days) {
             $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
 
-            return;
+            return -1;
         }
 
         $multimediaObjectsExpired = $this->expiredVideoService->getExpiredVideos();
@@ -72,12 +63,14 @@ EOT
         if (0 === count($multimediaObjectsExpired)) {
             $output->writeln('No videos timed out.');
 
-            return;
+            return -1;
         }
 
         foreach ($multimediaObjectsExpired as $multimediaObject) {
             $this->removeOwnersFromMultimediaObject($output, $multimediaObject);
         }
+
+        return 0;
     }
 
     private function removeOwnersFromMultimediaObject(OutputInterface $output, MultimediaObject $multimediaObject): void

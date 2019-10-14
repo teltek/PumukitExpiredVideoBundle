@@ -2,8 +2,6 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,10 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoListCommand extends ContainerAwareCommand
 {
-    /** @var DocumentManager */
     private $dm;
-
-    /** @var ExpiredVideoService */
     private $expiredVideoService;
 
     protected function configure(): void
@@ -42,7 +37,7 @@ EOT
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
         $now = new \DateTime();
 
@@ -58,7 +53,7 @@ EOT
         if (!$expiredVideos) {
             $output->writeln('No videos expired.');
 
-            return;
+            return -1;
         }
 
         $message[] = 'Expired videos: '.count($expiredVideos);
@@ -68,6 +63,8 @@ EOT
 
         $message[] = '';
         $output->writeln($message);
+
+        return 0;
     }
 
     private function generateMessageByMultimediaObject(MultimediaObject $multimediaObject): string

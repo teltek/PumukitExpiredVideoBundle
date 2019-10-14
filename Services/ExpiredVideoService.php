@@ -50,32 +50,34 @@ class ExpiredVideoService
     {
         $output = '';
 
-        if ($this->senderService && $this->senderService->isEnabled()) {
-            $parameters = [
-                'subject' => $this->subject[$sType],
-                'type' => $sType,
-                'sender_name' => $this->senderService->getSenderName(),
-            ];
+        if (!$this->senderService->isEnabled()) {
+            return $output;
+        }
 
-            foreach ($aEmails as $sUserId => $aData) {
-                $aUserKeys = $this->addRenewUniqueKeys($sUserId, $aData);
-                $parameters['data'] = $aUserKeys;
+        $parameters = [
+            'subject' => $this->subject[$sType],
+            'type' => $sType,
+            'sender_name' => $this->senderService->getSenderName(),
+        ];
 
-                $output = $this->senderService->sendNotification(
-                    $aData['email'],
-                    $this->translator->trans($this->subject[$sType]),
-                    $this->template,
-                    $parameters,
-                    false
-                );
+        foreach ($aEmails as $sUserId => $aData) {
+            $aUserKeys = $this->addRenewUniqueKeys($sUserId, $aData);
+            $parameters['data'] = $aUserKeys;
 
-                if (0 < $output) {
-                    $infoLog = __CLASS__.' ['.__FUNCTION__.'] Sent notification email to "'.$aData['email'].'"';
-                    $this->logger->info($infoLog);
-                } else {
-                    $infoLog = __CLASS__.' ['.__FUNCTION__.'] Unable to send notification email to "'.$aData['email'].'", '.$output.'email(s) were sent.';
-                    $this->logger->info($infoLog);
-                }
+            $output = $this->senderService->sendNotification(
+                $aData['email'],
+                $this->translator->trans($this->subject[$sType]),
+                $this->template,
+                $parameters,
+                false
+            );
+
+            if (0 < $output) {
+                $infoLog = __CLASS__.' ['.__FUNCTION__.'] Sent notification email to "'.$aData['email'].'"';
+                $this->logger->info($infoLog);
+            } else {
+                $infoLog = __CLASS__.' ['.__FUNCTION__.'] Unable to send notification email to "'.$aData['email'].'", '.$output.'email(s) were sent.';
+                $this->logger->info($infoLog);
             }
         }
 

@@ -2,9 +2,7 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Pumukit\ExpiredVideoBundle\Exception\ExpiredVideoException;
-use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Series;
 use Pumukit\SchemaBundle\Services\PersonService;
@@ -15,12 +13,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoDeleteCommand extends ContainerAwareCommand
 {
-    /** @var DocumentManager */
     private $dm;
     private $days;
     private $user_code;
-
-    /** @var ExpiredVideoService */
     private $expiredVideoService;
 
     protected function configure(): void
@@ -40,28 +35,24 @@ EOT
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
-        /** @var PersonService */
         $personService = $this->getContainer()->get('pumukitschema.person');
-        if (!$personService) {
-            throw new ExpiredVideoException('PersonService not found.');
-        }
         $this->user_code = $personService->getPersonalScopeRoleCode();
         $this->days = (int) $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($input->getOption('force')) {
             $output->writeln('The option force must be set to delete videos timed out');
 
-            return;
+            return -1;
         }
 
         if (0 === $this->days) {
             $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
 
-            return;
+            return -1;
         }
 
         $multimediaObjectsExpired = $this->expiredVideoService->getExpiredVideosToDelete($this->days);
@@ -69,10 +60,12 @@ EOT
         if (!$multimediaObjectsExpired) {
             $output->writeln('No videos to delete.');
 
-            return;
+            return -1;
         }
 
         $this->removeExpiredVideos($output, $multimediaObjectsExpired);
+
+        return 0;
     }
 
     private function executeRemoveOnVideo(OutputInterface $output, MultimediaObject $multimediaObject, int $counter): int
