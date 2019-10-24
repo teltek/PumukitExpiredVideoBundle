@@ -42,7 +42,6 @@
         <source>Return</source>
         <target xml:lang="es-ES" state="translated">Volver</target>
       </trans-unit>
-<<<<<<< HEAD
       <trans-unit id="13153631d908409ea931f8ada3f79bdb" resname="PuMuKIT - Remove owner of the following video.">
         <source>PuMuKIT - Remove owner of the following video.</source>
         <target xml:lang="es-ES" state="translated">PuMuKIT - Eliminado propietario del siguiente video.</target>
