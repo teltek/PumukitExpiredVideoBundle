@@ -50,10 +50,6 @@
         <source>PuMuKIT - These videos will be expired coming soon.</source>
         <target xml:lang="es-ES" state="translated">PuMuKIT - Estos videos caducarán próximamente.</target>
       </trans-unit>
-      <trans-unit id="a58f028aa856474b80f59d6c5fc0d61d" resname="PuMuKIT2 - These videos will be expired coming soon.">
-        <source>PuMuKIT2 - These videos will be expired coming soon.</source>
-        <target xml:lang="es-ES" state="translated">PuMuKIT2 - Estos vídeos caducarán próximamente.</target>
-      </trans-unit>
       <trans-unit id="291dde514bcc4e84bdea49ca07394cb6" resname="To renew all your videos access this url:">
         <source>To renew all your videos access this url:</source>
         <target xml:lang="es-ES" state="translated">Para renovar todos sus videos acceder a esta url:</target>
