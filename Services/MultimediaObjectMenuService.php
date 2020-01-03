@@ -25,4 +25,9 @@ class MultimediaObjectMenuService implements ItemInterface
     {
         return 'mdi-device-access-time';
     }
+
+    public function getClass(): string
+    {
+        return 'qa-button-video-expiration-date';
+    }
 }
