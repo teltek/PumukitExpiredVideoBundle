@@ -20,4 +20,9 @@ class MenuService implements ItemInterface
     {
         return 'ROLE_ACCESS_EXPIRED_VIDEO';
     }
+
+    public function getClass(): string
+    {
+        return 'qa-button-video-expiration-date';
+    }
 }
