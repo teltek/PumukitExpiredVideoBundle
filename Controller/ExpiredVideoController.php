@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/admin/expired/video")
@@ -55,7 +56,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
     public function deleteVideoAction(string $key): RedirectResponse
     {
         if (!$key || !preg_match($this->regex, $key)) {
-            return $this->redirectToRoute('homepage', [], 301);
+            return $this->redirectToRoute('homepage', [], Response::HTTP_MOVED_PERMANENTLY);
         }
 
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
@@ -70,7 +71,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
             ;
         }
 
-        return $this->redirectToRoute('pumukit_expired_video_list_all', [], 301);
+        return $this->redirectToRoute('pumukit_expired_video_list_all', [], Response::HTTP_MOVED_PERMANENTLY);
     }
 
     /**
@@ -83,7 +84,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
     public function renewExpiredVideoAdminAction(string $key): RedirectResponse
     {
         if (!$key || !preg_match($this->regex, $key)) {
-            return $this->redirectToRoute('homepage', [], 301);
+            return $this->redirectToRoute('homepage', [], Response::HTTP_MOVED_PERMANENTLY);
         }
 
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
@@ -116,7 +117,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
             $dm->flush();
         }
 
-        return $this->redirectToRoute('pumukit_expired_video_list_all', [], 301);
+        return $this->redirectToRoute('pumukit_expired_video_list_all', [], Response::HTTP_MOVED_PERMANENTLY);
     }
 
     /**
@@ -127,7 +128,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
     {
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
         if (!$key || !preg_match($this->regex, $key)) {
-            return $this->redirectToRoute('homepage', [], 301);
+            return $this->redirectToRoute('homepage', [], Response::HTTP_MOVED_PERMANENTLY);
         }
 
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
@@ -182,7 +183,7 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
         $days = $this->container->getParameter('pumukit_expired_video.expiration_date_days');
 
         if (!$key || !preg_match($this->regex, $key)) {
-            return $this->redirectToRoute('homepage', [], 301);
+            return $this->redirectToRoute('homepage', [], Response::HTTP_MOVED_PERMANENTLY);
         }
 
         $dm = $this->get('doctrine_mongodb.odm.document_manager');

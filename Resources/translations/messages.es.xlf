@@ -1,150 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en" target-language="es-ES" datatype="plaintext" original="file.ext">
+  <file source-language="en" target-language="es" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
     <body>
-      <trans-unit id="391441114d7c5041df58a65297703c27" resname="This video is out of date:">
+      <trans-unit id="LPFxTim" resname="This video is out of date:">
         <source>This video is out of date:</source>
-        <target xml:lang="es-ES" state="translated">Este video está caducado:</target>
+        <target state="translated">Este video está caducado:</target>
       </trans-unit>
-      <trans-unit id="0b9c082a84d013c9c1b2ae143bb06aff" resname="The owner of this video has been deleted.">
+      <trans-unit id="UzuTzHM" resname="The owner of this video has been deleted.">
         <source>The owner of this video has been deleted.</source>
-        <target xml:lang="es-ES" state="translated">El propietario de este video ha sido borrado.</target>
+        <target state="translated">El propietario de este video ha sido borrado.</target>
       </trans-unit>
-      <trans-unit id="d0c0ff02cf9695af05daf48c697dbf7c" resname="This video will be expire soon">
+      <trans-unit id="WcCUBBL" resname="This video will be expire soon">
         <source>This video will be expire soon</source>
-        <target xml:lang="es-ES" state="translated">Este video caduca proximamente</target>
+        <target state="translated">Este video caduca proximamente</target>
       </trans-unit>
-      <trans-unit id="1914693b9aa44c18207a1b3bf2c2bd02" resname="Access this url to renew the video:">
+      <trans-unit id="XBhtXAL" resname="Access this url to renew the video:">
         <source>Access this url to renew the video:</source>
-        <target xml:lang="es-ES" state="translated">Acceder a esta url para renovar el video:</target>
+        <target state="translated">Acceder a esta url para renovar el video:</target>
       </trans-unit>
-      <trans-unit id="1120da170a28f2d3430ceba63e213a44" resname="The multimedia object has been successfully renewed.">
+      <trans-unit id="IAjr6q5" resname="The multimedia object has been successfully renewed.">
         <source>The multimedia object has been successfully renewed.</source>
-        <target xml:lang="es-ES" state="translated">El objeto multimedia ha sido renovado con éxito.</target>
+        <target state="translated">El objeto multimedia ha sido renovado con éxito.</target>
       </trans-unit>
-      <trans-unit id="d2350e41a5ef5e861c81467064e4160a" resname="You aren't the owner of this multimedia object.">
+      <trans-unit id="LkWMcnY" resname="You aren't the owner of this multimedia object.">
         <source>You aren't the owner of this multimedia object.</source>
-        <target xml:lang="es-ES" state="translated">No eres el propietario de este objeto multimedia.</target>
+        <target state="translated">No eres el propietario de este objeto multimedia.</target>
       </trans-unit>
-      <trans-unit id="babf8027d0878519b37554584a590eca" resname="This multimedia object accomplishes one of these cases">
+      <trans-unit id="WS5pXDz" resname="This multimedia object accomplishes one of these cases">
         <source>This multimedia object accomplishes one of these cases</source>
-        <target xml:lang="es-ES" state="translated">Este objeto multimedia logra uno de estos casos</target>
+        <target state="translated">Este objeto multimedia logra uno de estos casos</target>
       </trans-unit>
-      <trans-unit id="49069212093b514819d342cde75e5d1c" resname="Has been renewed.">
+      <trans-unit id="brp2eDc" resname="Has been renewed.">
         <source>Has been renewed.</source>
-        <target xml:lang="es-ES" state="translated">Se ha renovado.</target>
+        <target state="translated">Se ha renovado.</target>
       </trans-unit>
-      <trans-unit id="d34bd0d087c6ce7df469256589363c18" resname="Multimedia object doesn't exists.">
+      <trans-unit id="MipWvY5" resname="Multimedia object doesn't exists.">
         <source>Multimedia object doesn't exists.</source>
-        <target xml:lang="es-ES" state="translated">No existe el objeto multimedia.</target>
+        <target state="translated">No existe el objeto multimedia.</target>
       </trans-unit>
-      <trans-unit id="988fd738de9c6d177440c5dcf69e73ce" resname="Return">
+      <trans-unit id="awFD0Dh" resname="Return">
         <source>Return</source>
-        <target xml:lang="es-ES" state="translated">Volver</target>
+        <target state="translated">Volver</target>
       </trans-unit>
-      <trans-unit id="13153631d908409ea931f8ada3f79bdb" resname="PuMuKIT - Remove owner of the following video.">
+      <trans-unit id="NVYRv1h" resname="PuMuKIT - Remove owner of the following video.">
         <source>PuMuKIT - Remove owner of the following video.</source>
-        <target xml:lang="es-ES" state="translated">PuMuKIT - Eliminado propietario del siguiente video.</target>
+        <target state="translated">PuMuKIT - Eliminado propietario del siguiente video.</target>
       </trans-unit>
-      <trans-unit id="a58f028aa856474b80f59d6c5fc0d61d" resname="PuMuKIT - These videos will be expired coming soon.">
+      <trans-unit id="nZziYw8" resname="PuMuKIT - These videos will be expired coming soon.">
         <source>PuMuKIT - These videos will be expired coming soon.</source>
-        <target xml:lang="es-ES" state="translated">PuMuKIT - Estos videos caducarán próximamente.</target>
+        <target state="translated">PuMuKIT - Estos videos caducarán próximamente.</target>
       </trans-unit>
-      <trans-unit id="291dde514bcc4e84bdea49ca07394cb6" resname="To renew all your videos access this url:">
+      <trans-unit id="c0LLhVl" resname="To renew all your videos access this url:">
         <source>To renew all your videos access this url:</source>
-        <target xml:lang="es-ES" state="translated">Para renovar todos sus videos acceder a esta url:</target>
+        <target state="translated">Para renovar todos sus videos acceder a esta url:</target>
       </trans-unit>
-      <trans-unit id="1cb73556f8e711e6bc6492361f002671" resname="Delete">
+      <trans-unit id="4tClSWj" resname="Delete">
         <source>Delete</source>
-        <target xml:lang="es-ES" state="translated">Eliminar</target>
+        <target state="translated">Eliminar</target>
       </trans-unit>
-      <trans-unit id="1cb738eef8e711e6bc6492361f002671" resname="Renew with the same owners">
+      <trans-unit id="3aBGPv7" resname="Renew with the same owners">
         <source>Renew with the same owners</source>
-        <target xml:lang="es-ES" state="translated">Renovar con los mismos dueños</target>
+        <target state="translated">Renovar con los mismos dueños</target>
       </trans-unit>
-      <trans-unit id="1cb73bf0f8e711e6bc6492361f002671" resname="Multimedia objects coming to expire">
+      <trans-unit id="w5Fwa6g" resname="Multimedia objects coming to expire">
         <source>Multimedia objects coming to expire</source>
-        <target xml:lang="es-ES" state="translated">Objetos multimedia a punto de caducar</target>
+        <target state="translated">Objetos multimedia a punto de caducar</target>
       </trans-unit>
-      <trans-unit id="67c9288af8ea11e6bc6492361f002671" resname="Expiration">
+      <trans-unit id="841uDps" resname="Expiration">
         <source>Expiration</source>
-        <target xml:lang="es-ES" state="translated">Caducidad</target>
+        <target state="translated">Caducidad</target>
       </trans-unit>
-      <trans-unit id="67c92b0af8ea11e6bc6492361f002671" resname="Owners">
+      <trans-unit id="WPXfmyQ" resname="Owners">
         <source>Owners</source>
-        <target xml:lang="es-ES" state="translated">Propietarios</target>
+        <target state="translated">Propietarios</target>
       </trans-unit>
-      <trans-unit id="ac80a188f9a311e6bc6492361f002671" resname="Are you sure to delete this video?">
+      <trans-unit id="g2MdAjA" resname="Are you sure to delete this video?">
         <source>Are you sure to delete this video?</source>
-        <target xml:lang="es-ES" state="translated">¿Está seguro de eliminar este video?</target>
+        <target state="translated">¿Está seguro de eliminar este video?</target>
       </trans-unit>
-      <trans-unit id="ac80a444f9a311e6bc6492361f002671" resname="Are you sure to update this video?">
+      <trans-unit id="gno9SEH" resname="Are you sure to update this video?">
         <source>Are you sure to update this video?</source>
-        <target xml:lang="es-ES" state="translated">¿Está seguro de actualizar este video?</target>
+        <target state="translated">¿Está seguro de actualizar este video?</target>
       </trans-unit>
-      <trans-unit id="171d2afcf9a411e6bc6492361f002671" resname="Accept">
+      <trans-unit id="iXE7nJw" resname="Accept">
         <source>Accept</source>
-        <target xml:lang="es-ES" state="translated">Aceptar</target>
+        <target state="translated">Aceptar</target>
       </trans-unit>
-      <trans-unit id="171d2d5ef9a411e6bc6492361f002671" resname="Expired video">
+      <trans-unit id="CvnOCdv" resname="Expired video">
         <source>Expired video</source>
-        <target xml:lang="es-ES" state="translated">Vídeo caducado</target>
+        <target state="translated">Vídeo caducado</target>
       </trans-unit>
-      <trans-unit id="da51381f8a7cdd66fcacc1566013321e" resname="Show expiration date">
+      <trans-unit id="HkSdtrR" resname="Show expiration date">
         <source>Show expiration date</source>
         <target>Mostrar fecha de caducidad</target>
       </trans-unit>
-      <trans-unit id="200ef7a3b363bc27577081b10436a4a4" resname="Multimedia object expiration date">
+      <trans-unit id="flG34UI" resname="Multimedia object expiration date">
         <source>Multimedia object expiration date</source>
         <target>Fecha de caducidad del objeto multimedia</target>
       </trans-unit>
-      <trans-unit id="23bb788d31600ae781a4d26b4aa619b9" resname="The expiration date for this video is %date%">
+      <trans-unit id="O24TJxx" resname="The expiration date for this video is %date%">
         <source>The expiration date for this video is %date%</source>
         <target>La fecha de caducidad es %date%</target>
       </trans-unit>
-      <trans-unit id="d3d2e617335f08df83599665eef8a418" resname="Close">
+      <trans-unit id="fZ63rLE" resname="Close">
         <source>Close</source>
         <target>Cerrar</target>
       </trans-unit>
-      <trans-unit id="490aa6e856ccf208a054389e47ce0d06" resname="Id">
+      <trans-unit id="EhVukhv" resname="Id">
         <source>Id</source>
         <target>Id</target>
       </trans-unit>
-      <trans-unit id="21133d71a056222fa2096906538e4e04" resname="Img">
+      <trans-unit id="Vlmffir" resname="Img">
         <source>Img</source>
         <target>Img</target>
       </trans-unit>
-      <trans-unit id="b78a3223503896721cca1303f776159b" resname="Title">
+      <trans-unit id="fozSBW2" resname="Title">
         <source>Title</source>
         <target>Título</target>
       </trans-unit>
-      <trans-unit id="6bd6beac1da76b2d2a9c3b7914ba034c" resname="Publication">
+      <trans-unit id="FfxltpM" resname="Publication">
         <source>Publication</source>
         <target>Publicación</target>
       </trans-unit>
-      <trans-unit id="06df33001c1d7187fdd81ea1f5b277aa" resname="Actions">
+      <trans-unit id=".4BZ3Gd" resname="Actions">
         <source>Actions</source>
         <target>Acciones</target>
       </trans-unit>
-      <trans-unit id="ea4788705e6873b424c65e91c2846b19" resname="Cancel">
+      <trans-unit id="GXZu1sy" resname="Cancel">
         <source>Cancel</source>
         <target>Cancelar</target>
       </trans-unit>
-      <trans-unit id="3ac340832f29c11538fbe2d6f75e8bcc" resname="Update">
+      <trans-unit id="wcEAnT8" resname="Update">
         <source>Update</source>
         <target>Actualizar</target>
       </trans-unit>
-      <trans-unit id="d2844ef4c46c11e7abc4cec278b6b50a" resname="Expired video list">
+      <trans-unit id="h..s9pe" resname="Expired video list">
         <source>Expired video list</source>
         <target>Listado videos caducados</target>
       </trans-unit>
-      <trans-unit id="895886da303d11e9b210d663bd873d93" resname="Renew all videos">
+      <trans-unit id="mj6fLrq" resname="Renew all videos">
         <source>Renew all videos</source>
         <target>Renovar los videos</target>
       </trans-unit>
-      <trans-unit id="0690e28e305011e9b210d663bd873d93" resname="Update expiration date">
+      <trans-unit id="7dEv7Kq" resname="Update expiration date">
         <source>Update expiration date</source>
         <target>Actualizar fecha de expiración</target>
+      </trans-unit>
+      <trans-unit id="xYKta2r" resname="Multimedia objects list">
+        <source>Multimedia objects list</source>
+        <target>Multimedia objects list</target>
+      </trans-unit>
+      <trans-unit id="2T4AOhv" resname="Expiration Date">
+        <source>Expiration Date</source>
+        <target>Expiration Date</target>
+      </trans-unit>
+      <trans-unit id="kMFomwt" resname="Renew">
+        <source>Renew</source>
+        <target>Renew</target>
+      </trans-unit>
+      <trans-unit id="C5zlqxG" resname="Multimedia objects updated">
+        <source>Multimedia objects updated</source>
+        <target>Multimedia objects updated</target>
+      </trans-unit>
+      <trans-unit id="uCRnkDR" resname="Multimedia objects cant updated">
+        <source>Multimedia objects cant updated</source>
+        <target>Multimedia objects cant updated</target>
+      </trans-unit>
+      <trans-unit id="ndCL6K3" resname="Multimedia object picture">
+        <source>Multimedia object picture</source>
+        <target>Multimedia object picture</target>
+      </trans-unit>
+      <trans-unit id="FQn1YfJ" resname="Save">
+        <source>Save</source>
+        <target>Save</target>
       </trans-unit>
     </body>
   </file>

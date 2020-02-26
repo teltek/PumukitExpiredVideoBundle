@@ -2,6 +2,7 @@
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
+use Pumukit\ExpiredVideoBundle\Exception\ExpiredVideoException;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Role;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -11,16 +12,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoRemoveOwnerCommand extends ContainerAwareCommand
 {
+    public const EXPIRED_OWNER_CODE = 'expired_owner';
     private $dm;
-    private $mmobjRepo;
     private $user_code;
-    private $type = 'removeOwner';
     private $expiredVideoService;
     private $sendMail;
-    private $roleRepo;
     private $days;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('video:expired:remove')
@@ -34,69 +33,80 @@ EOT
         ;
     }
 
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
-
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
-        $this->user_code = $this->getContainer()->get('pumukitschema.person')->getPersonalScopeRoleCode();
+        $personService = $this->getContainer()->get('pumukitschema.person');
+        $this->user_code = $personService->getPersonalScopeRoleCode();
         $this->sendMail = $this->getContainer()->getParameter('pumukit_notification.sender_email');
 
-        $this->mmobjRepo = $this->dm->getRepository(MultimediaObject::class);
-        $this->roleRepo = $this->dm->getRepository(Role::class);
-
-        $this->days = $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
+        $this->days = (int) $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): ?int
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('force')) {
-            if (0 === $this->days) {
-                $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
-
-                return null;
-            }
-
-            $mmobjExpired = $this->expiredVideoService->getExpiredVideos();
-
-            $expiredOwnerRole = $this->getRoleWithCode('expired_owner');
-
-            if (count($mmobjExpired) > 0) {
-                foreach ($mmobjExpired as $mmObj) {
-                    $removeOwner = false;
-                    if (count($mmObj->getRoles()) > 0) {
-                        foreach ($mmObj->getRoles() as $role) {
-                            if ($role->getCod() === $this->user_code) {
-                                foreach ($mmObj->getPeopleByRoleCod($this->user_code, true) as $person) {
-                                    $mmObj->addPersonWithRole($person, $expiredOwnerRole);
-                                    $mmObj->removePersonWithRole($person, $role);
-                                }
-                                $removeOwner = true;
-                                $this->dm->flush();
-                            }
-                        }
-                        if ($removeOwner) {
-                            $output->writeln('Remove owner people from multimedia object id - '.$mmObj->getId());
-                        }
-                    } else {
-                        $output->writeln('There aren\'t roles on multimedia object id - '.$mmObj->getId());
-                    }
-                }
-            } else {
-                $output->writeln('No videos timed out.');
-            }
-        } else {
             $output->writeln('The option force must be set to remove owner videos timed out');
+
+            return -1;
+        }
+
+        if (0 === $this->days) {
+            $output->writeln('Expiration date days is 0, it means deactivate expired video functionality.');
+
+            return -1;
+        }
+
+        $multimediaObjectsExpired = $this->expiredVideoService->getExpiredVideos();
+
+        if (0 === count($multimediaObjectsExpired)) {
+            $output->writeln('No videos timed out.');
+
+            return -1;
+        }
+
+        foreach ($multimediaObjectsExpired as $multimediaObject) {
+            $this->removeOwnersFromMultimediaObject($output, $multimediaObject);
         }
 
         return 0;
     }
 
+    private function removeOwnersFromMultimediaObject(OutputInterface $output, MultimediaObject $multimediaObject): void
+    {
+        $expiredOwnerRole = $this->getRoleWithCode(self::EXPIRED_OWNER_CODE);
+        $removeOwner = false;
+        if (0 === count($multimediaObject->getRoles())) {
+            $output->writeln('There aren\'t roles on multimedia object id - '.$multimediaObject->getId());
+
+            return;
+        }
+
+        foreach ($multimediaObject->getRoles() as $role) {
+            if ($role->getCod() !== $this->user_code) {
+                continue;
+            }
+
+            foreach ($multimediaObject->getPeopleByRoleCod($this->user_code, true) as $person) {
+                $multimediaObject->addPersonWithRole($person, $expiredOwnerRole);
+                $multimediaObject->removePersonWithRole($person, $role);
+            }
+            $removeOwner = true;
+        }
+
+        $this->dm->flush();
+
+        if ($removeOwner) {
+            $output->writeln('Remove owner people from multimedia object id - '.$multimediaObject->getId());
+        }
+    }
+
     private function getRoleWithCode(string $code): Role
     {
-        $role = $this->roleRepo->findOneBy(['cod' => $code]);
+        $role = $this->dm->getRepository(Role::class)->findOneBy(['cod' => $code]);
         if (!$role) {
-            throw new \Exception("Role with code '".$code."' not found. Please, init pumukit roles.");
+            throw new ExpiredVideoException("Role with code '".$code."' not found. Please, init pumukit roles.");
         }
 
         return $role;

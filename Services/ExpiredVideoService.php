@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Log\LoggerInterface;
 use Pumukit\NotificationBundle\Services\SenderService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Pumukit\SchemaBundle\Document\Person;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -14,7 +14,6 @@ class ExpiredVideoService
 {
     private $dm;
     private $authorizationChecker;
-    private $router;
     private $senderService;
     private $translator;
     private $logger;
@@ -28,16 +27,15 @@ class ExpiredVideoService
         'expired' => 'PuMuKIT - These videos will be expired coming soon.',
     ];
 
-    public function __construct(DocumentManager $documentManager, AuthorizationCheckerInterface $authorizationChecker, Router $router, LoggerInterface $logger, SenderService $senderService, TranslatorInterface $translator, array $subject = null, $days = 365)
+    public function __construct(DocumentManager $documentManager, AuthorizationCheckerInterface $authorizationChecker, LoggerInterface $logger, SenderService $senderService, TranslatorInterface $translator, array $subject = null, $days = 365)
     {
         $this->dm = $documentManager;
         $this->authorizationChecker = $authorizationChecker;
-        $this->router = $router;
         $this->senderService = $senderService;
         $this->translator = $translator;
         $this->logger = $logger;
-        $this->mmobjRepo = $this->dm->getRepository('PumukitSchemaBundle:MultimediaObject');
-        $this->personRepo = $this->dm->getRepository('PumukitSchemaBundle:Person');
+        $this->mmobjRepo = $this->dm->getRepository(MultimediaObject::class);
+        $this->personRepo = $this->dm->getRepository(Person::class);
 
         if ($subject) {
             $this->subject = $subject;
@@ -50,32 +48,34 @@ class ExpiredVideoService
     {
         $output = '';
 
-        if ($this->senderService && $this->senderService->isEnabled()) {
-            $parameters = [
-                'subject' => $this->subject[$sType],
-                'type' => $sType,
-                'sender_name' => $this->senderService->getSenderName(),
-            ];
+        if (!$this->senderService->isEnabled()) {
+            return $output;
+        }
 
-            foreach ($aEmails as $sUserId => $aData) {
-                $aUserKeys = $this->addRenewUniqueKeys($sUserId, $aData);
-                $parameters['data'] = $aUserKeys;
+        $parameters = [
+            'subject' => $this->subject[$sType],
+            'type' => $sType,
+            'sender_name' => $this->senderService->getSenderName(),
+        ];
 
-                $output = $this->senderService->sendNotification(
-                    $aData['email'],
-                    $this->translator->trans($this->subject[$sType]),
-                    $this->template,
-                    $parameters,
-                    false
-                );
+        foreach ($aEmails as $sUserId => $aData) {
+            $aUserKeys = $this->addRenewUniqueKeys($sUserId, $aData);
+            $parameters['data'] = $aUserKeys;
 
-                if (0 < $output) {
-                    $infoLog = __CLASS__.' ['.__FUNCTION__.'] Sent notification email to "'.$aData['email'].'"';
-                    $this->logger->info($infoLog);
-                } else {
-                    $infoLog = __CLASS__.' ['.__FUNCTION__.'] Unable to send notification email to "'.$aData['email'].'", '.$output.'email(s) were sent.';
-                    $this->logger->info($infoLog);
-                }
+            $output = $this->senderService->sendNotification(
+                $aData['email'],
+                $this->translator->trans($this->subject[$sType]),
+                $this->template,
+                $parameters,
+                false
+            );
+
+            if (0 < $output) {
+                $infoLog = __CLASS__.' ['.__FUNCTION__.'] Sent notification email to "'.$aData['email'].'"';
+                $this->logger->info($infoLog);
+            } else {
+                $infoLog = __CLASS__.' ['.__FUNCTION__.'] Unable to send notification email to "'.$aData['email'].'", '.$output.'email(s) were sent.';
+                $this->logger->info($infoLog);
             }
         }
 
