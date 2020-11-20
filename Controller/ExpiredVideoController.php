@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pumukit\ExpiredVideoBundle\Controller;
 
 use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
@@ -21,7 +23,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ExpiredVideoController extends Controller implements NewAdminControllerInterface
 {
-    private $roleCod;
     private $regex = '/^[0-9a-z]{24}$/';
 
     /**
@@ -137,10 +138,10 @@ class ExpiredVideoController extends Controller implements NewAdminControllerInt
         );
 
         $user = $this->getUser();
-        $this->roleCod = $this->container->getParameter('pumukitschema.personal_scope_role_code');
+        $roleCode = $this->container->getParameter('pumukitschema.personal_scope_role_code');
 
         if ($mmObj) {
-            $people = $mmObj->getPeopleByRoleCod($this->roleCod, true);
+            $people = $mmObj->getPeopleByRoleCod($roleCode, true);
             $isOwner = false;
             if (isset($people) && !empty($people) && is_array($people)) {
                 foreach ($people as $person) {

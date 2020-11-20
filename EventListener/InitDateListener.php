@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pumukit\ExpiredVideoBundle\EventListener;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -13,24 +15,14 @@ class InitDateListener
     private $dm;
     private $days;
     private $newRenovationDate;
+    private $authorizationChecker;
 
     public function __construct(DocumentManager $documentManager, AuthorizationCheckerInterface $authorizationChecker, int $days = 365)
     {
         $this->dm = $documentManager;
         $this->days = $days;
-
-        try {
-            if ($authorizationChecker->isGranted('ROLE_UNLIMITED_EXPIRED_VIDEO')) {
-                $date = new \DateTime();
-                $date->setDate(9999, 01, 01);
-                $this->days = 3649635;
-                $this->newRenovationDate = $date;
-            } else {
-                $this->newRenovationDate = new \DateTime('+'.$this->days.' days');
-            }
-        } catch (\Exception $exception) {
-            $this->newRenovationDate = new \DateTime('+'.$this->days.' days');
-        }
+        $this->authorizationChecker = $authorizationChecker;
+        $this->getNewRenovationDate();
     }
 
     public function onMultimediaObjectCreate(MultimediaObjectEvent $event): void
@@ -65,6 +57,22 @@ class InitDateListener
         $properties['expiration_date'] = $multimediaObjects['origin']->getProperty('expiration_date');
         $properties['renew_expiration_date'] = $multimediaObjects['origin']->getProperty('renew_expiration_date');
         $this->updateProperties($this->dm, $multimediaObjects['clon'], $properties, false);
+    }
+
+    private function getNewRenovationDate(): void
+    {
+        try {
+            if ($this->authorizationChecker->isGranted('ROLE_UNLIMITED_EXPIRED_VIDEO')) {
+                $date = new \DateTime();
+                $date->setDate(9999, 01, 01);
+                $this->days = 3649635;
+                $this->newRenovationDate = $date;
+            } else {
+                $this->newRenovationDate = new \DateTime('+'.$this->days.' days');
+            }
+        } catch (\Exception $exception) {
+            $this->newRenovationDate = new \DateTime('+'.$this->days.' days');
+        }
     }
 
     private function checkConfiguration(): bool

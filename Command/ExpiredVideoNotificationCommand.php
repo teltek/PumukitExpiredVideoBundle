@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pumukit\ExpiredVideoBundle\Command;
 
 use Pumukit\SchemaBundle\Document\EmbeddedPerson;
