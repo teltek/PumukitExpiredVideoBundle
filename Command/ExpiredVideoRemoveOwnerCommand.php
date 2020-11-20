@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pumukit\ExpiredVideoBundle\Command;
 
 use Pumukit\ExpiredVideoBundle\Exception\ExpiredVideoException;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Role;
+use Pumukit\SchemaBundle\Document\Tag;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -68,6 +71,7 @@ EOT
 
         foreach ($multimediaObjectsExpired as $multimediaObject) {
             $this->removeOwnersFromMultimediaObject($output, $multimediaObject);
+            $this->removeTagFromMultimediaObject($output, $multimediaObject);
         }
 
         return 0;
@@ -110,5 +114,21 @@ EOT
         }
 
         return $role;
+    }
+
+    private function removeTagFromMultimediaObject(OutputInterface $output, MultimediaObject $multimediaObject): void
+    {
+        $webTVTag = $this->getWebTVTag();
+        $multimediaObject->removeTag($webTVTag);
+    }
+
+    private function getWebTVTag(): Tag
+    {
+        $webTVTag = $this->dm->getRepository(Tag::class)->findOneBy(['cod' => 'PUCHWEBTV']);
+        if (!$webTVTag instanceof Tag) {
+            throw new \Exception('PUCHWEBTV tag not found');
+        }
+
+        return $webTVTag;
     }
 }
