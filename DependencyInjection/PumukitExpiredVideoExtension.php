@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pumukit\ExpiredVideoBundle\DependencyInjection;
 
+use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
@@ -19,14 +20,30 @@ class PumukitExpiredVideoExtension extends Extension
         $container->setParameter('pumukit_expired_video.expiration_date_days', $config['expiration_date_days']);
         $container->setParameter('pumukit_expired_video.range_warning_days', $config['range_warning_days']);
 
+        $container->setParameter('pumukit_expired_video.notification_email_subject', $config['notification_email_subject']);
+        $container->setParameter('pumukit_expired_video.notification_email_template', $config['notification_email_template']);
+
+        $container->setParameter('pumukit_expired_video.update_email_subject', $config['update_email_subject']);
+        $container->setParameter('pumukit_expired_video.update_email_template', $config['update_email_template']);
+
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-        $permissions = [['role' => 'ROLE_ACCESS_EXPIRED_VIDEO', 'description' => 'Access expired video']];
+        $permissions = [
+            [
+                'role' => ExpiredVideoConfigurationService::ROLE_ACCESS_EXPIRED_VIDEO,
+                'description' => 'Access expired video',
+            ],
+        ];
         $newPermissions = array_merge($container->getParameter('pumukitschema.external_permissions'), $permissions);
         $container->setParameter('pumukitschema.external_permissions', $newPermissions);
 
-        $permissions = [['role' => 'ROLE_UNLIMITED_EXPIRED_VIDEO', 'description' => 'Upload videos without expiration date']];
+        $permissions = [
+            [
+                'role' => ExpiredVideoConfigurationService::ROLE_UNLIMITED_EXPIRED_VIDEO,
+                'description' => 'Upload videos without expiration date',
+            ],
+        ];
         $newPermissions = array_merge($container->getParameter('pumukitschema.external_permissions'), $permissions);
         $container->setParameter('pumukitschema.external_permissions', $newPermissions);
     }

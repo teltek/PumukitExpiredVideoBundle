@@ -20,7 +20,7 @@ class SeriesMenuService implements ItemInterface
 
     public function getAccessRole(): string
     {
-        return 'ROLE_ACCESS_EXPIRED_VIDEO';
+        return ExpiredVideoConfigurationService::ROLE_ACCESS_EXPIRED_VIDEO;
     }
 
     public function getIcon(): string

@@ -6,13 +6,14 @@ namespace Pumukit\ExpiredVideoBundle\Command;
 
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoListCommand extends ContainerAwareCommand
 {
-    private $dm;
     private $expiredVideoService;
+    private $expiredVideoConfigurationService;
 
     protected function configure(): void
     {
@@ -35,42 +36,57 @@ EOT
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
+        $this->expiredVideoConfigurationService = $this->getContainer()->get('pumukit_expired_video.configuration');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
-        $now = new \DateTime();
-
-        $message = [
-            '',
-            '<info>Expired video list</info>',
-            '<info>==================</info>',
-            '<comment>Searching videos with expiration date less than '.$now->format('c').'</comment>',
-        ];
-
         $expiredVideos = $this->expiredVideoService->getExpiredVideos();
 
         if (!$expiredVideos) {
-            $output->writeln('No videos expired.');
+            $output->writeln("There aren't expired videos.");
 
             return -1;
         }
 
-        $message[] = 'Expired videos: '.count($expiredVideos);
+        $elements = [];
+        $i = 1;
         foreach ($expiredVideos as $multimediaObject) {
-            $message[] = $this->generateMessageByMultimediaObject($multimediaObject);
+            $elements[] = $this->generateMessageByMultimediaObject($multimediaObject, $i);
+            ++$i;
         }
 
-        $message[] = '';
-        $output->writeln($message);
+        $this->generateTableWithResult($output, $elements);
 
         return 0;
     }
 
-    private function generateMessageByMultimediaObject(MultimediaObject $multimediaObject): string
+    private function generateMessageByMultimediaObject(MultimediaObject $multimediaObject, int $count): array
     {
-        return ' * Multimedia Object ID: '.$multimediaObject->getId().' - Expiration date: '.$multimediaObject->getProperty('expiration_date');
+        return [
+            $count,
+            $multimediaObject,
+            $multimediaObject->getProperty(
+                $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()
+            ),
+        ];
+    }
+
+    private function generateTableWithResult(OutputInterface $output, array $elements): void
+    {
+        $now = new \DateTime();
+        $output->writeln([
+            '',
+            '<info>***** Command: Expired video list *****</info>',
+            '<comment>Criteria: </comment>',
+            '<comment>    Expiration date < '.$now->format('c').'</comment>',
+        ]);
+        $table = new Table($output);
+        $table
+            ->setHeaders(['Nº', 'MultimediaObject', 'Expiration Date'])
+            ->setRows($elements)
+        ;
+        $table->render();
     }
 }

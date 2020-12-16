@@ -1,0 +1,38 @@
+<h2>{{ subject|trans }}</h2>
+
+<br/>
+
+<p>{{ "The owners of this expired multimedia objects was moved to expired owner position"|trans }}</p>
+<p>{{ "The multimedia object now isn't published on the page"|trans }}</p>
+
+<table>
+    {% for multimedia_object in multimedia_objects %}
+        {% for objectID, people in multimedia_object %}
+            <tr>
+                <td>ID: {{ objectID }}</td>
+                <td>
+                    {% for person in people %}
+                        {{ person }},
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+</table>
+
+{#{% if type == "removeOwner" %}#}
+
+{#    {% for video in data.videos %}#}
+{#        <p>{% trans %}This video is out of date: {% endtrans %} {{ video.title }}</p>#}
+{#        <p>{% trans %}The owner of this video has been deleted.{% endtrans %}</p>#}
+{#        <ul>#}
+{#            <li>#}
+{#                <a href="{{ url('homepage') }}admin/expired/video/renew/{{ video.token }}">#}
+{#                    {{ url('homepage') }}admin/expired/video/renew/{{ video.token }}/#}
+{#                </a>#}
+{#            </li>#}
+{#        </ul>#}
+{#        <br/>#}
+{#    {% endfor %}#}
+{#{% elseif type == "expired" %}#}
+{#{% endif %}#}

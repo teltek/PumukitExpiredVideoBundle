@@ -6,20 +6,46 @@
 
     <services>
 
+        <service id="pumukit_expired_video.configuration" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService">
+            <argument>%pumukit_expired_video.expiration_date_days%</argument>
+            <argument>%pumukit_expired_video.range_warning_days%</argument>
+            <argument>%pumukit_expired_video.notification_email_subject%</argument>
+            <argument>%pumukit_expired_video.notification_email_template%</argument>
+            <argument>%pumukit_expired_video.update_email_subject%</argument>
+            <argument>%pumukit_expired_video.update_email_template%</argument>
+        </service>
+
         <service id="pumukit_expired_video.expired_video" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService">
             <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
             <argument type="service" id="security.authorization_checker" />
-            <argument type="service" id="logger"/>
-            <argument type="service" id="pumukit_notification.sender" on-invalid="ignore"/>
-            <argument type="service" id="translator"/>
-            <argument type="expression">container.hasParameter('pumukit_expired_video.notification_subject') ? parameter('pumukit_expired_video.notification_subject') : null</argument>
-            <argument>%pumukit_expired_video.expiration_date_days%</argument>
+            <argument type="service" id="pumukit_expired_video.configuration"/>
         </service>
 
-        <service id="pumukit_expired_video.init_date" class="Pumukit\ExpiredVideoBundle\EventListener\InitDateListener">
+        <service id="pumukit_expired_video.notification" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoNotificationService">
             <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
+            <argument type="service" id="pumukit_expired_video.configuration"/>
+            <argument type="service" id="pumukitschema.person"/>
+            <argument type="service" id="pumukit_notification.sender" on-invalid="ignore"/>
+            <argument type="service" id="translator"/>
+        </service>
+
+        <service id="pumukit_expired_video.update" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoUpdateService">
+            <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
+            <argument type="service" id="pumukit_expired_video.configuration"/>
+            <argument type="service" id="pumukitschema.person"/>
+            <argument type="service" id="pumukit_notification.sender" on-invalid="ignore"/>
+            <argument type="service" id="translator"/>
+        </service>
+
+        <service id="pumukit_expired_video.delete" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService">
+            <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
+            <argument type="service" id="pumukit_expired_video.configuration"/>
+        </service>
+
+        <service id="pumukit_expired_video.init_date" class="Pumukit\ExpiredVideoBundle\EventListener\MultimediaObjectListener">
+            <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
+            <argument type="service" id="pumukit_expired_video.configuration"/>
             <argument type="service" id="security.authorization_checker" />
-            <argument>%pumukit_expired_video.expiration_date_days%</argument>
             <tag name="kernel.event_listener" event="multimediaobject.create" method="onMultimediaObjectCreate" />
             <tag name="kernel.event_listener" event="multimediaobject.clone" method="onMultimediaObjectClone" />
         </service>
@@ -40,5 +66,6 @@
             <argument type="service" id="pumukitschema.multimedia_object"/>
             <tag name="security.voter" />
         </service>
+
     </services>
 </container>
