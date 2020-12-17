@@ -64,6 +64,8 @@ EOT
             $result[] = $this->expiredVideoDeleteService->removeMultimediaObject($multimediaObject);
         }
 
+        $this->expiredVideoDeleteService->sendAdministratorEmail($result);
+
         $this->generateTableWithResult($output, $result);
 
         return 0;

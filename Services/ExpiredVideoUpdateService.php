@@ -83,7 +83,7 @@ class ExpiredVideoUpdateService
         ];
 
         return $this->senderService->sendNotification(
-            $this->senderService->getAdminEmail(),
+            $this->expiredVideoConfigurationService->getAdministratorEmails(),
             $this->translator->trans($parameters['subject']),
             $this->expiredVideoConfigurationService->getUpdateEmailConfiguration()['template'],
             $parameters,

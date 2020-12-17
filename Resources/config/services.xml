@@ -13,6 +13,9 @@
             <argument>%pumukit_expired_video.notification_email_template%</argument>
             <argument>%pumukit_expired_video.update_email_subject%</argument>
             <argument>%pumukit_expired_video.update_email_template%</argument>
+            <argument>%pumukit_expired_video.administrator_emails%</argument>
+            <argument>%pumukit_expired_video.delete_email_subject%</argument>
+            <argument>%pumukit_expired_video.delete_email_template%</argument>
         </service>
 
         <service id="pumukit_expired_video.expired_video" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService">
@@ -40,6 +43,9 @@
         <service id="pumukit_expired_video.delete" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService">
             <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
             <argument type="service" id="pumukit_expired_video.configuration"/>
+            <argument type="service" id="pumukit_expired_video.expired_video"/>
+            <argument type="service" id="pumukit_notification.sender" on-invalid="ignore"/>
+            <argument type="service" id="translator"/>
         </service>
 
         <service id="pumukit_expired_video.init_date" class="Pumukit\ExpiredVideoBundle\EventListener\MultimediaObjectListener">

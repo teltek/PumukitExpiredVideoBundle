@@ -6,6 +6,7 @@ namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Pumukit\NotificationBundle\Services\SenderService;
 use Pumukit\SchemaBundle\Document\Material;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Pic;
@@ -13,18 +14,28 @@ use Pumukit\SchemaBundle\Document\Series;
 use Pumukit\SchemaBundle\Document\Track;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class ExpiredVideoDeleteService
 {
     private $documentManager;
     private $expiredVideoConfigurationService;
+    private $expiredVideoService;
+    private $senderService;
+    private $translator;
 
     public function __construct(
         DocumentManager $documentManager,
-        ExpiredVideoConfigurationService $expiredVideoConfigurationService
+        ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        ExpiredVideoService $expiredVideoService,
+        SenderService $senderService,
+        TranslatorInterface $translator
     ) {
         $this->documentManager = $documentManager;
         $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
+        $this->expiredVideoService = $expiredVideoService;
+        $this->senderService = $senderService;
+        $this->translator = $translator;
     }
 
     public function getAllExpiredVideosToDelete()
@@ -63,6 +74,37 @@ class ExpiredVideoDeleteService
         $this->removeTracks($multimediaObject);
         $this->removeMaterial($multimediaObject);
         $this->removePics($multimediaObject);
+    }
+
+    public function sendAdministratorEmail(array $result)
+    {
+        $multimediaObjects = $this->getMultimediaObjectsWhichExpiredTomorrow();
+        $this->senderService->sendNotification(
+            $this->expiredVideoConfigurationService->getAdministratorEmails(),
+            $this->translator->trans($this->expiredVideoConfigurationService->getDeleteEmailConfiguration()['subject']),
+            $this->expiredVideoConfigurationService->getDeleteEmailConfiguration()['template'],
+            [
+                'subject' => $this->translator->trans($this->expiredVideoConfigurationService->getDeleteEmailConfiguration()['subject']),
+                'multimedia_objects' => $result,
+                'multimedia_objects_to_remove_tomorrow' => $multimediaObjects,
+            ],
+            false
+        );
+    }
+
+    private function getMultimediaObjectsWhichExpiredTomorrow(): array
+    {
+        $multimediaObjects = $this->expiredVideoService->getExpiredVideosByDateAndRange(1, true);
+
+        $result = [];
+        foreach ($multimediaObjects as $multimediaObject) {
+            $result[] = [
+                $multimediaObject->getId(),
+                $multimediaObject->getTitle(),
+            ];
+        }
+
+        return $result;
     }
 
     private function deleteOnBBDD(MultimediaObject $multimediaObject)
@@ -112,7 +154,7 @@ class ExpiredVideoDeleteService
         foreach ($tracks as $track) {
             if ($track instanceof Track) {
                 $isUsedOnAnotherMedia = $this->checkMedia($track);
-                if ($isUsedOnAnotherMedia && $fileSystem->exists($track->getPath())) {
+                if (!$isUsedOnAnotherMedia && $fileSystem->exists($track->getPath())) {
                     $this->removeFileFromDisk($track->getPath());
                 }
             }
@@ -127,7 +169,7 @@ class ExpiredVideoDeleteService
         foreach ($materials as $material) {
             if ($material instanceof Material) {
                 $isUsedOnAnotherMedia = $this->checkMaterial($material);
-                if ($isUsedOnAnotherMedia && $fileSystem->exists($material->getPath())) {
+                if (!$isUsedOnAnotherMedia && $fileSystem->exists($material->getPath())) {
                     $this->removeFileFromDisk($material->getPath());
                 }
             }
@@ -142,7 +184,7 @@ class ExpiredVideoDeleteService
         foreach ($pics as $pic) {
             if ($pic instanceof Pic) {
                 $isUsedOnAnotherMedia = $this->checkPics($pic);
-                if ($isUsedOnAnotherMedia && $fileSystem->exists($pic->getPath())) {
+                if (!$isUsedOnAnotherMedia && $fileSystem->exists($pic->getPath())) {
                     $this->removeFileFromDisk($pic->getPath());
                 }
             }

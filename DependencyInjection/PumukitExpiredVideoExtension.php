@@ -26,6 +26,11 @@ class PumukitExpiredVideoExtension extends Extension
         $container->setParameter('pumukit_expired_video.update_email_subject', $config['update_email_subject']);
         $container->setParameter('pumukit_expired_video.update_email_template', $config['update_email_template']);
 
+        $container->setParameter('pumukit_expired_video.delete_email_subject', $config['delete_email_subject']);
+        $container->setParameter('pumukit_expired_video.delete_email_template', $config['delete_email_template']);
+
+        $container->setParameter('pumukit_expired_video.administrator_emails', $config['administrator_emails']);
+
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 

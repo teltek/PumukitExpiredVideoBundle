@@ -21,6 +21,9 @@ class ExpiredVideoConfigurationService
     private $notificationEmailTemplate;
     private $updateEmailSubject;
     private $updateEmailTemplate;
+    private $administratorEmails;
+    private $deleteEmailSubject;
+    private $deleteEmailTemplate;
 
     public function __construct(
         int $expirationDateDaysConf,
@@ -28,7 +31,10 @@ class ExpiredVideoConfigurationService
         string $notificationEmailSubject,
         string $notificationEmailTemplate,
         string $updateEmailSubject,
-        string $updateEmailTemplate
+        string $updateEmailTemplate,
+        array $administratorEmails,
+        string $deleteEmailSubject,
+        string $deleteEmailTemplate
     ) {
         $this->expirationDateDaysConf = $expirationDateDaysConf;
         $this->rangeWarningDays = $rangeWarningDays;
@@ -36,6 +42,9 @@ class ExpiredVideoConfigurationService
         $this->notificationEmailTemplate = $notificationEmailTemplate;
         $this->updateEmailSubject = $updateEmailSubject;
         $this->updateEmailTemplate = $updateEmailTemplate;
+        $this->administratorEmails = $administratorEmails;
+        $this->deleteEmailSubject = $deleteEmailSubject;
+        $this->deleteEmailTemplate = $deleteEmailTemplate;
     }
 
     public function isDeactivatedService(): bool
@@ -74,10 +83,18 @@ class ExpiredVideoConfigurationService
         ];
     }
 
+    public function getDeleteEmailConfiguration(): array
+    {
+        return [
+            'subject' => $this->deleteEmailSubject,
+            'template' => $this->deleteEmailTemplate,
+        ];
+    }
+
     public function getMultimediaObjectPropertyExpirationDateKey(bool $fullPropertyKey = false): string
     {
         if ($fullPropertyKey) {
-            return 'property.'.self::MULTIMEDIA_OBJECT_PROPERTY_EXPIRATION_DATE;
+            return 'properties.'.self::MULTIMEDIA_OBJECT_PROPERTY_EXPIRATION_DATE;
         }
 
         return self::MULTIMEDIA_OBJECT_PROPERTY_EXPIRATION_DATE;
@@ -86,7 +103,7 @@ class ExpiredVideoConfigurationService
     public function getMultimediaObjectPropertyRenewExpirationDateKey(bool $fullPropertyKey = false): string
     {
         if ($fullPropertyKey) {
-            return 'property.'.self::MULTIMEDIA_OBJECT_PROPERTY_RENEW_EXPIRATION_DATE;
+            return 'properties.'.self::MULTIMEDIA_OBJECT_PROPERTY_RENEW_EXPIRATION_DATE;
         }
 
         return self::MULTIMEDIA_OBJECT_PROPERTY_RENEW_EXPIRATION_DATE;
@@ -110,5 +127,10 @@ class ExpiredVideoConfigurationService
     public function getAccessExpiredVideoCodePermission(): string
     {
         return self::ROLE_ACCESS_EXPIRED_VIDEO;
+    }
+
+    public function getAdministratorEmails(): array
+    {
+        return $this->administratorEmails;
     }
 }
