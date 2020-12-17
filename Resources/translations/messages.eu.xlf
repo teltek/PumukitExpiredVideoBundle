@@ -193,6 +193,10 @@
         <source>The multimedia object now isn't published on the page</source>
         <target>The multimedia object now isn't published on the page</target>
       </trans-unit>
+      <trans-unit id="1" resname="PuMuKIT - Multimedia objects deleted">
+        <source>PuMuKIT - Multimedia objects deleted</source>
+        <target>PuMuKIT - Multimedia objects deleted</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

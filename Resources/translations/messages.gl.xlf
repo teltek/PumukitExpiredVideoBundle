@@ -193,6 +193,10 @@
         <source>The multimedia object now isn't published on the page</source>
         <target>O obxecto multimedia ahoga xa non está pubicado na páxina</target>
       </trans-unit>
+      <trans-unit id="1" resname="PuMuKIT - Multimedia objects deleted">
+        <source>PuMuKIT - Multimedia objects deleted</source>
+        <target>PuMuKIT - Obxetos multimedia borrados</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

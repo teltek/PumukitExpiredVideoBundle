@@ -7,9 +7,9 @@
 <table>
     {% for multimedia_object in multimedia_objects %}
         <tr>
-            <td>{{ multimedia_object.0 }}</td>
-            <td>{{ multimedia_object.1 }}</td>
-            <td>{{ multimedia_object.2 }}</td>
+            <td>{{ "ID"|trans }}: {{ multimedia_object.0 }}</td>
+            <td>{{ "Title"|trans }}: {{ multimedia_object.1 }}</td>
+            <td>{{ "Expired date" }}: {{ multimedia_object.2 }}</td>
         </tr>
     {% endfor %}
 </table>

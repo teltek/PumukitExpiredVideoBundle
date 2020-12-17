@@ -47,7 +47,7 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->scalarNode('delete_email_subject')
-            ->defaultValue('PuMuKIT - Multimedia object deleted')
+            ->defaultValue('PuMuKIT - Multimedia objects deleted')
             ->info('Subject of email on delete command')
             ->end()
             ->scalarNode('delete_email_template')
