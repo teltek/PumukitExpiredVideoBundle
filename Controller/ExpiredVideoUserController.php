@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Pumukit\ExpiredVideoBundle\Controller;
 
-use Pumukit\ExpiredVideoBundle\PumukitExpiredVideoBundle;
 use Pumukit\ExpiredVideoBundle\Utils\TokenUtils;
 use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
