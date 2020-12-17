@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
+  <file source-language="en" target-language="gl" datatype="plaintext" original="file.ext">
     <header>
       <tool tool-id="symfony" tool-name="Symfony"/>
     </header>
@@ -179,19 +179,19 @@
       </trans-unit>
       <trans-unit id="goXiI.N" resname="The following videos was removed from PuMuKIT platform">
         <source>The following videos was removed from PuMuKIT platform</source>
-        <target>The following videos was removed from PuMuKIT platform</target>
+        <target>Os seguintes obxectos multimedia foron eliminado de PuMuKIT</target>
       </trans-unit>
       <trans-unit id="wvZOPHA" resname="Tomorrow this videos will be removed">
         <source>Tomorrow this videos will be removed</source>
-        <target>Tomorrow this videos will be removed</target>
+        <target>Maña estes vídeos serán eliminados</target>
       </trans-unit>
       <trans-unit id="GHDaZBs" resname="The owners of this expired multimedia objects was moved to expired owner position">
         <source>The owners of this expired multimedia objects was moved to expired owner position</source>
-        <target>The owners of this expired multimedia objects was moved to expired owner position</target>
+        <target>Os propietarios destos videos caducados foron movidos a antiguos propietarios</target>
       </trans-unit>
       <trans-unit id="THdP3vh" resname="The multimedia object now isn't published on the page">
         <source>The multimedia object now isn't published on the page</source>
-        <target>The multimedia object now isn't published on the page</target>
+        <target>O obxecto multimedia ahoga xa non está pubicado na páxina</target>
       </trans-unit>
     </body>
   </file>

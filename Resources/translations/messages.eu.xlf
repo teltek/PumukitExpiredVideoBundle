@@ -177,6 +177,22 @@
         <source>Save</source>
         <target>Save</target>
       </trans-unit>
+      <trans-unit id="goXiI.N" resname="The following videos was removed from PuMuKIT platform">
+        <source>The following videos was removed from PuMuKIT platform</source>
+        <target>The following videos was removed from PuMuKIT platform</target>
+      </trans-unit>
+      <trans-unit id="wvZOPHA" resname="Tomorrow this videos will be removed">
+        <source>Tomorrow this videos will be removed</source>
+        <target>Tomorrow this videos will be removed</target>
+      </trans-unit>
+      <trans-unit id="GHDaZBs" resname="The owners of this expired multimedia objects was moved to expired owner position">
+        <source>The owners of this expired multimedia objects was moved to expired owner position</source>
+        <target>The owners of this expired multimedia objects was moved to expired owner position</target>
+      </trans-unit>
+      <trans-unit id="THdP3vh" resname="The multimedia object now isn't published on the page">
+        <source>The multimedia object now isn't published on the page</source>
+        <target>The multimedia object now isn't published on the page</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
