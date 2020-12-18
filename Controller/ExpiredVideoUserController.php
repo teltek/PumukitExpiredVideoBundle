@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ExpiredVideoUserController extends Controller implements NewAdminControllerInterface
 {
     /**
-     * @Route("/renew/{key}/", name="pumukit_expired_video_renew",  defaults={"key": null})
+     * @Route("/renew/{key}/", name="pumukit_expired_video_owner_renew",  defaults={"key": null})
      * @Template("PumukitExpiredVideoBundle:ExpiredVideo:renewExpiredVideo.html.twig")
      */
     public function renewMultimediaObjectFromEmailAction(string $key)
@@ -32,9 +32,9 @@ class ExpiredVideoUserController extends Controller implements NewAdminControlle
         }
 
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
-        $mmObj = $dm->getRepository(MultimediaObject::class)->findOneBy(
-            ['properties.expiration_key' => new \MongoId($key)]
-        );
+        $mmObj = $dm->getRepository(MultimediaObject::class)->findOneBy([
+            $expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey(true) => new \MongoId($key),
+        ]);
 
         $user = $this->getUser();
         $roleCode = $this->container->getParameter('pumukitschema.personal_scope_role_code');
@@ -83,7 +83,7 @@ class ExpiredVideoUserController extends Controller implements NewAdminControlle
     }
 
     /**
-     * @Route("/all/renew/{key}/", name="pumukit_expired_video_renew_all",  defaults={"key": null})
+     * @Route("/all/renew/{key}/", name="pumukit_expired_video_owner_renew_all",  defaults={"key": null})
      * @Template("PumukitExpiredVideoBundle:ExpiredVideo:renewExpiredVideo.html.twig")
      */
     public function renewAllMultimediaObjectsFromEmailAction(string $key)
@@ -96,7 +96,9 @@ class ExpiredVideoUserController extends Controller implements NewAdminControlle
         }
 
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
-        $person = $dm->getRepository(Person::class)->findOneBy(['properties.expiration_key' => new \MongoId($key)]);
+        $person = $dm->getRepository(Person::class)->findOneBy([
+            $expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey(true) => new \MongoId($key),
+        ]);
 
         if (!$person) {
             $error = 4;
@@ -107,7 +109,10 @@ class ExpiredVideoUserController extends Controller implements NewAdminControlle
         $user = $this->getUser();
         if ($user->getEmail() === $person->getEmail()) {
             $aObject = $dm->getRepository(MultimediaObject::class)->findBy(
-                ['people.people._id' => $person->getId(), 'properties.expiration_key' => ['$exists' => true]]
+                [
+                    'people.people._id' => $person->getId(),
+                    $expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey(true) => ['$exists' => true],
+                ]
             );
 
             if (count($aObject) >= 1) {

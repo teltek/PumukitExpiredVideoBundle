@@ -5,8 +5,8 @@
 <p>{% trans %}To renew all your videos access this url:{% endtrans %}</p>
 <ul>
     <li>
-        <a href="{{ url('homepage') }}admin/expired/video/all/renew/{{ data.all }}/">
-            {{ url('homepage') }}admin/expired/video/all/renew/{{ data.all }}/
+        <a href="{{ url('pumukit_expired_video_owner_renew_all', {'key': data.all }) }}">
+            {{ url('pumukit_expired_video_owner_renew_all', {'key': data.all }) }}
         </a>
     </li>
 </ul>
@@ -16,8 +16,8 @@
     <p>{% trans %}Access this url to renew the video: {% endtrans %}</p>
     <ul>
         <li>
-            <a href="{{ url('homepage') }}admin/expired/video/renew/{{ video.token }}">
-                {{ url('homepage') }}admin/expired/video/renew/{{ video.token }}/
+            <a href="{{ url('pumukit_expired_video_owner_renew', {'key' : video.token }) }}">
+                {{ url('pumukit_expired_video_owner_renew', {'key' : video.token }) }}
             </a>
         </li>
     </ul>
