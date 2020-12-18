@@ -1,0 +1,21 @@
+<h2>{{ subject|trans }}</h2>
+
+<br/>
+
+<p>{{ "The owners of this expired multimedia objects was moved to expired owner position"|trans }}</p>
+
+<table>
+    {% for multimedia_object in multimedia_objects %}
+        <p><b>{{ "The multimedia object now isn't published on the page"|trans }}</b></p>
+        {% for objectID, people in multimedia_object %}
+            <tr>
+                <td>ID: {{ objectID }}</td>
+                <td>
+                    {% for person in people %}
+                        {{ person }},
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+</table>

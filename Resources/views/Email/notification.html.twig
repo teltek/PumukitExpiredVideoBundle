@@ -2,43 +2,27 @@
 
 <br/>
 
-{% if type == "removeOwner" %}
+<p>{% trans %}To renew all your videos access this url:{% endtrans %}</p>
+<ul>
+    <li>
+        <a href="{{ url('pumukit_expired_video_owner_renew_all', {'key': data.all }) }}">
+            {{ url('pumukit_expired_video_owner_renew_all', {'key': data.all }) }}
+        </a>
+    </li>
+</ul>
 
-    {% for video in data.videos %}
-        <p>{% trans %}This video is out of date: {% endtrans %} {{ video.title }}</p>
-        <p>{% trans %}The owner of this video has been deleted.{% endtrans %}</p>
-        <ul>
-            <li>
-                <a href="{{ url('homepage') }}admin/expired/video/renew/{{ video.token }}">
-                    {{ url('homepage') }}admin/expired/video/renew/{{ video.token }}/
-                </a>
-            </li>
-        </ul>
-        <br/>
-    {% endfor %}
-{% elseif type == "expired" %}
-    <p>{% trans %}To renew all your videos access this url:{% endtrans %}</p>
+{% for video in data.videos %}
+    <p>{% trans %}This video will be expire soon{% endtrans %}: {{ video.title }}</p>
+    <p>{% trans %}Access this url to renew the video: {% endtrans %}</p>
     <ul>
         <li>
-            <a href="{{ url('homepage') }}admin/expired/video/all/renew/{{ data.all }}/">
-                {{ url('homepage') }}admin/expired/video/all/renew/{{ data.all }}/
+            <a href="{{ url('pumukit_expired_video_owner_renew', {'key' : video.token }) }}">
+                {{ url('pumukit_expired_video_owner_renew', {'key' : video.token }) }}
             </a>
         </li>
     </ul>
-
-    {% for video in data.videos %}
-        <p>{% trans %}This video will be expire soon{% endtrans %}: {{ video.title }}</p>
-        <p>{% trans %}Access this url to renew the video: {% endtrans %}</p>
-        <ul>
-            <li>
-                <a href="{{ url('homepage') }}admin/expired/video/renew/{{ video.token }}">
-                    {{ url('homepage') }}admin/expired/video/renew/{{ video.token }}/
-                </a>
-            </li>
-        </ul>
-        <br/>
-    {% endfor %}
-{% endif %}
+    <br/>
+{% endfor %}
 
 <br/>
 <br/>

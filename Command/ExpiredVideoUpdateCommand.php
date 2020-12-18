@@ -10,20 +10,21 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ExpiredVideoDeleteCommand extends ContainerAwareCommand
+class ExpiredVideoUpdateCommand extends ContainerAwareCommand
 {
-    private $expiredVideoDeleteService;
+    private $expiredVideoService;
+    private $expiredVideoUpdateService;
     private $expiredVideoConfigurationService;
 
     protected function configure(): void
     {
         $this
-            ->setName('video:expired:delete')
-            ->setDescription('Expired video delete')
+            ->setName('video:expired:update')
+            ->setDescription('This command update role owner when the video was expired')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
             ->setHelp(
                 <<<'EOT'
-This command delete all the videos without owner people when this expiration_date is less than a the configured max time days.
+Expired video remove delete owner people on multimedia object id when the expiration_date is less than now. This command send email to web administrator when delete data.
 EOT
             )
         ;
@@ -31,14 +32,15 @@ EOT
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->expiredVideoDeleteService = $this->getContainer()->get('pumukit_expired_video.delete');
+        $this->expiredVideoUpdateService = $this->getContainer()->get('pumukit_expired_video.update');
+        $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
         $this->expiredVideoConfigurationService = $this->getContainer()->get('pumukit_expired_video.configuration');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!$input->getOption('force')) {
-            $message = 'The option force must be set to delete expired videos';
+        if ($input->getOption('force')) {
+            $message = 'The option force must be set to remove owner videos timed out';
             $this->generateTableWithResult($output, [], $message);
 
             return -1;
@@ -51,20 +53,30 @@ EOT
             return -1;
         }
 
-        $multimediaObjectsExpired = $this->expiredVideoDeleteService->getAllExpiredVideosToDelete();
-        if (!$multimediaObjectsExpired) {
-            $message = "There aren't expired video to delete";
+        $expiredVideos = $this->expiredVideoService->getExpiredVideos();
+        if (!$expiredVideos) {
+            $message = "There aren't expired videos.";
             $this->generateTableWithResult($output, [], $message);
 
             return -1;
         }
 
         $result = [];
-        foreach ($multimediaObjectsExpired as $multimediaObject) {
-            $result[] = $this->expiredVideoDeleteService->removeMultimediaObject($multimediaObject);
+        $removedOwners = [];
+        foreach ($expiredVideos as $multimediaObject) {
+            $result[] = [
+                $multimediaObject->getId(),
+                $multimediaObject->getProperty(
+                    $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()
+                ),
+            ];
+            $removedOwners[] = $this->expiredVideoUpdateService->removeOwners($multimediaObject);
+            $this->expiredVideoUpdateService->removeTag($multimediaObject);
         }
 
-        $this->expiredVideoDeleteService->sendAdministratorEmail($result);
+        if (!empty($removedOwners)) {
+            $this->expiredVideoUpdateService->sendAdministratorEmail($removedOwners);
+        }
 
         $this->generateTableWithResult($output, $result);
 
@@ -74,11 +86,10 @@ EOT
     private function generateTableWithResult(OutputInterface $output, array $elements, ?string $message = null): void
     {
         $date = new \DateTime();
-        $date->sub(new \DateInterval('P'.$this->expiredVideoConfigurationService->getExpirationDateDaysConf().'D'));
 
         $output->writeln([
             '',
-            '<info>***** Command: Expired video delete *****</info>',
+            '<info>***** Command: Expired video update *****</info>',
             '<comment>Criteria: </comment>',
             '<comment>    Expiration date < '.$date->format('c').'</comment>',
         ]);
@@ -92,7 +103,7 @@ EOT
 
         $table = new Table($output);
         $table
-            ->setHeaders(['MultimediaObjectID', 'Multimedia Object Title', 'Multimedia Object Expiration Date'])
+            ->setHeaders(['MultimediaObject', 'Expiration date'])
             ->setRows($elements)
         ;
         $table->render();

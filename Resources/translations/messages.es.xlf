@@ -177,6 +177,26 @@
         <source>Save</source>
         <target>Save</target>
       </trans-unit>
+      <trans-unit id="goXiI.N" resname="The following videos was removed from PuMuKIT platform">
+        <source>The following videos was removed from PuMuKIT platform</source>
+        <target>Los siguientes objetos multimedia han sido eliminados de PuMuKIT</target>
+      </trans-unit>
+      <trans-unit id="wvZOPHA" resname="Tomorrow this videos will be removed">
+        <source>Tomorrow this videos will be removed</source>
+        <target>Mañana estos vídeos serán eliminados</target>
+      </trans-unit>
+      <trans-unit id="GHDaZBs" resname="The owners of this expired multimedia objects was moved to expired owner position">
+        <source>The owners of this expired multimedia objects was moved to expired owner position</source>
+        <target>Los propietarios de estos videos caducados han sido movidos a antiguos propietarios</target>
+      </trans-unit>
+      <trans-unit id="THdP3vh" resname="The multimedia object now isn't published on the page">
+        <source>The multimedia object now isn't published on the page</source>
+        <target>El objeto multimedia ahora ya no está pubicado en la página</target>
+      </trans-unit>
+      <trans-unit id="1" resname="PuMuKIT - Multimedia objects deleted">
+        <source>PuMuKIT - Multimedia objects deleted</source>
+        <target>PuMuKIT - Objetos multimedia borrados</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -15,12 +15,12 @@ class MenuService implements ItemInterface
 
     public function getUri(): string
     {
-        return 'pumukit_expired_video_list_all';
+        return 'pumukit_expired_video_list';
     }
 
     public function getAccessRole(): string
     {
-        return 'ROLE_ACCESS_EXPIRED_VIDEO';
+        return ExpiredVideoConfigurationService::ROLE_ACCESS_EXPIRED_VIDEO;
     }
 
     public function getClass(): string

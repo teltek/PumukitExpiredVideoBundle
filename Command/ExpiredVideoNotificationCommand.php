@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use Pumukit\SchemaBundle\Document\EmbeddedPerson;
-use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoNotificationCommand extends ContainerAwareCommand
 {
-    public const EXPIRED_VIDEO_TYPE = 'expired';
-    private $dm;
-    private $user_code;
+    private $expiredVideoNotificationService;
     private $expiredVideoService;
-    private $days;
+    private $expiredVideoConfigurationService;
 
     protected function configure(): void
     {
@@ -49,108 +46,70 @@ EOT
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->dm = $this->getContainer()->get('doctrine_mongodb.odm.document_manager');
+        $this->expiredVideoNotificationService = $this->getContainer()->get('pumukit_expired_video.notification');
         $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
-        $personService = $this->getContainer()->get('pumukitschema.person');
-        $this->user_code = $personService->getPersonalScopeRoleCode();
-        $this->days = (int) $this->getContainer()->getParameter('pumukit_expired_video.expiration_date_days');
+        $this->expiredVideoConfigurationService = $this->getContainer()->get('pumukit_expired_video.configuration');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $message = [
-            '',
-            '<info>Expired video notification</info>',
-            '<info>==========================</info>',
-        ];
-
-        if (0 === $this->days) {
-            $message[] = '<error>Expiration date days is 0, it means deactivate expired video functionality.</error>';
-            $output->writeln($message);
-
-            return null;
-        }
-
         $days = (int) $input->getArgument('days');
         $range = 'true' === $input->getArgument('range');
 
+        if ($this->expiredVideoConfigurationService->isDeactivatedService()) {
+            $message = 'Expiration date days is 0, it means deactivate expired video functionality.';
+            $this->generateTableWithResult($output, [], $days, $message);
+
+            return -1;
+        }
+
         $expiredVideos = $this->expiredVideoService->getExpiredVideosByDateAndRange($days, $range);
+        if (!$expiredVideos || 0 === count($expiredVideos)) {
+            $message = 'No expired video on the selected date';
+            $this->generateTableWithResult($output, [], $days, $message);
 
-        if (!$expiredVideos) {
-            $date = new \DateTime(date('Y-m-d'));
-            $date->add(new \DateInterval('P'.$days.'D'));
-            $date = $date->format('Y-m-d H:i:s');
-            $message[] = 'No videos to expired on date '.$date;
-            $output->writeln($message);
-
-            return null;
+            return -1;
         }
 
-        $message[] = '<comment>Expired videos to notify: '.count($expiredVideos).'</comment>';
+        $result = $this->expiredVideoNotificationService->checkAndSendNotifications($expiredVideos);
 
-        $output->writeln($message);
+        $this->generateTableWithResult($output, $result, $days, null);
 
-        $this->sendNotification($output, $expiredVideos);
-
-        $output->writeln('');
+        return 0;
     }
 
-    private function sendNotification(OutputInterface $output, iterable $aMultimediaObject): void
+    private function generateTableWithResult(OutputInterface $output, array $elements, int $days, ?string $message): void
     {
-        if (!$aMultimediaObject) {
-            $output->writeln('No videos expired in this range');
+        $date = new \DateTime(date('Y-m-d'));
+        $date->add(new \DateInterval('P'.$days.'D'));
 
-            return;
-        }
-        foreach ($aMultimediaObject as $multimediaObject) {
-            $sendMail = $this->getEmailsToNotificationFromMultimediaObject($output, $multimediaObject);
-        }
+        $output->writeln([
+            '',
+            '<info>***** Command: Expired video notification *****</info>',
+            '<comment>Criteria: </comment>',
+            '<comment>    Expiration date == '.$date->format('c').'</comment>',
+        ]);
 
-        if (empty($sendMail)) {
-            $output->writeln("There aren't user emails to send");
-
-            return;
-        }
-
-        try {
-            $this->expiredVideoService->generateNotification($sendMail, self::EXPIRED_VIDEO_TYPE);
-        } catch (\Exception $exception) {
-            $output->writeln('<error>'.$exception->getMessage().'</error>');
-        }
-    }
-
-    private function getEmailsToNotificationFromMultimediaObject(OutputInterface $output, MultimediaObject $multimediaObject): array
-    {
-        $output->writeln(' * Multimedia Object ID: '.$multimediaObject->getId().' - Expiration date: '.$multimediaObject->getProperty('expiration_date'));
-
-        $sendMail = [];
-        $people = $multimediaObject->getPeopleByRoleCod($this->user_code, true);
-
-        if (0 === count($people)) {
-            $output->writeln("There aren't owners on this video");
-
-            return $sendMail;
+        if ($message) {
+            $output->writeln([
+                '<comment>Result message: </comment>',
+                '<info>'.$message.'</info>',
+            ]);
         }
 
-        foreach ($people as $person) {
-            $sendMail[] = $this->getPersonEmail($person, $multimediaObject);
+        $resultElements = [];
+        foreach ($elements as $multimediaObject => $people) {
+            $resultElements[] = [
+                $multimediaObject,
+                implode(',', $people),
+            ];
         }
 
-        return $sendMail;
-    }
-
-    private function getPersonEmail(EmbeddedPerson $person, MultimediaObject $multimediaObject): ?array
-    {
-        $personEmail = $person->getEmail();
-        if (!$personEmail) {
-            return null;
-        }
-
-        $personId = $person->getId();
-
-        $sendMail[$personId]['videos'][] = $multimediaObject->getId();
-        $sendMail[$personId]['email'] = $personEmail;
-
-        return $sendMail;
+        $table = new Table($output);
+        $table
+            ->setHeaders(['MultimediaObject', 'People'])
+            ->setRows($resultElements)
+        ;
+        $table->render();
     }
 }

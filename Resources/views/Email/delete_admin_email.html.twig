@@ -1,0 +1,31 @@
+<h2>{{ subject|trans }}</h2>
+
+<br/>
+
+<p>{{ "The following videos was removed from PuMuKIT platform"|trans }}</p>
+
+<table>
+    {% for multimedia_object in multimedia_objects %}
+        <tr>
+            <td>{{ "ID"|trans }}: {{ multimedia_object.0 }}</td>
+            <td>{{ "Title"|trans }}: {{ multimedia_object.1 }}</td>
+            <td>{{ "Expired date" }}: {{ multimedia_object.2 }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<br />
+{% if multimedia_objects_to_remove_tomorrow %}
+    <br />
+
+    <p>{{ "Tomorrow this videos will be removed"|trans }}</p>
+
+    <table>
+        {% for next_removed_object in multimedia_objects_to_remove_tomorrow %}
+            <tr>
+                <td>{{ next_removed_object.0 }}</td>
+                <td>{{ next_removed_object.1 }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}

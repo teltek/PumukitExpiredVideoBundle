@@ -1,113 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en" target-language="eu" datatype="plaintext" original="file.ext">
+  <file source-language="en" target-language="gl" datatype="plaintext" original="file.ext">
     <header>
       <tool tool-id="symfony" tool-name="Symfony"/>
     </header>
     <body>
       <trans-unit id="LPFxTim" resname="This video is out of date:">
         <source>This video is out of date:</source>
-        <target state="translated">Bideo hau epez kanpo dago:</target>
+        <target state="needs-translation">This video is out of date:</target>
       </trans-unit>
       <trans-unit id="UzuTzHM" resname="The owner of this video has been deleted.">
         <source>The owner of this video has been deleted.</source>
-        <target state="translated">Bideo honen jabea ezabatua izan da.</target>
+        <target state="needs-translation">The owner of this video has been deleted.</target>
       </trans-unit>
       <trans-unit id="WcCUBBL" resname="This video will be expire soon">
         <source>This video will be expire soon</source>
-        <target state="translated">Bideo hau laster iraungiko da</target>
+        <target state="needs-translation">This video will be expire soon</target>
       </trans-unit>
       <trans-unit id="XBhtXAL" resname="Access this url to renew the video:">
         <source>Access this url to renew the video:</source>
-        <target state="translated">Bideoa berritzeko sakatu hurrengo esteka:</target>
+        <target state="needs-translation">Access this url to renew the video:</target>
       </trans-unit>
       <trans-unit id="IAjr6q5" resname="The multimedia object has been successfully renewed.">
         <source>The multimedia object has been successfully renewed.</source>
-        <target state="translated">Multimedia objetua berritua izan da.</target>
+        <target state="needs-translation">The multimedia object has been successfully renewed.</target>
       </trans-unit>
       <trans-unit id="LkWMcnY" resname="You aren't the owner of this multimedia object.">
         <source>You aren't the owner of this multimedia object.</source>
-        <target state="translated">Zu ez zara objetu multimedia honen jabea.</target>
+        <target state="needs-translation">You aren't the owner of this multimedia object.</target>
       </trans-unit>
       <trans-unit id="WS5pXDz" resname="This multimedia object accomplishes one of these cases">
         <source>This multimedia object accomplishes one of these cases</source>
-        <target state="translated">Objetu multimedia hau honako kasua betetzen du</target>
+        <target state="needs-translation">This multimedia object accomplishes one of these cases</target>
       </trans-unit>
       <trans-unit id="brp2eDc" resname="Has been renewed.">
         <source>Has been renewed.</source>
-        <target state="translated">Berritua izan da.</target>
+        <target state="needs-translation">Has been renewed.</target>
       </trans-unit>
       <trans-unit id="MipWvY5" resname="Multimedia object doesn't exists.">
         <source>Multimedia object doesn't exists.</source>
-        <target state="translated">Multimedia objetua ez da existitzen.</target>
+        <target state="needs-translation">Multimedia object doesn't exists.</target>
       </trans-unit>
       <trans-unit id="awFD0Dh" resname="Return">
         <source>Return</source>
-        <target state="translated">Itzuli</target>
+        <target state="needs-translation">Return</target>
       </trans-unit>
       <trans-unit id="NVYRv1h" resname="PuMuKIT - Remove owner of the following video.">
         <source>PuMuKIT - Remove owner of the following video.</source>
-        <target state="translated">PuMuKIT - Hurrengo bideoaren jabea ezabatu.</target>
+        <target state="needs-translation">PuMuKIT - Remove owner of the following video.</target>
       </trans-unit>
       <trans-unit id="nZziYw8" resname="PuMuKIT - These videos will be expired coming soon.">
         <source>PuMuKIT - These videos will be expired coming soon.</source>
-        <target state="translated">PuMuKIT - Hurrengo bideak laster iraungiko dira.</target>
+        <target state="needs-translation">PuMuKIT - These videos will be expired coming soon.</target>
       </trans-unit>
       <trans-unit id="c0LLhVl" resname="To renew all your videos access this url:">
         <source>To renew all your videos access this url:</source>
-        <target state="translated">Zure bideo guztiak berritzeko sakatu hurrengo esteka:</target>
+        <target state="needs-translation">To renew all your videos access this url:</target>
       </trans-unit>
       <trans-unit id="4tClSWj" resname="Delete">
         <source>Delete</source>
-        <target state="translated">Ezabatu</target>
+        <target state="needs-translation">Delete</target>
       </trans-unit>
       <trans-unit id="3aBGPv7" resname="Renew with the same owners">
         <source>Renew with the same owners</source>
-        <target state="translated">Beste urte bat jabe berekin eguneratzea</target>
+        <target state="needs-translation">Renew with the same owners</target>
       </trans-unit>
       <trans-unit id="w5Fwa6g" resname="Multimedia objects coming to expire">
         <source>Multimedia objects coming to expire</source>
-        <target state="translated">Iraungitako objektu multimediak</target>
+        <target state="needs-translation">Multimedia objects coming to expire</target>
       </trans-unit>
       <trans-unit id="841uDps" resname="Expiration">
         <source>Expiration</source>
-        <target state="translated">Iraungipena</target>
+        <target state="needs-translation">Expiration</target>
       </trans-unit>
       <trans-unit id="WPXfmyQ" resname="Owners">
         <source>Owners</source>
-        <target state="translated">Jabeak</target>
+        <target state="needs-translation">Owners</target>
       </trans-unit>
       <trans-unit id="g2MdAjA" resname="Are you sure to delete this video?">
         <source>Are you sure to delete this video?</source>
-        <target state="translated">Bideo hau ezabatzea seguru zaude?</target>
+        <target state="needs-translation">Are you sure to delete this video?</target>
       </trans-unit>
       <trans-unit id="gno9SEH" resname="Are you sure to update this video?">
         <source>Are you sure to update this video?</source>
-        <target state="translated">Bideo hau eguneratzea seguru zaude?</target>
+        <target state="needs-translation">Are you sure to update this video?</target>
       </trans-unit>
       <trans-unit id="iXE7nJw" resname="Accept">
         <source>Accept</source>
-        <target state="translated">Onartzea</target>
+        <target state="needs-translation">Accept</target>
       </trans-unit>
       <trans-unit id="CvnOCdv" resname="Expired video">
         <source>Expired video</source>
-        <target state="translated">Iraungitako bideoa</target>
+        <target state="needs-translation">Expired video</target>
       </trans-unit>
       <trans-unit id="HkSdtrR" resname="Show expiration date">
         <source>Show expiration date</source>
-        <target>Mostrar fecha de caducidad</target>
+        <target>Show expiration date</target>
       </trans-unit>
       <trans-unit id="flG34UI" resname="Multimedia object expiration date">
         <source>Multimedia object expiration date</source>
-        <target>Fecha de caducidad del objeto multimedia</target>
+        <target>Multimedia object expiration date</target>
       </trans-unit>
       <trans-unit id="O24TJxx" resname="The expiration date for this video is %date%">
         <source>The expiration date for this video is %date%</source>
-        <target>La fecha de caducidad es %date%</target>
+        <target>The expiration date for this video is %date%</target>
       </trans-unit>
       <trans-unit id="fZ63rLE" resname="Close">
         <source>Close</source>
-        <target>Cerrar</target>
+        <target>Close</target>
       </trans-unit>
       <trans-unit id="EhVukhv" resname="Id">
         <source>Id</source>
@@ -119,35 +119,35 @@
       </trans-unit>
       <trans-unit id="fozSBW2" resname="Title">
         <source>Title</source>
-        <target>Título</target>
+        <target>Title</target>
       </trans-unit>
       <trans-unit id="FfxltpM" resname="Publication">
         <source>Publication</source>
-        <target>Publicación</target>
+        <target>Publication</target>
       </trans-unit>
       <trans-unit id=".4BZ3Gd" resname="Actions">
         <source>Actions</source>
-        <target>Acciones</target>
+        <target>Actions</target>
       </trans-unit>
       <trans-unit id="GXZu1sy" resname="Cancel">
         <source>Cancel</source>
-        <target>Cancelar</target>
+        <target>Cancel</target>
       </trans-unit>
       <trans-unit id="wcEAnT8" resname="Update">
         <source>Update</source>
-        <target>Actualizar</target>
+        <target>Update</target>
       </trans-unit>
       <trans-unit id="h..s9pe" resname="Expired video list">
         <source>Expired video list</source>
-        <target>Listado videos caducados</target>
+        <target>Expired video list</target>
       </trans-unit>
       <trans-unit id="mj6fLrq" resname="Renew all videos">
         <source>Renew all videos</source>
-        <target>Berritu bideo guztiak</target>
+        <target>Renew all videos</target>
       </trans-unit>
       <trans-unit id="7dEv7Kq" resname="Update expiration date">
         <source>Update expiration date</source>
-        <target>Eguneratu iraungitze data</target>
+        <target>Update expiration date</target>
       </trans-unit>
       <trans-unit id="xYKta2r" resname="Multimedia objects list">
         <source>Multimedia objects list</source>
@@ -179,23 +179,23 @@
       </trans-unit>
       <trans-unit id="goXiI.N" resname="The following videos was removed from PuMuKIT platform">
         <source>The following videos was removed from PuMuKIT platform</source>
-        <target>The following videos was removed from PuMuKIT platform</target>
+        <target>Os seguintes obxectos multimedia foron eliminado de PuMuKIT</target>
       </trans-unit>
       <trans-unit id="wvZOPHA" resname="Tomorrow this videos will be removed">
         <source>Tomorrow this videos will be removed</source>
-        <target>Tomorrow this videos will be removed</target>
+        <target>Maña estes vídeos serán eliminados</target>
       </trans-unit>
       <trans-unit id="GHDaZBs" resname="The owners of this expired multimedia objects was moved to expired owner position">
         <source>The owners of this expired multimedia objects was moved to expired owner position</source>
-        <target>The owners of this expired multimedia objects was moved to expired owner position</target>
+        <target>Os propietarios destos videos caducados foron movidos a antiguos propietarios</target>
       </trans-unit>
       <trans-unit id="THdP3vh" resname="The multimedia object now isn't published on the page">
         <source>The multimedia object now isn't published on the page</source>
-        <target>The multimedia object now isn't published on the page</target>
+        <target>O obxecto multimedia ahoga xa non está pubicado na páxina</target>
       </trans-unit>
       <trans-unit id="1" resname="PuMuKIT - Multimedia objects deleted">
         <source>PuMuKIT - Multimedia objects deleted</source>
-        <target>PuMuKIT - Multimedia objects deleted</target>
+        <target>PuMuKIT - Obxetos multimedia borrados</target>
       </trans-unit>
     </body>
   </file>

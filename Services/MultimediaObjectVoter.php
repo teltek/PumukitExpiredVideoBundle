@@ -24,39 +24,38 @@ class MultimediaObjectVoter extends Voter
 
     protected function supports($attribute, $subject): bool
     {
-        if (self::RENEW !== $attribute) {
-            return false;
-        }
-
-        // NOTE: Only vote on Post objects inside this voter
-        if (!$subject instanceof MultimediaObject) {
-            return false;
-        }
-
-        return true;
+        return !(self::RENEW !== $attribute || !$subject instanceof MultimediaObject);
     }
 
     protected function voteOnAttribute($attribute, $multimediaObject, TokenInterface $token): bool
     {
-        $user = $token->getUser();
-
         if (self::RENEW === $attribute) {
-            return $this->canRenew($this->multimediaObjectService, $multimediaObject, $user);
+            return $this->canRenew($multimediaObject, $token->getUser());
         }
 
         throw new \LogicException('This code should not be reached!');
     }
 
-    protected function canRenew(MultimediaObjectService $multimediaObjectService, MultimediaObject $multimediaObject, $user = null): bool
+    protected function canRenew(MultimediaObject $multimediaObject, $user = null): bool
     {
-        if ($user instanceof User && ($user->hasRole(PermissionProfile::SCOPE_GLOBAL) || $user->hasRole('ROLE_SUPER_ADMIN'))) {
-            return true;
-        }
-
-        if ($user instanceof User && $user->hasRole(PermissionProfile::SCOPE_PERSONAL) && $multimediaObjectService->isUserOwner($user, $multimediaObject)) {
-            return true;
+        if ($user instanceof User) {
+            return $this->checkPermissionProfile($multimediaObject, $user);
         }
 
         return false;
+    }
+
+    private function checkPermissionProfile(MultimediaObject $multimediaObject, User $user): bool
+    {
+        $canRenew = false;
+        if ($user->hasRole(PermissionProfile::SCOPE_GLOBAL) || $user->hasRole('ROLE_SUPER_ADMIN')) {
+            $canRenew = true;
+        }
+
+        if ($user->hasRole(PermissionProfile::SCOPE_PERSONAL) && $this->multimediaObjectService->isUserOwner($user, $multimediaObject)) {
+            $canRenew = true;
+        }
+
+        return $canRenew;
     }
 }
