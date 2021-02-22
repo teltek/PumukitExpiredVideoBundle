@@ -20,11 +20,16 @@ class ExpiredVideoUpdateCommand extends ContainerAwareCommand
     {
         $this
             ->setName('video:expired:update')
-            ->setDescription('This command update role owner when the video was expired')
+            ->setDescription('This command move owners to expired owners and remove tag webtv from multimedia object if the video was expired')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
             ->setHelp(
                 <<<'EOT'
-Expired video remove delete owner people on multimedia object id when the expiration_date is less than now. This command send email to web administrator when delete data.
+Video Expired Update Command:
+
+If the video was expired this command execute the next actions
+    1. Move video owners to expired video owners
+    2. Remove tag PUCHWEBTV to unpublish the video
+    3. Send email to administrator with this actions.
 EOT
             )
         ;
