@@ -39,7 +39,7 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ($input->getOption('force')) {
+        if (!$input->getOption('force')) {
             $message = 'The option force must be set to remove owner videos timed out';
             $this->generateTableWithResult($output, [], $message);
 
