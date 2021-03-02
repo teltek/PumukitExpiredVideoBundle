@@ -151,51 +151,51 @@
       </trans-unit>
       <trans-unit id="xYKta2r" resname="Multimedia objects list">
         <source>Multimedia objects list</source>
-        <target>Multimedia objects list</target>
+        <target>Multimedia objektuen zerrenda</target>
       </trans-unit>
       <trans-unit id="2T4AOhv" resname="Expiration Date">
         <source>Expiration Date</source>
-        <target>Expiration Date</target>
+        <target>Iraungitze Data</target>
       </trans-unit>
       <trans-unit id="kMFomwt" resname="Renew">
         <source>Renew</source>
-        <target>Renew</target>
+        <target>Berritu</target>
       </trans-unit>
       <trans-unit id="C5zlqxG" resname="Multimedia objects updated">
         <source>Multimedia objects updated</source>
-        <target>Multimedia objects updated</target>
+        <target>Multimedia objektuak eguneratu dira</target>
       </trans-unit>
       <trans-unit id="uCRnkDR" resname="Multimedia objects cant updated">
         <source>Multimedia objects cant updated</source>
-        <target>Multimedia objects cant updated</target>
+        <target>Multimedia objektuak ezin dira eguneratu</target>
       </trans-unit>
       <trans-unit id="ndCL6K3" resname="Multimedia object picture">
         <source>Multimedia object picture</source>
-        <target>Multimedia object picture</target>
+        <target>Multimedia objektuen argazkia</target>
       </trans-unit>
       <trans-unit id="FQn1YfJ" resname="Save">
         <source>Save</source>
-        <target>Save</target>
+        <target>Aurreztu</target>
       </trans-unit>
       <trans-unit id="goXiI.N" resname="The following videos was removed from PuMuKIT platform">
         <source>The following videos was removed from PuMuKIT platform</source>
-        <target>The following videos was removed from PuMuKIT platform</target>
+        <target>Ondorengo bideoak PuMuKIT plataformatik kendu ziren</target>
       </trans-unit>
       <trans-unit id="wvZOPHA" resname="Tomorrow this videos will be removed">
         <source>Tomorrow this videos will be removed</source>
-        <target>Tomorrow this videos will be removed</target>
+        <target>Bihar bideo hau kendu egingo da</target>
       </trans-unit>
       <trans-unit id="GHDaZBs" resname="The owners of this expired multimedia objects was moved to expired owner position">
         <source>The owners of this expired multimedia objects was moved to expired owner position</source>
-        <target>The owners of this expired multimedia objects was moved to expired owner position</target>
+        <target>Iraungitako multimedia objektu honen jabeak iraungitako jabearen posiziora eraman ziren</target>
       </trans-unit>
       <trans-unit id="THdP3vh" resname="The multimedia object now isn't published on the page">
         <source>The multimedia object now isn't published on the page</source>
-        <target>The multimedia object now isn't published on the page</target>
+        <target>Multimedia objektua ez da orrialdean argitaratzen</target>
       </trans-unit>
       <trans-unit id="1" resname="PuMuKIT - Multimedia objects deleted">
         <source>PuMuKIT - Multimedia objects deleted</source>
-        <target>PuMuKIT - Multimedia objects deleted</target>
+        <target>PuMuKIT - Multimedia objektuak ezabatu dira</target>
       </trans-unit>
     </body>
   </file>
