@@ -51,6 +51,7 @@ class ExpiredVideoUpdateService
             foreach ($multimediaObject->getPeopleByRoleCod($this->personService->getPersonalScopeRoleCode(), true) as $person) {
                 $multimediaObject->addPersonWithRole($person, $this->getRoleWithCode());
                 $multimediaObject->removePersonWithRole($person, $role);
+
                 $removedOwnerFromMultimediaObject[$multimediaObject->getId()][] = $person->getEmail();
             }
             $removeOwner = true;
@@ -58,8 +59,6 @@ class ExpiredVideoUpdateService
 
         if ($removeOwner) {
             $this->documentManager->flush();
-
-            return $removedOwnerFromMultimediaObject;
         }
 
         return $removedOwnerFromMultimediaObject;
