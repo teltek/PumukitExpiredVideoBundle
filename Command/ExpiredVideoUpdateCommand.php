@@ -75,7 +75,11 @@ EOT
                     $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()
                 ),
             ];
-            $removedOwners[] = $this->expiredVideoUpdateService->removeOwners($multimediaObject);
+
+            $wasOwnerRemoved = $this->expiredVideoUpdateService->removeOwners($multimediaObject);
+            if (!empty($wasOwnerRemoved)) {
+                $removedOwners[] = $wasOwnerRemoved;
+            }
             $this->expiredVideoUpdateService->removeTag($multimediaObject);
         }
 
