@@ -68,6 +68,7 @@ class ExpiredVideoUpdateService
     public function removeTag(MultimediaObject $multimediaObject): void
     {
         $multimediaObject->removeTag($this->getWebTVTag());
+        $this->documentManager->flush();
     }
 
     public function sendAdministratorEmail(array $multimediaObjects)
