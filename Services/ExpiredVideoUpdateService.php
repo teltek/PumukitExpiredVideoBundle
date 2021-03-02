@@ -70,6 +70,12 @@ class ExpiredVideoUpdateService
         $this->documentManager->flush();
     }
 
+    public function postVideo(MultimediaObject $multimediaObject): void
+    {
+        $multimediaObject->addTag($this->getWebTVTag());
+        $this->documentManager->flush();
+    }
+
     public function sendAdministratorEmail(array $multimediaObjects)
     {
         if (!$this->senderService->isEnabled()) {

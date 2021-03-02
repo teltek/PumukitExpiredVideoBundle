@@ -87,6 +87,8 @@ class ExpiredVideoAdminController extends Controller implements NewAdminControll
 
         $ownerKey = $this->container->getParameter('pumukitschema.personal_scope_role_code');
         $expiredVideoConfigurationService = $this->container->get('pumukit_expired_video.configuration');
+        $expiredVideoUpdateService = $this->container->get('pumukit_expired_video.update');
+
         $days = $expiredVideoConfigurationService->getExpirationDateDaysConf();
 
         $dm = $this->get('doctrine_mongodb.odm.document_manager');
@@ -122,6 +124,8 @@ class ExpiredVideoAdminController extends Controller implements NewAdminControll
                 $expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
                 $date
             );
+
+            $expiredVideoUpdateService->postVideo($mmObj);
 
             $dm->flush();
         }
