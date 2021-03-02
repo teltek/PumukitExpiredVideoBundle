@@ -84,7 +84,7 @@ class ExpiredVideoDeleteService
             $this->translator->trans($this->expiredVideoConfigurationService->getDeleteEmailConfiguration()['subject']),
             $this->expiredVideoConfigurationService->getDeleteEmailConfiguration()['template'],
             [
-                'subject' => $this->translator->trans($this->expiredVideoConfigurationService->getDeleteEmailConfiguration()['subject']),
+                'subject' => $this->expiredVideoConfigurationService->getDeleteEmailConfiguration()['subject'],
                 'multimedia_objects' => $result,
                 'multimedia_objects_to_remove_tomorrow' => $multimediaObjects,
             ],
