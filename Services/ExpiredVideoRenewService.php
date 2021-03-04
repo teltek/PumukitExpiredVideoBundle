@@ -32,7 +32,7 @@ class ExpiredVideoRenewService
 
     public function findVideoByRenewKey(string $key)
     {
-        $renewKeyProperty = $expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey(true);
+        $renewKeyProperty = $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey(true);
 
         return $this->documentManager->getRepository(MultimediaObject::class)->findOneBy([
             $renewKeyProperty => new \MongoId($key),
@@ -54,7 +54,7 @@ class ExpiredVideoRenewService
 
         $people = $multimediaObject->getPeopleByRoleCod($this->personalScopeRoleCode, true);
 
-        if (isset($people) && !empty($people) && is_array($people)) {
+        if (!empty($people) && is_array($people)) {
             return false;
         }
 
@@ -117,7 +117,7 @@ class ExpiredVideoRenewService
         $this->removePersonRenewProperty($person);
     }
 
-    private function generateRenewDate(): \DateTimeInterface
+    private function generateRenewDate(int $days): \DateTimeInterface
     {
         $date = new \DateTime();
         return $date->add(new \DateInterval('P'.$days.'D'));
@@ -126,7 +126,7 @@ class ExpiredVideoRenewService
     private function removePersonRenewProperty(PersonInterface $person)
     {
         $person->removeProperty(
-            $expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()
+            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()
         );
 
         $this->documentManager->flush();
