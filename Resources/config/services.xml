@@ -40,6 +40,13 @@
             <argument type="service" id="translator"/>
         </service>
 
+        <service id="pumukit_expired_video.renew" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoRenewService">
+            <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
+            <argument type="service" id="pumukit_expired_video.configuration"/>
+            <argument type="service" id="security.authorization_checker"/>
+            <argument>%pumukitschema.personal_scope_role_code%</argument>
+        </service>
+
         <service id="pumukit_expired_video.delete" class="Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService">
             <argument type="service" id="doctrine_mongodb.odm.document_manager"/>
             <argument type="service" id="pumukit_expired_video.configuration"/>
