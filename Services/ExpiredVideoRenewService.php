@@ -54,7 +54,7 @@ class ExpiredVideoRenewService
 
         $people = $multimediaObject->getPeopleByRoleCod($this->personalScopeRoleCode, true);
 
-        if (isset($people) && !empty($people) && is_array($people)) {
+        if (!empty($people) && is_array($people)) {
             return false;
         }
 
