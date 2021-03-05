@@ -67,7 +67,7 @@ class ExpiredVideoUserController extends Controller implements NewAdminControlle
             return ['message' => 2];
         }
 
-        $expiredVideoRenewService->renewAllMultimediaObjects($multimediaObjects, $this->getUser());
+        $expiredVideoRenewService->renewAllMultimediaObjects($multimediaObjects, $this->getUser(), $person);
 
         return ['message' => 0];
     }
