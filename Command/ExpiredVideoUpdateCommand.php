@@ -60,6 +60,7 @@ EOT
             return -1;
         }
 
+        $result = [];
         if (!$input->getOption('force')) {
             $message = 'The option force must be set to remove owner videos timed out';
             foreach ($expiredVideos as $multimediaObject) {
@@ -75,8 +76,6 @@ EOT
             return -1;
         }
 
-
-        $result = [];
         $removedOwners = [];
         foreach ($expiredVideos as $multimediaObject) {
             $result[] = [
