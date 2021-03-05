@@ -122,7 +122,7 @@ class ExpiredVideoNotificationService
     {
         $data['all'] = $this->generateDataForPerson($userEmail);
         foreach ($multimediaObjects as $multimediaObjectId) {
-            $data['videos'] = $this->generateDataForMultimediaObject($multimediaObjectId);
+            $data['videos'][$multimediaObjectId] = $this->generateDataForMultimediaObject($multimediaObjectId);
         }
 
         $this->documentManager->flush();
@@ -152,10 +152,10 @@ class ExpiredVideoNotificationService
             $renewMultimediaObjectToken
         );
 
-        $data[$mmObj->getId()]['token'] = $renewMultimediaObjectToken;
-        $data[$mmObj->getId()]['title'] = $mmObj->getTitle();
-        $data[$mmObj->getId()]['obj'] = $mmObj;
-        $data[$mmObj->getId()]['expired'] = $mmObj->getPropertyAsDateTime(
+        $data['token'] = $renewMultimediaObjectToken;
+        $data['title'] = $mmObj->getTitle();
+        $data['obj'] = $mmObj;
+        $data['expired'] = $mmObj->getPropertyAsDateTime(
             $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()
         );
 
