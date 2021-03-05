@@ -44,13 +44,6 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!$input->getOption('force')) {
-            $message = 'The option force must be set to remove owner videos timed out';
-            $this->generateTableWithResult($output, [], $message);
-
-            return -1;
-        }
-
         if ($this->expiredVideoConfigurationService->isDeactivatedService()) {
             $message = 'Expiration date days is 0, it means deactivate expired video functionality.';
             $this->generateTableWithResult($output, [], $message);
@@ -59,12 +52,29 @@ EOT
         }
 
         $expiredVideos = $this->expiredVideoService->getExpiredVideos();
+
         if (!$expiredVideos) {
             $message = "There aren't expired videos.";
             $this->generateTableWithResult($output, [], $message);
 
             return -1;
         }
+
+        if (!$input->getOption('force')) {
+            $message = 'The option force must be set to remove owner videos timed out';
+            foreach ($expiredVideos as $multimediaObject) {
+                $result[] = [
+                    $multimediaObject->getId(),
+                    $multimediaObject->getProperty(
+                        $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()
+                    ),
+                ];
+            }
+            $this->generateTableWithResult($output, $result, $message);
+
+            return -1;
+        }
+
 
         $result = [];
         $removedOwners = [];

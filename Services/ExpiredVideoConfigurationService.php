@@ -109,8 +109,12 @@ class ExpiredVideoConfigurationService
         return self::MULTIMEDIA_OBJECT_PROPERTY_RENEW_EXPIRATION_DATE;
     }
 
-    public function getMultimediaObjectPropertyRenewKey(): string
+    public function getMultimediaObjectPropertyRenewKey(bool $fullPropertyKey = false): string
     {
+        if ($fullPropertyKey) {
+            return 'properties.'.self::RENEW_PROPERTY_KEY;
+        }
+
         return self::RENEW_PROPERTY_KEY;
     }
 
