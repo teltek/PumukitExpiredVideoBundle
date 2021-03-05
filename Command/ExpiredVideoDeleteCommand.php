@@ -37,13 +37,6 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (!$input->getOption('force')) {
-            $message = 'The option force must be set to delete expired videos';
-            $this->generateTableWithResult($output, [], $message);
-
-            return -1;
-        }
-
         if ($this->expiredVideoConfigurationService->isDeactivatedService()) {
             $message = 'Expiration date days is 0, it means deactivate expired video functionality.';
             $this->generateTableWithResult($output, [], $message);
@@ -62,6 +55,13 @@ EOT
         $result = [];
         foreach ($multimediaObjectsExpired as $multimediaObject) {
             $result[] = $this->expiredVideoDeleteService->removeMultimediaObject($multimediaObject);
+        }
+
+        if (!$input->getOption('force')) {
+            $message = 'The option force must be set to delete expired videos';
+            $this->generateTableWithResult($output, $result, $message);
+
+            return -1;
         }
 
         if (!empty($result)) {
