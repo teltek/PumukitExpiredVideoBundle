@@ -95,19 +95,19 @@
       </trans-unit>
       <trans-unit id="HkSdtrR" resname="Show expiration date">
         <source>Show expiration date</source>
-        <target>Mostrar fecha de caducidad</target>
+        <target>Erakutsi iraungitze data</target>
       </trans-unit>
       <trans-unit id="flG34UI" resname="Multimedia object expiration date">
         <source>Multimedia object expiration date</source>
-        <target>Fecha de caducidad del objeto multimedia</target>
+        <target>Multimedia objektuaren iraungitze data</target>
       </trans-unit>
       <trans-unit id="O24TJxx" resname="The expiration date for this video is %date%">
         <source>The expiration date for this video is %date%</source>
-        <target>La fecha de caducidad es %date%</target>
+        <target>Bideo honen iraungitze data da %date%</target>
       </trans-unit>
       <trans-unit id="fZ63rLE" resname="Close">
         <source>Close</source>
-        <target>Cerrar</target>
+        <target>Itxi</target>
       </trans-unit>
       <trans-unit id="EhVukhv" resname="Id">
         <source>Id</source>
@@ -119,27 +119,27 @@
       </trans-unit>
       <trans-unit id="fozSBW2" resname="Title">
         <source>Title</source>
-        <target>Título</target>
+        <target>Izenburua</target>
       </trans-unit>
       <trans-unit id="FfxltpM" resname="Publication">
         <source>Publication</source>
-        <target>Publicación</target>
+        <target>Argitalpena</target>
       </trans-unit>
       <trans-unit id=".4BZ3Gd" resname="Actions">
         <source>Actions</source>
-        <target>Acciones</target>
+        <target>Ekintzak</target>
       </trans-unit>
       <trans-unit id="GXZu1sy" resname="Cancel">
         <source>Cancel</source>
-        <target>Cancelar</target>
+        <target>Utzi</target>
       </trans-unit>
       <trans-unit id="wcEAnT8" resname="Update">
         <source>Update</source>
-        <target>Actualizar</target>
+        <target>Eguneratu</target>
       </trans-unit>
       <trans-unit id="h..s9pe" resname="Expired video list">
         <source>Expired video list</source>
-        <target>Listado videos caducados</target>
+        <target>Iraungitako bideo zerrenda</target>
       </trans-unit>
       <trans-unit id="mj6fLrq" resname="Renew all videos">
         <source>Renew all videos</source>
