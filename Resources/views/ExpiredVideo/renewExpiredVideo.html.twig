@@ -9,11 +9,12 @@
             <h4>{% trans %}You aren't the owner of this multimedia object.{% endtrans %}</h4>
         {% elseif message == 2 %}
             <h4>
-                {% trans %}This multimedia object accomplishes one of these cases{% endtrans %} :
+               {% trans %}Has been renewed.{% endtrans %}
             </h4>
             <ul>
-                <li>{% trans %}Has been renewed.{% endtrans %}</li>
-                <li>{% trans %}Multimedia object doesn't exists.{% endtrans %}</li>
+                {% for multimediaObject in multimediaObjects %}
+                    <li> {{ multimediaObject.title }} </li>
+                {% endfor %}
             </ul>
         {% elseif message == 3 %}
             <h4>{% trans %}Multimedia object doesn't exists.{% endtrans %}</h4>
