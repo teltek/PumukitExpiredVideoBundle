@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
+use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
+use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,8 +14,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoDeleteCommand extends ContainerAwareCommand
 {
-    private $expiredVideoDeleteService;
     private $expiredVideoConfigurationService;
+    private $expiredVideoDeleteService;
+
+    public function __construct(
+        ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        ExpiredVideoDeleteService $expiredVideoDeleteService
+    ) {
+        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
+        $this->expiredVideoDeleteService = $expiredVideoDeleteService;
+    }
 
     protected function configure(): void
     {
@@ -27,12 +37,6 @@ This command delete all the videos without owner people when this expiration_dat
 EOT
             )
         ;
-    }
-
-    protected function initialize(InputInterface $input, OutputInterface $output): void
-    {
-        $this->expiredVideoDeleteService = $this->getContainer()->get('pumukit_expired_video.delete');
-        $this->expiredVideoConfigurationService = $this->getContainer()->get('pumukit_expired_video.configuration');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

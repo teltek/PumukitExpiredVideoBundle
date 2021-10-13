@@ -26,15 +26,22 @@ pumukit_expired_video:
 
 `range_warning_days`: used on the administration panel where the list of expired videos to see in an easy way the Multimedia Objects that will be expired in this range of days.
 
-
-### Step 3: Configuring subject
-
-If you want change the subject of the email you can override default setting the following parameters:
-
-
-```bash
-parameters:
-  pumukit_expired_video.notification_subject:
-        removeOwner: 'My new subject for remove Owner'
-        expired:  'My new subject for expired notification'
+### Other configuration
 ```
+pumukit_expired_video:
+    notification_email_subject: "PuMuKIT - These videos will be expired coming soon."
+    notification_email_template: "PumukitExpiredVideoBundle:Email:notification.html.twig"
+    update_email_subject: "PuMuKIT - Remove owner of the following video."
+    update_email_template: "PumukitExpiredVideoBundle:Email:update_admin_email.html.twig"
+    administrator_emails: ['youremailaccount@pumukit.es']
+    delete_email_subject: "PuMuKIT - Multimedia objects deleted"
+    delete_email_template: "PumukitExpiredVideoBundle:Email:delete_admin_email.html.twig"
+``` 
+
+`notification_email_subject`: Subject of email send on notification command
+`notification_email_template`: Twig template to use on notification command
+`update_email_subject`: Subject of email send on update command
+`update_email_template`: Twig template to use on update command
+`administrator_emails`: Emails of admin that you want to receive all notifications 
+`delete_email_subject`: Subject of email send on delete command
+`delete_email_template`:  Twig template to use on delete command

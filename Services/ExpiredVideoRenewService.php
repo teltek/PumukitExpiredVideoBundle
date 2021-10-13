@@ -98,7 +98,7 @@ class ExpiredVideoRenewService
             [
                 'people.people._id' => $person->getId(),
                 $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey(true) => [
-                    '$exists' => true
+                    '$exists' => true,
                 ],
             ]
         );
@@ -120,6 +120,7 @@ class ExpiredVideoRenewService
     private function generateRenewDate(int $days): \DateTimeInterface
     {
         $date = new \DateTime();
+
         return $date->add(new \DateInterval('P'.$days.'D'));
     }
 

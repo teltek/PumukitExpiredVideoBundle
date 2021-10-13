@@ -27,4 +27,9 @@ class SeriesMenuService implements ItemInterface
     {
         return 'mdi-device-access-time';
     }
+
+    public function getServiceTag(): string
+    {
+        return 'seriesmenu';
+    }
 }

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
+use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
+use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
+use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoUpdateService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,9 +15,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ExpiredVideoUpdateCommand extends ContainerAwareCommand
 {
+    private $expiredVideoConfigurationService;
     private $expiredVideoService;
     private $expiredVideoUpdateService;
-    private $expiredVideoConfigurationService;
+
+    public function __construct(
+        ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        ExpiredVideoService $expiredVideoService,
+        ExpiredVideoUpdateService $expiredVideoUpdateService
+    ) {
+        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
+        $this->expiredVideoService = $expiredVideoService;
+        $this->expiredVideoUpdateService = $expiredVideoUpdateService;
+    }
 
     protected function configure(): void
     {
@@ -33,13 +46,6 @@ If the video was expired this command execute the next actions
 EOT
             )
         ;
-    }
-
-    protected function initialize(InputInterface $input, OutputInterface $output): void
-    {
-        $this->expiredVideoUpdateService = $this->getContainer()->get('pumukit_expired_video.update');
-        $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
-        $this->expiredVideoConfigurationService = $this->getContainer()->get('pumukit_expired_video.configuration');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
