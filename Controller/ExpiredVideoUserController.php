@@ -7,15 +7,16 @@ namespace Pumukit\ExpiredVideoBundle\Controller;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoRenewService;
 use Pumukit\ExpiredVideoBundle\Utils\TokenUtils;
 use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/admin/expired/video")
  */
-class ExpiredVideoUserController extends Controller implements NewAdminControllerInterface
+class ExpiredVideoUserController extends AbstractController implements NewAdminControllerInterface
 {
     private $expiredVideoRenewService;
 

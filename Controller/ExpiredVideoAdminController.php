@@ -12,9 +12,10 @@ use Pumukit\ExpiredVideoBundle\Utils\TokenUtils;
 use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Role;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @Route("/admin/expired/video/system")
  * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
  */
-class ExpiredVideoAdminController extends Controller implements NewAdminControllerInterface
+class ExpiredVideoAdminController extends AbstractController implements NewAdminControllerInterface
 {
     private $documentManager;
     private $expiredVideoConfigurationService;
