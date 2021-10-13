@@ -7,13 +7,13 @@ namespace Pumukit\ExpiredVideoBundle\Command;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoNotificationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ExpiredVideoNotificationCommand extends ContainerAwareCommand
+class ExpiredVideoNotificationCommand extends Command
 {
     private $expiredVideoConfigurationService;
     private $expiredVideoService;
@@ -27,12 +27,13 @@ class ExpiredVideoNotificationCommand extends ContainerAwareCommand
         $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
         $this->expiredVideoService = $expiredVideoService;
         $this->expiredVideoNotificationService = $expiredVideoNotificationService;
+        parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('video:expired:notification')
+            ->setName('pumukit:expired:video:notification')
             ->setDescription('Automatically sending notifications to users who have a video about to expire.')
             ->addArgument('days', InputArgument::REQUIRED, 'days')
             ->addArgument('range', InputArgument::REQUIRED, 'range')

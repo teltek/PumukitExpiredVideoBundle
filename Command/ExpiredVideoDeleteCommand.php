@@ -6,13 +6,13 @@ namespace Pumukit\ExpiredVideoBundle\Command;
 
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ExpiredVideoDeleteCommand extends ContainerAwareCommand
+class ExpiredVideoDeleteCommand extends Command
 {
     private $expiredVideoConfigurationService;
     private $expiredVideoDeleteService;
@@ -23,12 +23,13 @@ class ExpiredVideoDeleteCommand extends ContainerAwareCommand
     ) {
         $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
         $this->expiredVideoDeleteService = $expiredVideoDeleteService;
+        parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('video:expired:delete')
+            ->setName('pumukit:expired:video:delete')
             ->setDescription('Expired video delete')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
             ->setHelp(

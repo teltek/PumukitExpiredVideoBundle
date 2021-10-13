@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pumukit\ExpiredVideoBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoUpdateService;

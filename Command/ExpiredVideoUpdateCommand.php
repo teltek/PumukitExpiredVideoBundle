@@ -7,13 +7,13 @@ namespace Pumukit\ExpiredVideoBundle\Command;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoUpdateService;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ExpiredVideoUpdateCommand extends ContainerAwareCommand
+class ExpiredVideoUpdateCommand extends Command
 {
     private $expiredVideoConfigurationService;
     private $expiredVideoService;
@@ -27,12 +27,13 @@ class ExpiredVideoUpdateCommand extends ContainerAwareCommand
         $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
         $this->expiredVideoService = $expiredVideoService;
         $this->expiredVideoUpdateService = $expiredVideoUpdateService;
+        parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('video:expired:update')
+            ->setName('pumukit:expired:video:update')
             ->setDescription('This command move owners to expired owners and remove tag webtv from multimedia object if the video was expired')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
             ->setHelp(

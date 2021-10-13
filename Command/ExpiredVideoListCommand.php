@@ -7,12 +7,12 @@ namespace Pumukit\ExpiredVideoBundle\Command;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ExpiredVideoListCommand extends ContainerAwareCommand
+class ExpiredVideoListCommand extends Command
 {
     private $expiredVideoConfigurationService;
     private $expiredVideoService;
@@ -23,12 +23,13 @@ class ExpiredVideoListCommand extends ContainerAwareCommand
     ) {
         $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
         $this->expiredVideoService = $expiredVideoService;
+        parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('video:expired:list')
+            ->setName('pumukit:expired:video:list')
             ->setDescription('Expired video list')
             ->setHelp(
                 <<<'EOT'
