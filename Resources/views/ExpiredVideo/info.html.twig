@@ -14,7 +14,7 @@
                 {% set expiration_date = multimediaObject.properties.expiration_date|date("d/m/Y") %}
                 {% trans with {'%date%': expiration_date} %}The expiration date for this video is %date%{% endtrans %}
             {% else %}
-                {% set expiration_date = "now"|date('d/m/Y') %}
+                {% set expiration_date = "now"|date('Y/m/d') %}
             {% endif %}
             {% if can_edit|default(false) %}
                 <form style="padding: 22px">

@@ -23,7 +23,7 @@
                             {{ multimediaObject.getTitle()|default('No title')|trans }}
                         </td>
                         <td headers="expiration-date">
-                            {{ multimediaObject.getProperty('expiration_date')|localizeddate('medium','medium',app.request.getLocale()) }}
+                            {{ multimediaObject.getProperty('expiration_date')|date('Y/m/d') }}
                         </td>
                     </tr>
                 {% endfor %}

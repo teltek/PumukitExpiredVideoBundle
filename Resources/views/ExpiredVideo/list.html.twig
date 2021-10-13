@@ -42,8 +42,8 @@
                     <td style="color:{{ color }}">
                         {{ multimediaObject.title }} - {{ multimediaObject.series.title }}
                     </td>
-                    <td style="color:{{ color }}">{{ multimediaObject.getPublicDate()|localizeddate("medium","none",app.request.getLocale()) }}</td>
-                    <td style="color:{{ color }}">{{ multimediaObject.properties.expiration_date|localizeddate("medium","none",app.request.getLocale()) }}</td>
+                    <td style="color:{{ color }}">{{ multimediaObject.getPublicDate()|date('Y/m/d')) }}</td>
+                    <td style="color:{{ color }}">{{ multimediaObject.properties.expiration_date|date('Y/m/d')) }}</td>
                     <td>
                         <ul>
                             {% for person in multimediaObject.getPeopleByRole(ownerRol,true) %}
