@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Pumukit\ExpiredVideoBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
+use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Series;
@@ -20,15 +23,28 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ExpiredVideoMenuController extends Controller implements NewAdminControllerInterface
 {
+    private $documentManager;
+    private $expiredVideoConfigurationService;
+    private $expiredVideoService;
+
+    public function __construct(
+        DocumentManager $documentManager,
+        ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        ExpiredVideoService $expiredVideoService
+    ) {
+        $this->documentManager = $documentManager;
+        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
+        $this->expiredVideoService = $expiredVideoService;
+    }
+
     /**
      * @Route("/info/{id}", name="pumukit_expired_video_info")
-     * @Template("PumukitExpiredVideoBundle:ExpiredVideo:info.html.twig")
+     * @Template("@PumukitExpiredVideo/ExpiredVideo/info.html.twig")
      * @Security("is_granted('ROLE_ACCESS_MULTIMEDIA_SERIES')")
      */
     public function infoAction(MultimediaObject $multimediaObject): array
     {
-        $expiredVideoConfigurationService = $this->container->get('pumukit_expired_video.configuration');
-        $canEdit = $this->isGranted($expiredVideoConfigurationService->getAccessExpiredVideoCodePermission());
+        $canEdit = $this->isGranted($this->expiredVideoConfigurationService->getAccessExpiredVideoCodePermission());
 
         return ['can_edit' => $canEdit, 'multimediaObject' => $multimediaObject];
     }
@@ -39,17 +55,14 @@ class ExpiredVideoMenuController extends Controller implements NewAdminControlle
      */
     public function updateDateFromModalAction(Request $request, MultimediaObject $multimediaObject): RedirectResponse
     {
-        $dm = $this->get('doctrine_mongodb.odm.document_manager');
-        $expiredVideoConfigurationService = $this->container->get('pumukit_expired_video.configuration');
-
         $newDate = new \DateTime($request->get('date'));
         $multimediaObject->setPropertyAsDateTime(
-            $expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
+            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
             $newDate
         );
 
-        $dm->persist($multimediaObject);
-        $dm->flush();
+        $this->documentManager->persist($multimediaObject);
+        $this->documentManager->flush();
 
         return $this->redirectToRoute('pumukit_expired_video_info', ['id' => $multimediaObject->getId()]);
     }
@@ -57,12 +70,11 @@ class ExpiredVideoMenuController extends Controller implements NewAdminControlle
     /**
      * @Route("/renew/series/info/{id}", name="pumukit_expired_video_renew_list")
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
-     * @Template("PumukitExpiredVideoBundle:Modal:index.html.twig")
+     * @Template("@PumukitExpiredVideo/Modal/index.html.twig")
      */
     public function renewAllVideoOfSeriesFromMenuAction(Series $series): array
     {
-        $dm = $this->get('doctrine_mongodb.odm.document_manager');
-        $multimediaObjects = $dm->getRepository(MultimediaObject::class)->findBy(
+        $multimediaObjects = $this->documentManager->getRepository(MultimediaObject::class)->findBy(
             [
                 'series' => $series->getId(),
                 'status' => ['$ne' => MultimediaObject::STATUS_PROTOTYPE],
@@ -83,15 +95,13 @@ class ExpiredVideoMenuController extends Controller implements NewAdminControlle
     public function renewAllSeriesAction(Request $request, Series $series): JsonResponse
     {
         $date = $request->get('date');
-        $expiredVideoService = $this->get('pumukit_expired_video.expired_video');
         if (!$date) {
-            $date = $expiredVideoService->getExpirationDateByPermission();
+            $date = $this->expiredVideoService->getExpirationDateByPermission();
         } else {
             $date = \DateTime::createFromFormat('Y-m-d', $date);
         }
 
-        $dm = $this->get('doctrine_mongodb.odm.document_manager');
-        $multimediaObjects = $dm->getRepository(MultimediaObject::class)->findBy(
+        $multimediaObjects = $this->documentManager->getRepository(MultimediaObject::class)->findBy(
             [
                 'series' => $series->getId(),
                 'status' => ['$ne' => MultimediaObject::STATUS_PROTOTYPE],
@@ -101,7 +111,7 @@ class ExpiredVideoMenuController extends Controller implements NewAdminControlle
 
         if ($multimediaObjects) {
             foreach ($multimediaObjects as $multimediaObject) {
-                $expiredVideoService->renewMultimediaObject($multimediaObject, $date);
+                $this->expiredVideoService->renewMultimediaObject($multimediaObject, $date);
             }
         }
 

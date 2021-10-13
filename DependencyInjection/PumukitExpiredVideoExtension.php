@@ -31,8 +31,8 @@ class PumukitExpiredVideoExtension extends Extension
 
         $container->setParameter('pumukit_expired_video.administrator_emails', $config['administrator_emails']);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.xml');
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('pumukit_template.yaml');
 
         $permissions = [
             [

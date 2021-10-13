@@ -27,4 +27,9 @@ class MenuService implements ItemInterface
     {
         return 'qa-button-video-expiration-date';
     }
+
+    public function getServiceTag(): string
+    {
+        return 'menu';
+    }
 }

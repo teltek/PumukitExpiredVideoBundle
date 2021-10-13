@@ -1,0 +1,71 @@
+services:
+  _defaults:
+    autowire:      true
+    autoconfigure: true
+    public:        true
+    bind:
+      $personalScopeRoleCode: "%pumukitschema.personal_scope_role_code%"
+
+  Pumukit\ExpiredVideoBundle\Controller\:
+    resource: '../../Controller'
+    tags: ['controller.service_arguments']
+
+  Pumukit\ExpiredVideoBundle\Command\:
+    resource: '../../Command/'
+    tags: ['console.command']
+
+  Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService:
+    class: Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService
+    arguments:
+      $expirationDateDaysConf: "%pumukit_expired_video.expiration_date_days%"
+      $rangeWarningDays: "%pumukit_expired_video.range_warning_days%"
+      $notificationEmailSubject: "%pumukit_expired_video.notification_email_subject%"
+      $notificationEmailTemplate: "%pumukit_expired_video.notification_email_template%"
+      $updateEmailSubject: "%pumukit_expired_video.update_email_subject%"
+      $updateEmailTemplate: "%pumukit_expired_video.update_email_template%"
+      $administratorEmails: "%pumukit_expired_video.administrator_emails%"
+      $deleteEmailSubject: "%pumukit_expired_video.delete_email_subject%"
+      $deleteEmailTemplate: "%pumukit_expired_video.delete_email_template%"
+
+  Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService:
+    class: Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService
+
+  Pumukit\ExpiredVideoBundle\Services\ExpiredVideoNotificationService:
+    class: Pumukit\ExpiredVideoBundle\Services\ExpiredVideoNotificationService
+
+  Pumukit\ExpiredVideoBundle\Services\ExpiredVideoUpdateService:
+    class: Pumukit\ExpiredVideoBundle\Services\ExpiredVideoUpdateService
+
+  Pumukit\ExpiredVideoBundle\Services\ExpiredVideoRenewService:
+    class: Pumukit\ExpiredVideoBundle\Services\ExpiredVideoRenewService
+    arguments:
+      $personalScopeRoleCode: "%pumukitschema.personal_scope_role_code%"
+
+  Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService:
+    class: Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService
+
+  Pumukit\ExpiredVideoBundle\EventListener\MultimediaObjectListener:
+    class: Pumukit\ExpiredVideoBundle\EventListener\MultimediaObjectListener
+    tags:
+      - { name: "kernel.event_listener", event: "multimediaobject.create", method: "onMultimediaObjectCreate" }
+      - { name: "kernel.event_listener", event: "multimediaobject.clone", method: "onMultimediaObjectClone" }
+
+  Pumukit\ExpiredVideoBundle\Services\MenuService:
+    class: Pumukit\ExpiredVideoBundle\Services\MenuService
+    tags:
+      - { name: "pumukitnewadmin.menuitem" }
+
+  Pumukit\ExpiredVideoBundle\Services\MultimediaObjectMenuService:
+    class: Pumukit\ExpiredVideoBundle\Services\MultimediaObjectMenuService
+    tags:
+      - { name: "pumukitnewadmin.mmobjmenuitem" }
+
+  Pumukit\ExpiredVideoBundle\Services\SeriesMenuService:
+    class: Pumukit\ExpiredVideoBundle\Services\SeriesMenuService
+    tags:
+      - { name: "pumukitnewadmin.seriesmenuitem" }
+
+  Pumukit\ExpiredVideoBundle\Services\MultimediaObjectVoter:
+    class: Pumukit\ExpiredVideoBundle\Services\MultimediaObjectVoter
+    tags:
+        - { name: "security.voter" }

@@ -11,8 +11,8 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('pumukit_expired_video');
+        $treeBuilder = new TreeBuilder('pumukit_expired_video');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()

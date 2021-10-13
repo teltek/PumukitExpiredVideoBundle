@@ -1,4 +1,4 @@
-{% extends 'PumukitNewAdminBundle::layout.html.twig' %}
+{% extends '@PumukitNewAdmin/layout.html.twig' %}
 
 {% block body %}
     <h3 class="cab_body_div">
@@ -27,7 +27,9 @@
                 {% endif %}
                 <tr>
                     <td>
-                        <span data-id="{{ multimediaObject.id }}"/><a href="{{ path('pumukitnewadmin_mms_shortener', {'id': multimediaObject.id }) }}">{{ multimediaObject.id }}</a></span>
+                        <span data-id="{{ multimediaObject.id }}">
+                            <a href="{{ path('pumukitnewadmin_mms_shortener', {'id': multimediaObject.id }) }}">{{ multimediaObject.id }}</a>
+                        </span>
                     </td>
                     {% set pic = multimediaObject.getPic() %}
                     <td>

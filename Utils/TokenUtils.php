@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Pumukit\ExpiredVideoBundle\Utils;
 
+use MongoDB\BSON\ObjectId;
+
 class TokenUtils
 {
-    public static function generateExpiredToken(): \MongoId
+    public static function generateExpiredToken(): ObjectId
     {
-        return new \MongoId();
+        return new ObjectId();
     }
 
     public static function isValidToken(string $token): bool
