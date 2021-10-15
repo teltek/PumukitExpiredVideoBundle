@@ -30,12 +30,12 @@ pumukit_expired_video:
 ```
 pumukit_expired_video:
     notification_email_subject: "PuMuKIT - These videos will be expired coming soon."
-    notification_email_template: "PumukitExpiredVideoBundle:Email:notification.html.twig"
+    notification_email_template: "@PumukitExpiredVideo/Email/notification.html.twig"
     update_email_subject: "PuMuKIT - Remove owner of the following video."
-    update_email_template: "PumukitExpiredVideoBundle:Email:update_admin_email.html.twig"
+    update_email_template: "@PumukitExpiredVideo/Email/update_admin_email.html.twig"
     administrator_emails: ['youremailaccount@pumukit.es']
     delete_email_subject: "PuMuKIT - Multimedia objects deleted"
-    delete_email_template: "PumukitExpiredVideoBundle:Email:delete_admin_email.html.twig"
+    delete_email_template: "@PumukitExpiredVideo/Email/delete_admin_email.html.twig"
 ``` 
 
 `notification_email_subject`: Subject of email send on notification command
