@@ -6,6 +6,7 @@ namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use MongoDB\BSON\ObjectId;
 use Pumukit\NotificationBundle\Services\SenderService;
 use Pumukit\SchemaBundle\Document\Material;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
@@ -114,7 +115,7 @@ class ExpiredVideoDeleteService
 
         return $repository->createQueryBuilder()
             ->remove()
-            ->field('_id')->equals(new \MongoId($multimediaObject->getId()))
+            ->field('_id')->equals(new ObjectId($multimediaObject->getId()))
             ->getQuery()
             ->execute()
             ;
@@ -122,7 +123,7 @@ class ExpiredVideoDeleteService
 
     private function deleteSeries(string $seriesID)
     {
-        $seriesMongoId = new \MongoId($seriesID);
+        $seriesMongoId = new ObjectId($seriesID);
 
         $multimediaObjectsFromSeries = $this->documentManager->getRepository(MultimediaObject::class)->findBy([
             'series' => $seriesMongoId,

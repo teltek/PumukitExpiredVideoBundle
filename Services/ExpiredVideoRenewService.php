@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MongoDB\BSON\ObjectId;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Person;
 use Pumukit\SchemaBundle\Document\PersonInterface;
@@ -35,14 +36,14 @@ class ExpiredVideoRenewService
         $renewKeyProperty = $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey(true);
 
         return $this->documentManager->getRepository(MultimediaObject::class)->findOneBy([
-            $renewKeyProperty => new \MongoId($key),
+            $renewKeyProperty => new ObjectId($key),
         ]);
     }
 
     public function getPersonWithRenewKey(string $key)
     {
         return $this->documentManager->getRepository(Person::class)->findOneBy([
-            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey(true) => new \MongoId($key),
+            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey(true) => new ObjectId($key),
         ]);
     }
 

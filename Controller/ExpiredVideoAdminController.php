@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pumukit\ExpiredVideoBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MongoDB\BSON\ObjectId;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoUpdateService;
@@ -85,7 +86,7 @@ class ExpiredVideoAdminController extends AbstractController implements NewAdmin
             return $this->redirectToRoute('homepage', [], Response::HTTP_MOVED_PERMANENTLY);
         }
 
-        $multimediaObject = $this->documentManager->getRepository(MultimediaObject::class)->find(new \MongoId($key));
+        $multimediaObject = $this->documentManager->getRepository(MultimediaObject::class)->find(new ObjectId($key));
         if ($multimediaObject) {
             $this->expiredVideoDeleteService->removeMultimediaObject($multimediaObject);
         }
@@ -104,7 +105,7 @@ class ExpiredVideoAdminController extends AbstractController implements NewAdmin
         }
 
         $days = $this->expiredVideoConfigurationService->getExpirationDateDaysConf();
-        $mmObj = $this->documentManager->getRepository(MultimediaObject::class)->find(new \MongoId($key));
+        $mmObj = $this->documentManager->getRepository(MultimediaObject::class)->find(new ObjectId($key));
 
         if ($mmObj) {
             $roleOwner = $this->documentManager->getRepository(Role::class)->findOneBy(['cod' => $this->personalScopeRoleCode]);

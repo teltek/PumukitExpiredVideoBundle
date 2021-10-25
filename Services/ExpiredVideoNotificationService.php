@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MongoDB\BSON\ObjectId;
 use Pumukit\ExpiredVideoBundle\Utils\TokenUtils;
 use Pumukit\NotificationBundle\Services\SenderService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
@@ -174,7 +175,7 @@ class ExpiredVideoNotificationService
     private function getMultimediaObjectById($multimediaObjectID)
     {
         return $this->documentManager->getRepository(MultimediaObject::class)->findOneBy([
-            '_id' => new \MongoId($multimediaObjectID),
+            '_id' => new ObjectId($multimediaObjectID),
         ]);
     }
 }
