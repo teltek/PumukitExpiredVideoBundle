@@ -30,8 +30,7 @@ class ExpiredVideoUserController extends Controller implements NewAdminControlle
 
         $multimediaObject = $expiredVideoRenewService->findVideoByRenewKey($key);
         if (!$multimediaObject) {
-            return ['message' => 2,
-                    'multimediaObjects' => $multimediaObject, ];
+            return ['message' => 2];
         }
 
         $isOwner = $expiredVideoRenewService->isOwner($multimediaObject, $this->getUser());
@@ -63,8 +62,7 @@ class ExpiredVideoUserController extends Controller implements NewAdminControlle
 
         $multimediaObjects = $expiredVideoRenewService->findMultimediaObjectsByPerson($person);
         if (!$multimediaObjects) {
-            return ['message' => 2,
-                    'multimediaObjects' => $multimediaObjects, ];
+            return ['message' => 2];
         }
 
         $expiredVideoRenewService->renewAllMultimediaObjects($multimediaObjects, $this->getUser(), $person);
