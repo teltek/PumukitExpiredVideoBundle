@@ -97,38 +97,38 @@ class ExpiredVideoService
 
         $multimediaObjects = [];
         foreach ($renewVideos as $multimediaObject) {
-            if($multimediaObject instanceof MultimediaObject && !$multimediaObject->getPeopleByRoleCod('owner', true)) {
+            if ($multimediaObject instanceof MultimediaObject && !$multimediaObject->getPeopleByRoleCod('owner', true)) {
                 $multimediaObjects[] = $multimediaObject;
             }
         }
 
         $person = null;
-        if($username) {
+        if ($username) {
             $user = $this->dm->getRepository(User::class)->findOneBy(['username' => $username]);
-            if(!$user) {
-                throw new \Exception('User not found '. $user);
+            if (!$user) {
+                throw new \Exception('User not found '.$user);
             }
             $person = $user->getPerson();
-            if(!$person) {
+            if (!$person) {
                 throw new \Exception('User havent got person associated');
             }
         }
 
         $expiredOwnerRole = $this->dm->getRepository(Role::class)->findOneBy([
-            'cod' => ExpiredVideoConfigurationService::EXPIRED_OWNER_CODE
+            'cod' => ExpiredVideoConfigurationService::EXPIRED_OWNER_CODE,
         ]);
 
-        if(!$expiredOwnerRole instanceof Role) {
+        if (!$expiredOwnerRole instanceof Role) {
             throw new \Exception('Role not found');
         }
 
         $filteredMultimediaObjects = [];
         foreach ($multimediaObjects as $multimediaObject) {
-            if($person && $multimediaObject->containsPersonWithRole($person, $expiredOwnerRole)) {
+            if ($person && $multimediaObject->containsPersonWithRole($person, $expiredOwnerRole)) {
                 $filteredMultimediaObjects[] = $multimediaObject;
             }
 
-            if(!$person && !$multimediaObject->getPeopleByRoleCod($expiredOwnerRole)) {
+            if (!$person && !$multimediaObject->getPeopleByRoleCod($expiredOwnerRole)) {
                 $filteredMultimediaObjects[] = $multimediaObject;
             }
         }

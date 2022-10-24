@@ -7,7 +7,6 @@ namespace Pumukit\ExpiredVideoBundle\Command;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\SchemaBundle\Document\Role;
 use Pumukit\SchemaBundle\Document\Tag;
-use Pumukit\SchemaBundle\Document\User;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -66,7 +65,7 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
-        $user = ($this->user === 'allUsers') ? null : $this->user;
+        $user = ('allUsers' === $this->user) ? null : $this->user;
         $renewedVideos = $this->expiredVideoService->renewedVideosWithoutOwner($user);
 
         if (!$renewedVideos) {
@@ -75,7 +74,7 @@ EOT
             return -1;
         }
 
-        if($this->force) {
+        if ($this->force) {
             $this->fixVideos($renewedVideos, $this->renewDate, $this->addPublishTag);
         }
 
@@ -92,33 +91,32 @@ EOT
         $expiredOwnerRole = $this->documentManager->getRepository(Role::class)->findOneBy(['cod' => ExpiredVideoConfigurationService::EXPIRED_OWNER_CODE]);
 
         $i = 0;
-        foreach ($multimediaObjects as $multimediaObject)
-        {
+        foreach ($multimediaObjects as $multimediaObject) {
             $multimediaObject->setPropertyAsDateTime(
                 $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
                 $renewDate
             );
 
-            if($addPublishTag) {
+            if ($addPublishTag) {
                 $tag = $this->documentManager->getRepository(Tag::class)->findOneBy([
-                    'cod' => $webTVCode
+                    'cod' => $webTVCode,
                 ]);
-                if(!$tag instanceof Tag) {
+                if (!$tag instanceof Tag) {
                     throw new \Exception('Tag not found');
                 }
                 $multimediaObject->addTag($tag);
             }
 
             $expiredOwner = $multimediaObject->getPeopleByRole($expiredOwnerRole, true);
-            foreach($expiredOwner as $person) {
+            foreach ($expiredOwner as $person) {
                 $multimediaObject->addPersonWithRole($person, $ownerRole);
                 $multimediaObject->removePersonWithRole($person, $expiredOwnerRole);
             }
 
-            if($i % 50 === 0) {
+            if (0 === $i % 50) {
                 $this->documentManager->flush();
             }
-            $i++;
+            ++$i;
         }
 
         $this->documentManager->flush();
@@ -143,9 +141,9 @@ EOT
             $result[] = [
                 $i,
                 $element->getId(),
-                $element->getProperty($this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey())
+                $element->getProperty($this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()),
             ];
-            $i++;
+            ++$i;
         }
         $table = new Table($output);
         $table
