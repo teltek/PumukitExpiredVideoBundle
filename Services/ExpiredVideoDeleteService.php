@@ -118,7 +118,7 @@ class ExpiredVideoDeleteService
             ->field('_id')->equals(new ObjectId($multimediaObject->getId()))
             ->getQuery()
             ->execute()
-            ;
+        ;
     }
 
     private function deleteSeries(string $seriesID)
@@ -144,7 +144,7 @@ class ExpiredVideoDeleteService
             ->field('_id')->equals($seriesMongoId)
             ->getQuery()
             ->execute()
-            ;
+        ;
     }
 
     private function removeTracks(MultimediaObject $multimediaObject): void

@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/admin/expired/video/system")
+ *
  * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
  */
 class ExpiredVideoAdminController extends AbstractController implements NewAdminControllerInterface
@@ -67,7 +68,7 @@ class ExpiredVideoAdminController extends AbstractController implements NewAdmin
             ]
         );
 
-        return $this->render("@PumukitExpiredVideo/ExpiredVideo/list.html.twig", [
+        return $this->render('@PumukitExpiredVideo/ExpiredVideo/list.html.twig', [
             'days' => $this->expiredVideoConfigurationService->getExpirationDateDaysConf(),
             'ownerRol' => $ownerRol,
             'multimediaObjects' => $multimediaObjects,

@@ -39,20 +39,22 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
 
     /**
      * @Route("/info/{id}", name="pumukit_expired_video_info")
+     *
      * @Security("is_granted('ROLE_ACCESS_MULTIMEDIA_SERIES')")
      */
     public function infoAction(MultimediaObject $multimediaObject): Response
     {
         $canEdit = $this->isGranted($this->expiredVideoConfigurationService->getAccessExpiredVideoCodePermission());
 
-        return $this->render("@PumukitExpiredVideo/ExpiredVideo/info.html.twig", [
+        return $this->render('@PumukitExpiredVideo/ExpiredVideo/info.html.twig', [
             'can_edit' => $canEdit,
-            'multimediaObject' => $multimediaObject
+            'multimediaObject' => $multimediaObject,
         ]);
     }
 
     /**
      * @Route("/update/date/{id}", name="pumukit_expired_video_update_date")
+     *
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
      */
     public function updateDateFromModalAction(Request $request, MultimediaObject $multimediaObject): RedirectResponse
@@ -71,6 +73,7 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
 
     /**
      * @Route("/renew/series/info/{id}", name="pumukit_expired_video_renew_list")
+     *
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
      */
     public function renewAllVideoOfSeriesFromMenuAction(Series $series): Response
@@ -83,7 +86,7 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
             ]
         );
 
-        return $this->render("@PumukitExpiredVideo/Modal/index.html.twig", [
+        return $this->render('@PumukitExpiredVideo/Modal/index.html.twig', [
             'multimediaObjects' => $multimediaObjects,
             'series' => $series,
         ]);
@@ -91,6 +94,7 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
 
     /**
      * @Route("/renew/all/series/{id}", name="pumukit_expired_series_renew_all")
+     *
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
      */
     public function renewAllSeriesAction(Request $request, Series $series): JsonResponse
