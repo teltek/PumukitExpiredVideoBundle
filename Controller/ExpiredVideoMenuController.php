@@ -11,11 +11,11 @@ use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Series;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -39,18 +39,22 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
 
     /**
      * @Route("/info/{id}", name="pumukit_expired_video_info")
-     * @Template("@PumukitExpiredVideo/ExpiredVideo/info.html.twig")
+     *
      * @Security("is_granted('ROLE_ACCESS_MULTIMEDIA_SERIES')")
      */
-    public function infoAction(MultimediaObject $multimediaObject): array
+    public function infoAction(MultimediaObject $multimediaObject): Response
     {
         $canEdit = $this->isGranted($this->expiredVideoConfigurationService->getAccessExpiredVideoCodePermission());
 
-        return ['can_edit' => $canEdit, 'multimediaObject' => $multimediaObject];
+        return $this->render('@PumukitExpiredVideo/ExpiredVideo/info.html.twig', [
+            'can_edit' => $canEdit,
+            'multimediaObject' => $multimediaObject,
+        ]);
     }
 
     /**
      * @Route("/update/date/{id}", name="pumukit_expired_video_update_date")
+     *
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
      */
     public function updateDateFromModalAction(Request $request, MultimediaObject $multimediaObject): RedirectResponse
@@ -69,10 +73,10 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
 
     /**
      * @Route("/renew/series/info/{id}", name="pumukit_expired_video_renew_list")
+     *
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
-     * @Template("@PumukitExpiredVideo/Modal/index.html.twig")
      */
-    public function renewAllVideoOfSeriesFromMenuAction(Series $series): array
+    public function renewAllVideoOfSeriesFromMenuAction(Series $series): Response
     {
         $multimediaObjects = $this->documentManager->getRepository(MultimediaObject::class)->findBy(
             [
@@ -82,14 +86,15 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
             ]
         );
 
-        return [
+        return $this->render('@PumukitExpiredVideo/Modal/index.html.twig', [
             'multimediaObjects' => $multimediaObjects,
             'series' => $series,
-        ];
+        ]);
     }
 
     /**
      * @Route("/renew/all/series/{id}", name="pumukit_expired_series_renew_all")
+     *
      * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
      */
     public function renewAllSeriesAction(Request $request, Series $series): JsonResponse
