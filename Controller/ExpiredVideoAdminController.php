@@ -14,7 +14,6 @@ use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Role;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,9 +47,8 @@ class ExpiredVideoAdminController extends AbstractController implements NewAdmin
 
     /**
      * @Route("/list/", name="pumukit_expired_video_list")
-     * @Template("@PumukitExpiredVideo/ExpiredVideo/list.html.twig")
      */
-    public function listAction(): array
+    public function listAction(): Response
     {
         $ownerRol = $this->documentManager->getRepository(Role::class)->findOneBy([
             'cod' => $this->personalScopeRoleCode,
@@ -69,16 +67,15 @@ class ExpiredVideoAdminController extends AbstractController implements NewAdmin
             ]
         );
 
-        return [
+        return $this->render("@PumukitExpiredVideo/ExpiredVideo/list.html.twig", [
             'days' => $this->expiredVideoConfigurationService->getExpirationDateDaysConf(),
             'ownerRol' => $ownerRol,
             'multimediaObjects' => $multimediaObjects,
-        ];
+        ]);
     }
 
     /**
      * @Route("/delete/{key}/", name="pumukit_expired_video_delete", defaults={"key": null})
-     * @Template("@PumukitExpiredVideo/ExpiredVideo/list.html.twig")
      */
     public function deleteVideoAction(string $key): RedirectResponse
     {
@@ -96,7 +93,6 @@ class ExpiredVideoAdminController extends AbstractController implements NewAdmin
 
     /**
      * @Route("/renew/{key}/", name="pumukit_expired_video_update", defaults={"key": null})
-     * @Template("@PumukitExpiredVideo/ExpiredVideo/list.html.twig")
      */
     public function renewExpiredVideoAdminAction(string $key): RedirectResponse
     {
