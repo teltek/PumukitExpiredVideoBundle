@@ -6,6 +6,8 @@ namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
+use Pumukit\SchemaBundle\Document\Role;
+use Pumukit\SchemaBundle\Document\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class ExpiredVideoService
@@ -80,6 +82,63 @@ class ExpiredVideoService
         }
 
         return $newRenovationDate;
+    }
+
+    public function renewedVideosWithoutOwner(?string $username): array
+    {
+        $now = new \DateTime();
+        $criteria = [
+            'status' => ['$ne' => MultimediaObject::STATUS_PROTOTYPE],
+            'type' => ['$ne' => MultimediaObject::TYPE_LIVE],
+            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(true) => ['$gt' => $now->format('c')],
+        ];
+
+        $renewVideos = $this->videosByCriteria($criteria);
+
+        $multimediaObjects = [];
+        foreach ($renewVideos as $multimediaObject) {
+            if ($multimediaObject instanceof MultimediaObject && !$multimediaObject->getPeopleByRoleCod('owner', true)) {
+                $multimediaObjects[] = $multimediaObject;
+            }
+        }
+
+        $person = null;
+        if ($username) {
+            $user = $this->dm->getRepository(User::class)->findOneBy(['username' => $username]);
+            if (!$user) {
+                throw new \Exception('User not found '.$user);
+            }
+            $person = $user->getPerson();
+            if (!$person) {
+                throw new \Exception('User havent got person associated');
+            }
+        }
+
+        $expiredOwnerRole = $this->dm->getRepository(Role::class)->findOneBy([
+            'cod' => ExpiredVideoConfigurationService::EXPIRED_OWNER_CODE,
+        ]);
+
+        if (!$expiredOwnerRole instanceof Role) {
+            throw new \Exception('Role not found');
+        }
+
+        $filteredMultimediaObjects = [];
+        foreach ($multimediaObjects as $multimediaObject) {
+            if ($person && $multimediaObject->containsPersonWithRole($person, $expiredOwnerRole)) {
+                $filteredMultimediaObjects[] = $multimediaObject;
+            }
+
+            if (!$person && !$multimediaObject->getPeopleByRoleCod($expiredOwnerRole)) {
+                $filteredMultimediaObjects[] = $multimediaObject;
+            }
+        }
+
+        return $filteredMultimediaObjects;
+    }
+
+    private function videosByCriteria(array $criteria): array
+    {
+        return $this->dm->getRepository(MultimediaObject::class)->findBy($criteria);
     }
 
     private function updateMultimediaObjectExpirationDate(MultimediaObject $multimediaObject, int $days, \DateTime $newRenovationDate): void
