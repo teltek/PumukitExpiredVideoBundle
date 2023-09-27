@@ -7,14 +7,14 @@ namespace Pumukit\ExpiredVideoBundle\Command;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\SchemaBundle\Document\Role;
 use Pumukit\SchemaBundle\Document\Tag;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class renewedVideosWithoutOwnerCommand extends ContainerAwareCommand
+class renewedVideosWithoutOwnerCommand extends Command
 {
     private $expiredVideoService;
     private $expiredVideoConfigurationService;
@@ -35,7 +35,7 @@ class renewedVideosWithoutOwnerCommand extends ContainerAwareCommand
             ->addOption('user', null, InputArgument::OPTIONAL, 'username', 'allUsers')
             ->setHelp(
                 <<<'EOT'
-            
+
 Example:
 
 php bin/console pumukit:expired:video:renewed:without:owner

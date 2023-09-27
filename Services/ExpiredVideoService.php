@@ -43,7 +43,8 @@ class ExpiredVideoService
     public function getExpiredVideosByDateAndRange(int $days, bool $range = true)
     {
         $qb = $this->mmobjRepo->createQueryBuilder()
-            ->field($this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(true))->exists(true);
+            ->field($this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(true))->exists(true)
+        ;
 
         if ($range) {
             $now = new \DateTimeImmutable(date('Y-m-d H:i:s'));
