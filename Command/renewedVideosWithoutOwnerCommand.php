@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
+use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\SchemaBundle\Document\Role;
 use Pumukit\SchemaBundle\Document\Tag;
 use Symfony\Component\Console\Command\Command;
@@ -23,6 +25,16 @@ class renewedVideosWithoutOwnerCommand extends Command
     private $user;
     private $addPublishTag;
     private $renewDate;
+
+    public function __construct(
+        DocumentManager $documentManager,
+        ExpiredVideoService $expiredVideoService,
+        ExpiredVideoConfigurationService $expiredVideoConfigurationService
+    ) {
+        $this->expiredVideoService = $expiredVideoService;
+        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
+        $this->documentManager = $documentManager;
+    }
 
     protected function configure(): void
     {
@@ -54,9 +66,6 @@ EOT
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->expiredVideoService = $this->getContainer()->get('pumukit_expired_video.expired_video');
-        $this->expiredVideoConfigurationService = $this->getContainer()->get('pumukit_expired_video.configuration');
-        $this->documentManager = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         $this->force = (true === $input->getOption('force'));
         $this->user = $input->getOption('user');
         $this->addPublishTag = $input->getOption('addPublishTag');
