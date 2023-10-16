@@ -71,7 +71,7 @@ EOT
         }
 
         $expiredVideos = $this->expiredVideoService->getExpiredVideosByDateAndRange($days, $range);
-        if (!$expiredVideos || 0 === count($expiredVideos)) {
+        if (!$expiredVideos || 0 === (is_countable($expiredVideos) ? count($expiredVideos) : 0)) {
             $message = 'No expired video on the selected date';
             $this->generateTableWithResult($output, [], $days, $message);
 

@@ -121,6 +121,7 @@ class ExpiredVideoNotificationService
 
     private function addRenewUniqueKeys(string $userEmail, array $multimediaObjects): array
     {
+        $data = [];
         $data['all'] = $this->generateDataForPerson($userEmail);
         foreach ($multimediaObjects as $multimediaObjectId) {
             $data['videos'][$multimediaObjectId] = $this->generateDataForMultimediaObject($multimediaObjectId);
@@ -145,6 +146,7 @@ class ExpiredVideoNotificationService
 
     private function generateDataForMultimediaObject(string $multimediaObjectId): array
     {
+        $data = [];
         $mmObj = $this->getMultimediaObjectById($multimediaObjectId);
 
         $renewMultimediaObjectToken = $mmObj->getProperty($this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey());

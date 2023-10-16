@@ -33,6 +33,7 @@ class MultimediaObjectListener
 
     public function onMultimediaObjectCreate(MultimediaObjectEvent $event): void
     {
+        $properties = [];
         if ($this->expiredVideoConfigurationService->isDeactivatedService()) {
             return;
         }
@@ -49,6 +50,7 @@ class MultimediaObjectListener
 
     public function onMultimediaObjectClone(MultimediaObjectCloneEvent $event): void
     {
+        $properties = [];
         if ($this->expiredVideoConfigurationService->isDeactivatedService()) {
             return;
         }

@@ -37,7 +37,7 @@ class ExpiredVideoUpdateService
 
     public function removeOwners(MultimediaObject $multimediaObject): array
     {
-        if (0 === count($multimediaObject->getRoles())) {
+        if (0 === (is_countable($multimediaObject->getRoles()) ? count($multimediaObject->getRoles()) : 0)) {
             return [];
         }
 
