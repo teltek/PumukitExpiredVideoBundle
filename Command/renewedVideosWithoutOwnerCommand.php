@@ -34,6 +34,8 @@ class renewedVideosWithoutOwnerCommand extends Command
         $this->expiredVideoService = $expiredVideoService;
         $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
         $this->documentManager = $documentManager;
+
+        parent::__construct();
     }
 
     protected function configure(): void
