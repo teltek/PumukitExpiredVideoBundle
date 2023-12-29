@@ -147,7 +147,7 @@ class ExpiredVideoNotificationService
         $mmObj = $this->getMultimediaObjectById($multimediaObjectId);
 
         $renewMultimediaObjectToken = $mmObj->getProperty($this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey());
-        if (!$renewMultimediaObjectToken || empty($renewMultimediaObjectToken)) {
+        if (empty($renewMultimediaObjectToken)) {
             $renewMultimediaObjectToken = TokenUtils::generateExpiredToken();
         }
 
