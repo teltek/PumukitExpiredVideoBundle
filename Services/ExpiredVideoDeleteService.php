@@ -9,10 +9,10 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use MongoDB\BSON\ObjectId;
 use Pumukit\NotificationBundle\Services\SenderService;
 use Pumukit\SchemaBundle\Document\Material;
+use Pumukit\SchemaBundle\Document\MediaType\Track;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Pic;
 use Pumukit\SchemaBundle\Document\Series;
-use Pumukit\SchemaBundle\Document\Track;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -155,8 +155,8 @@ class ExpiredVideoDeleteService
         foreach ($tracks as $track) {
             if ($track instanceof Track) {
                 $isUsedOnAnotherMedia = $this->checkMedia($track);
-                if (!$isUsedOnAnotherMedia && $fileSystem->exists($track->getPath())) {
-                    $this->removeFileFromDisk($track->getPath());
+                if (!$isUsedOnAnotherMedia && $fileSystem->exists($track->storage()->path()->path())) {
+                    $this->removeFileFromDisk($track->storage()->path()->path());
                 }
             }
         }
@@ -195,7 +195,7 @@ class ExpiredVideoDeleteService
     private function checkMedia(Track $track): bool
     {
         $multimediaObjects = $this->documentManager->getRepository(MultimediaObject::class)->findBy([
-            'tracks.path' => $track->getPath(),
+            'tracks.storage.path' => $track->storage()->path(),
         ]);
 
         return count($multimediaObjects) > 1;
