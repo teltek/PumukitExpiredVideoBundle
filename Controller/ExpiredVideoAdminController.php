@@ -13,17 +13,14 @@ use Pumukit\ExpiredVideoBundle\Utils\TokenUtils;
 use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Role;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * @Route("/admin/expired/video/system")
- *
- * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
- */
+#[Route('/admin/expired/video/system')]
+#[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
 class ExpiredVideoAdminController extends AbstractController implements NewAdminControllerInterface
 {
     private $documentManager;
@@ -46,9 +43,7 @@ class ExpiredVideoAdminController extends AbstractController implements NewAdmin
         $this->personalScopeRoleCode = $personalScopeRoleCode;
     }
 
-    /**
-     * @Route("/list/", name="pumukit_expired_video_list")
-     */
+    #[Route('/list/', name: 'pumukit_expired_video_list')]
     public function listAction(): Response
     {
         $ownerRol = $this->documentManager->getRepository(Role::class)->findOneBy([
@@ -75,9 +70,7 @@ class ExpiredVideoAdminController extends AbstractController implements NewAdmin
         ]);
     }
 
-    /**
-     * @Route("/delete/{key}/", name="pumukit_expired_video_delete", defaults={"key": null})
-     */
+    #[Route('/delete/{key}/', name: 'pumukit_expired_video_delete', defaults: ['key' => null])]
     public function deleteVideoAction(string $key): RedirectResponse
     {
         if (!TokenUtils::isValidToken($key)) {
@@ -92,9 +85,7 @@ class ExpiredVideoAdminController extends AbstractController implements NewAdmin
         return $this->redirectToRoute('pumukit_expired_video_list', [], Response::HTTP_MOVED_PERMANENTLY);
     }
 
-    /**
-     * @Route("/renew/{key}/", name="pumukit_expired_video_update", defaults={"key": null})
-     */
+    #[Route('/renew/{key}/', name: 'pumukit_expired_video_update', defaults: ['key' => null])]
     public function renewExpiredVideoAdminAction(string $key): RedirectResponse
     {
         if (!TokenUtils::isValidToken($key)) {

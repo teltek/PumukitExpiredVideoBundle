@@ -9,11 +9,9 @@ use Pumukit\ExpiredVideoBundle\Utils\TokenUtils;
 use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route("/admin/expired/video")
- */
+#[Route('/admin/expired/video')]
 class ExpiredVideoUserController extends AbstractController implements NewAdminControllerInterface
 {
     private $expiredVideoRenewService;
@@ -23,9 +21,7 @@ class ExpiredVideoUserController extends AbstractController implements NewAdminC
         $this->expiredVideoRenewService = $expiredVideoRenewService;
     }
 
-    /**
-     * @Route("/renew/{key}/", name="pumukit_expired_video_owner_renew", defaults={"key": null})
-     */
+    #[Route('/renew/{key}/', name: 'pumukit_expired_video_owner_renew', defaults: ['key' => null])]
     public function renewMultimediaObjectFromEmailAction(string $key)
     {
         if (!TokenUtils::isValidToken($key)) {
@@ -47,9 +43,7 @@ class ExpiredVideoUserController extends AbstractController implements NewAdminC
         return $this->render('@PumukitExpiredVideo/ExpiredVideo/renewExpiredVideo.html.twig', ['message' => 0]);
     }
 
-    /**
-     * @Route("/all/renew/{key}/", name="pumukit_expired_video_owner_renew_all", defaults={"key": null})
-     */
+    #[Route('/all/renew/{key}/', name: 'pumukit_expired_video_owner_renew_all', defaults: ['key' => null])]
     public function renewAllMultimediaObjectsFromEmailAction(string $key)
     {
         if (!TokenUtils::isValidToken($key)) {

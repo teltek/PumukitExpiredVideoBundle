@@ -22,12 +22,12 @@ class MultimediaObjectVoter extends Voter
         $this->multimediaObjectService = $multimediaObjectService;
     }
 
-    protected function supports($attribute, $subject): bool
+    protected function supports(string $attribute, $subject): bool
     {
         return !(self::RENEW !== $attribute || !$subject instanceof MultimediaObject);
     }
 
-    protected function voteOnAttribute($attribute, $multimediaObject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, $multimediaObject, TokenInterface $token): bool
     {
         if (self::RENEW === $attribute) {
             return $this->canRenew($multimediaObject, $token->getUser());

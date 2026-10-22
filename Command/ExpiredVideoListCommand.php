@@ -52,7 +52,7 @@ EOT
         if (!$expiredVideos) {
             $output->writeln("There aren't expired videos.");
 
-            return -1;
+            return Command::FAILURE;
         }
 
         $elements = [];

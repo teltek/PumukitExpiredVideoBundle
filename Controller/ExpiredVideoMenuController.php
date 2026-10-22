@@ -10,17 +10,15 @@ use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Series;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * @Route("/admin/expired/video")
- */
+#[Route('/admin/expired/video')]
 class ExpiredVideoMenuController extends AbstractController implements NewAdminControllerInterface
 {
     private $documentManager;
@@ -37,11 +35,8 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
         $this->expiredVideoService = $expiredVideoService;
     }
 
-    /**
-     * @Route("/info/{id}", name="pumukit_expired_video_info")
-     *
-     * @Security("is_granted('ROLE_ACCESS_MULTIMEDIA_SERIES')")
-     */
+    #[Route('/info/{id}', name: 'pumukit_expired_video_info')]
+    #[IsGranted('ROLE_ACCESS_MULTIMEDIA_SERIES')]
     public function infoAction(MultimediaObject $multimediaObject): Response
     {
         $canEdit = $this->isGranted($this->expiredVideoConfigurationService->getAccessExpiredVideoCodePermission());
@@ -52,11 +47,8 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
         ]);
     }
 
-    /**
-     * @Route("/update/date/{id}", name="pumukit_expired_video_update_date")
-     *
-     * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
-     */
+    #[Route('/update/date/{id}', name: 'pumukit_expired_video_update_date')]
+    #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
     public function updateDateFromModalAction(Request $request, MultimediaObject $multimediaObject): RedirectResponse
     {
         $newDate = new \DateTime($request->get('date'));
@@ -71,11 +63,8 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
         return $this->redirectToRoute('pumukit_expired_video_info', ['id' => $multimediaObject->getId()]);
     }
 
-    /**
-     * @Route("/renew/series/info/{id}", name="pumukit_expired_video_renew_list")
-     *
-     * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
-     */
+    #[Route('/renew/series/info/{id}', name: 'pumukit_expired_video_renew_list')]
+    #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
     public function renewAllVideoOfSeriesFromMenuAction(Series $series): Response
     {
         $multimediaObjects = $this->documentManager->getRepository(MultimediaObject::class)->findBy(
@@ -92,11 +81,8 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
         ]);
     }
 
-    /**
-     * @Route("/renew/all/series/{id}", name="pumukit_expired_series_renew_all")
-     *
-     * @Security("is_granted('ROLE_ACCESS_EXPIRED_VIDEO')")
-     */
+    #[Route('/renew/all/series/{id}', name: 'pumukit_expired_series_renew_all')]
+    #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
     public function renewAllSeriesAction(Request $request, Series $series): JsonResponse
     {
         $date = $request->get('date');

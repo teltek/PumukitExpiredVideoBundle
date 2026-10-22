@@ -67,7 +67,7 @@ EOT
             $message = 'Expiration date days is 0, it means deactivate expired video functionality.';
             $this->generateTableWithResult($output, [], $days, $message);
 
-            return -1;
+            return Command::FAILURE;
         }
 
         $expiredVideos = $this->expiredVideoService->getExpiredVideosByDateAndRange($days, $range);
@@ -75,7 +75,7 @@ EOT
             $message = 'No expired video on the selected date';
             $this->generateTableWithResult($output, [], $days, $message);
 
-            return -1;
+            return Command::FAILURE;
         }
 
         $result = $this->expiredVideoNotificationService->checkAndSendNotifications($expiredVideos);

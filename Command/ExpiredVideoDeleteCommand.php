@@ -46,7 +46,7 @@ EOT
             $message = 'Expiration date days is 0, it means deactivate expired video functionality.';
             $this->generateTableWithResult($output, [], $message);
 
-            return -1;
+            return Command::FAILURE;
         }
 
         $multimediaObjectsExpired = $this->expiredVideoDeleteService->getAllExpiredVideosToDelete();
@@ -54,7 +54,7 @@ EOT
             $message = "There aren't expired video to delete";
             $this->generateTableWithResult($output, [], $message);
 
-            return -1;
+            return Command::FAILURE;
         }
 
         $result = [];
@@ -66,7 +66,7 @@ EOT
             $message = 'The option force must be set to delete expired videos';
             $this->generateTableWithResult($output, $result, $message);
 
-            return -1;
+            return Command::FAILURE;
         }
 
         if (!empty($result)) {

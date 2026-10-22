@@ -82,7 +82,7 @@ EOT
         if (!$renewedVideos) {
             $output->writeln("There aren't renewed videos.");
 
-            return -1;
+            return Command::FAILURE;
         }
 
         if ($this->force) {
