@@ -25,7 +25,7 @@ class MultimediaObjectMenuService implements ItemInterface
 
     public function getIcon(): string
     {
-        return 'mdi-device-access-time';
+        return 'fa-solid fa-clock';
     }
 
     public function getClass(): string

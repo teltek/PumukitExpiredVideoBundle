@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Pumukit\ExpiredVideoBundle\Exception\ExpiredVideoException;
 use Pumukit\NotificationBundle\Services\SenderService;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Role;
@@ -19,6 +18,7 @@ class ExpiredVideoUpdateService
         private readonly DocumentManager $documentManager,
         private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
         private readonly PersonService $personService,
+        private readonly ExpiredOwnerRoleService $expiredOwnerRoleService,
         private readonly SenderService $senderService,
         private readonly TranslatorInterface $translator,
     ) {}
@@ -87,15 +87,7 @@ class ExpiredVideoUpdateService
 
     private function getRoleWithCode(): Role
     {
-        $role = $this->documentManager->getRepository(Role::class)->findOneBy([
-            'cod' => $this->expiredVideoConfigurationService->getRoleCodeExpiredOwner(),
-        ]);
-
-        if (!$role instanceof Role) {
-            throw new ExpiredVideoException("Role with code '".$this->expiredVideoConfigurationService->getRoleCodeExpiredOwner()."' not found. Please, init pumukit roles.");
-        }
-
-        return $role;
+        return $this->expiredOwnerRoleService->getRole();
     }
 
     private function getWebTVTag(): Tag

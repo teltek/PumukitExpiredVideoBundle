@@ -1,40 +1,32 @@
 <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-    <h3 class="modal-title pumukitnewadmin-modal-title-margin" id="myModalLabel">
-        {% trans %}Multimedia object expiration date{% endtrans %}
-    </h3>
+    <h3 class="modal-title" id="myModalLabel">{% trans %}Multimedia object expiration date{% endtrans %}</h3>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
 </div>
 
 <div class="modal-body">
-    <fieldset>
-        <div class="form-group">
-            {% if multimediaObject.getProperty('expiration_date') is not empty %}
-                {% set expiration_date = multimediaObject.properties.expiration_date|date("d/m/Y") %}
-                {% trans with {'%date%': expiration_date} %}The expiration date for this video is %date%{% endtrans %}
-            {% else %}
-                {% set expiration_date = "now"|date('Y/m/d') %}
-            {% endif %}
-            {% if can_edit|default(false) %}
-                <form style="padding: 22px">
-                    <div class="form-group" style="width: 250px">
-                        <label class="control-label required">{% trans %}Update{% endtrans %}</label>
-                        <input type="date" class="form-control" pattern="(\d\d\d\d)-(\d\d)-(\d\d)" title="Format YYYY-MM-DD" name="date" id="expiration_date_from" {% if multimediaObject.getProperty('expiration_date') %}value="{{ multimediaObject.properties.expiration_date|date('Y-m-d') }}"{% endif %}>
-                        <a href="#" class="btn btn-pumukit btn-raised btn-xs" onclick="
-                                $('.modal-content').load(
-                                '{{ path('pumukit_expired_video_update_date', {id: multimediaObject.id}) }}', {'date': $('#expiration_date_from').val()}, function(){$('#myModal').modal('hide')}); return false">
-                            {% trans %}Save{% endtrans %}
-                        </a>
-                    </div>
-                </form>
-            {% endif %}
-        </div>
-    </fieldset>
+    {% set expiration_date = multimediaObject.getProperty('expiration_date') %}
+    <p>
+        {% if expiration_date is not empty %}
+            {% trans with {'%date%': expiration_date|date('d/m/Y')} %}The expiration date for this video is %date%{% endtrans %}
+        {% else %}
+            {% trans %}This video has no expiration date.{% endtrans %}
+        {% endif %}
+    </p>
+    {% if can_edit|default(false) %}
+        <form action="{{ path('pumukit_expired_video_update_date', {id: multimediaObject.id}) }}" method="post"
+              data-controller="admin--modal-form"
+              data-action="submit->admin--modal-form#submit"
+              data-admin--modal-form-success-message-value="{{ 'Expiration date updated'|trans }}">
+            <div class="mb-3">
+                <label class="form-label" for="expiration_date_from">{% trans %}Update{% endtrans %}</label>
+                <input type="date" class="form-control" name="date" id="expiration_date_from" required
+                       {% if expiration_date is not empty %}value="{{ expiration_date|date('Y-m-d') }}"{% endif %}>
+            </div>
+            <button type="submit" class="btn btn-pumukit btn-sm">{% trans %}Save{% endtrans %}</button>
+        </form>
+    {% endif %}
 </div>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-default btn-raised" data-dismiss="modal">
-        {% trans %}Close{% endtrans %}
-    </button>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Close{% endtrans %}</button>
 </div>

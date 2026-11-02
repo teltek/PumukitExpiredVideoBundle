@@ -55,8 +55,8 @@ class ExpiredVideoNotificationCommand extends Command
         $days = (int) $input->getArgument('days');
         $range = 'true' === $input->getArgument('range');
 
-        if ($this->expiredVideoConfigurationService->isDeactivatedService()) {
-            $message = 'Expiration date days is 0, it means deactivate expired video functionality.';
+        if (!$this->expiredVideoConfigurationService->isEnabled()) {
+            $message = 'The expired video bundle is disabled (pumukit_expired_video.enable: false).';
             $this->generateTableWithResult($output, [], $days, $message);
 
             return Command::FAILURE;

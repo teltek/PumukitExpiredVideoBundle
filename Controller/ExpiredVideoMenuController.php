@@ -28,7 +28,7 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
         private readonly ExpiredVideoService $expiredVideoService,
     ) {}
 
-    #[Route('/info/{id}', name: 'pumukit_expired_video_info')]
+    #[Route('/info/{id}', name: 'pumukit_expired_video_info', methods: ['GET'])]
     #[IsGranted('ROLE_ACCESS_MULTIMEDIA_SERIES')]
     public function infoAction(MultimediaObject $multimediaObject): Response
     {
@@ -40,7 +40,7 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
         ]);
     }
 
-    #[Route('/update/date/{id}', name: 'pumukit_expired_video_update_date')]
+    #[Route('/update/date/{id}', name: 'pumukit_expired_video_update_date', methods: ['POST'])]
     #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
     public function updateDateFromModalAction(Request $request, MultimediaObject $multimediaObject): RedirectResponse
     {
@@ -59,7 +59,7 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
         return $this->redirectToRoute('pumukit_expired_video_info', ['id' => $multimediaObject->getId()]);
     }
 
-    #[Route('/renew/series/info/{id}', name: 'pumukit_expired_video_renew_list')]
+    #[Route('/renew/series/info/{id}', name: 'pumukit_expired_video_renew_list', methods: ['GET'])]
     #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
     public function renewAllVideoOfSeriesFromMenuAction(Series $series): Response
     {
@@ -77,7 +77,7 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
         ]);
     }
 
-    #[Route('/renew/all/series/{id}', name: 'pumukit_expired_series_renew_all')]
+    #[Route('/renew/all/series/{id}', name: 'pumukit_expired_series_renew_all', methods: ['POST'])]
     #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
     public function renewAllSeriesAction(Request $request, Series $series): JsonResponse
     {

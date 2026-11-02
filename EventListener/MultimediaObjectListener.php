@@ -21,10 +21,6 @@ class MultimediaObjectListener
 
     public function onMultimediaObjectCreate(MultimediaObjectEvent $event): void
     {
-        if ($this->expiredVideoConfigurationService->isDeactivatedService()) {
-            return;
-        }
-
         $multimediaObject = $event->getMultimediaObject();
         if ($multimediaObject->isPrototype()) {
             return;
@@ -44,10 +40,6 @@ class MultimediaObjectListener
 
     public function onMultimediaObjectClone(MultimediaObjectCloneEvent $event): void
     {
-        if ($this->expiredVideoConfigurationService->isDeactivatedService()) {
-            return;
-        }
-
         $multimediaObjects = $event->getMultimediaObjects();
         $origin = $multimediaObjects['origin'];
         $cloned = $multimediaObjects['clon'];

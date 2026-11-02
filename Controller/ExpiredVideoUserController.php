@@ -16,11 +16,11 @@ class ExpiredVideoUserController extends AbstractController implements NewAdminC
 {
     public function __construct(private readonly ExpiredVideoRenewService $expiredVideoRenewService) {}
 
-    #[Route('/renew/{key}/', name: 'pumukit_expired_video_owner_renew', defaults: ['key' => null])]
+    #[Route('/renew/{key}/', name: 'pumukit_expired_video_owner_renew', methods: ['GET'])]
     public function renewMultimediaObjectFromEmailAction(string $key): Response
     {
         if (!TokenUtils::isValidToken($key)) {
-            return $this->redirectToRoute('homepage', [], Response::HTTP_MOVED_PERMANENTLY);
+            throw $this->createNotFoundException();
         }
 
         $multimediaObject = $this->expiredVideoRenewService->findVideoByRenewKey($key);
@@ -38,11 +38,11 @@ class ExpiredVideoUserController extends AbstractController implements NewAdminC
         return $this->render('@PumukitExpiredVideo/ExpiredVideo/renewExpiredVideo.html.twig', ['message' => 0]);
     }
 
-    #[Route('/all/renew/{key}/', name: 'pumukit_expired_video_owner_renew_all', defaults: ['key' => null])]
+    #[Route('/all/renew/{key}/', name: 'pumukit_expired_video_owner_renew_all', methods: ['GET'])]
     public function renewAllMultimediaObjectsFromEmailAction(string $key): Response
     {
         if (!TokenUtils::isValidToken($key)) {
-            return $this->redirectToRoute('homepage', [], Response::HTTP_MOVED_PERMANENTLY);
+            throw $this->createNotFoundException();
         }
 
         $person = $this->expiredVideoRenewService->getPersonWithRenewKey($key);

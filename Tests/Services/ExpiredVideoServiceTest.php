@@ -6,6 +6,7 @@ namespace Pumukit\ExpiredVideoBundle\Tests\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use PHPUnit\Framework\TestCase;
+use Pumukit\ExpiredVideoBundle\Services\ExpiredOwnerRoleService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -37,7 +38,8 @@ class ExpiredVideoServiceTest extends TestCase
         return new ExpiredVideoService(
             $this->createStub(DocumentManager::class),
             $authorizationChecker,
-            new ExpiredVideoConfigurationService(365, 90, 'subject', 'template', 'subject', 'template', [], 'subject', 'template'),
+            new ExpiredVideoConfigurationService(true, 365, 90, 'subject', 'template', 'subject', 'template', [], 'subject', 'template'),
+            $this->createStub(ExpiredOwnerRoleService::class),
         );
     }
 }

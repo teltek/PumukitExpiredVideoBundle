@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Pumukit\ExpiredVideoBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MongoDB\BSON\ObjectId;
+use Pumukit\CoreBundle\Services\PaginationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoUpdateService;
-use Pumukit\ExpiredVideoBundle\Utils\TokenUtils;
 use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Role;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -23,102 +23,91 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
 class ExpiredVideoAdminController extends AbstractController implements NewAdminControllerInterface
 {
+    public const CSRF_TOKEN = 'expired_video_action';
+    private const PER_PAGE = 50;
+
     public function __construct(
         private readonly DocumentManager $documentManager,
         private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
         private readonly ExpiredVideoDeleteService $expiredVideoDeleteService,
         private readonly ExpiredVideoUpdateService $expiredVideoUpdateService,
+        private readonly PaginationService $paginationService,
         private readonly string $personalScopeRoleCode,
     ) {}
 
-    #[Route('/list/', name: 'pumukit_expired_video_list')]
-    public function listAction(): Response
+    #[Route('/list/', name: 'pumukit_expired_video_list', methods: ['GET'])]
+    public function listAction(Request $request): Response
     {
-        $ownerRol = $this->documentManager->getRepository(Role::class)->findOneBy([
-            'cod' => $this->personalScopeRoleCode,
-        ]);
+        $date = new \DateTime('+'.$this->expiredVideoConfigurationService->getRangeWarningDays().' days');
+        $key = $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(true);
 
-        $now = new \DateTime();
-        $date = $now->add(new \DateInterval('P'.$this->expiredVideoConfigurationService->getRangeWarningDays().'D'));
-        $multimediaObjects = $this->documentManager->getRepository(MultimediaObject::class)->findBy(
-            [
-                $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(true) => [
-                    '$lte' => $date->format('c'),
-                ],
-            ],
-            [
-                $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(true) => -1,
-            ]
-        );
+        $queryBuilder = $this->documentManager->getRepository(MultimediaObject::class)->createQueryBuilder()
+            ->field('status')->notEqual(MultimediaObject::STATUS_PROTOTYPE)
+            ->field($key)->lte($date->format('c'))
+            ->sort($key, -1)
+        ;
 
         return $this->render('@PumukitExpiredVideo/ExpiredVideo/list.html.twig', [
-            'days' => $this->expiredVideoConfigurationService->getExpirationDateDaysConf(),
-            'ownerRol' => $ownerRol,
-            'multimediaObjects' => $multimediaObjects,
+            'ownerRol' => $this->documentManager->getRepository(Role::class)->findOneBy(['cod' => $this->personalScopeRoleCode]),
+            'multimediaObjects' => $this->paginationService->createDoctrineODMMongoDBAdapter($queryBuilder, max(1, $request->query->getInt('page', 1)), self::PER_PAGE),
+            'now' => new \DateTime()->format('c'),
         ]);
     }
 
-    #[Route('/delete/{key}/', name: 'pumukit_expired_video_delete', defaults: ['key' => null])]
-    public function deleteVideoAction(string $key): RedirectResponse
+    #[Route('/delete/{id}/', name: 'pumukit_expired_video_delete', methods: ['POST'])]
+    public function deleteVideoAction(Request $request, MultimediaObject $multimediaObject): RedirectResponse
     {
-        if (!TokenUtils::isValidToken($key)) {
-            return $this->redirectToRoute('homepage', [], Response::HTTP_MOVED_PERMANENTLY);
-        }
+        $this->checkToken($request);
 
-        $multimediaObject = $this->documentManager->getRepository(MultimediaObject::class)->find(new ObjectId($key));
-        if ($multimediaObject) {
-            $this->expiredVideoDeleteService->removeMultimediaObject($multimediaObject);
-        }
+        $this->expiredVideoDeleteService->removeMultimediaObject($multimediaObject);
+        $this->addFlash('success', 'The video has been deleted.');
 
-        return $this->redirectToRoute('pumukit_expired_video_list', [], Response::HTTP_MOVED_PERMANENTLY);
+        return $this->redirectToList($request);
     }
 
-    #[Route('/renew/{key}/', name: 'pumukit_expired_video_update', defaults: ['key' => null])]
-    public function renewExpiredVideoAdminAction(string $key): RedirectResponse
+    #[Route('/renew/{id}/', name: 'pumukit_expired_video_update', methods: ['POST'])]
+    public function renewExpiredVideoAdminAction(Request $request, MultimediaObject $multimediaObject): RedirectResponse
     {
-        if (!TokenUtils::isValidToken($key)) {
-            return $this->redirectToRoute('homepage', [], Response::HTTP_MOVED_PERMANENTLY);
-        }
+        $this->checkToken($request);
 
         $days = $this->expiredVideoConfigurationService->getExpirationDateDaysConf();
-        $mmObj = $this->documentManager->getRepository(MultimediaObject::class)->find(new ObjectId($key));
-
-        if ($mmObj) {
-            $roleOwner = $this->documentManager->getRepository(Role::class)->findOneBy(['cod' => $this->personalScopeRoleCode]);
-            foreach ($mmObj->getRoles() as $role) {
-                if ($this->expiredVideoConfigurationService->getRoleCodeExpiredOwner() === $role->getCod()) {
-                    foreach ($mmObj->getPeopleByRoleCod($this->expiredVideoConfigurationService->getRoleCodeExpiredOwner(), true) as $person) {
-                        $mmObj->addPersonWithRole($person, $roleOwner);
-                        $mmObj->removePersonWithRole($person, $role);
-                    }
-                }
+        $expiredOwnerCode = $this->expiredVideoConfigurationService->getRoleCodeExpiredOwner();
+        $roleOwner = $this->documentManager->getRepository(Role::class)->findOneBy(['cod' => $this->personalScopeRoleCode]);
+        foreach ($multimediaObject->getRoles() as $role) {
+            if ($expiredOwnerCode !== $role->getCod()) {
+                continue;
             }
-
-            $aRenew = $mmObj->getProperty(
-                $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewExpirationDateKey()
-            );
-            $aRenew[] = $days;
-            $mmObj->setProperty(
-                $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewExpirationDateKey(),
-                $aRenew
-            );
-
-            $mmObj->removeProperty(
-                $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey()
-            );
-
-            $date = new \DateTime();
-            $date->add(new \DateInterval('P'.$days.'D'));
-            $mmObj->setPropertyAsDateTime(
-                $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
-                $date
-            );
-
-            $this->expiredVideoUpdateService->postVideo($mmObj);
-
-            $this->documentManager->flush();
+            foreach ($multimediaObject->getPeopleByRoleCod($expiredOwnerCode, true) as $person) {
+                $multimediaObject->addPersonWithRole($person, $roleOwner);
+                $multimediaObject->removePersonWithRole($person, $role);
+            }
         }
 
-        return $this->redirectToRoute('pumukit_expired_video_list', [], Response::HTTP_MOVED_PERMANENTLY);
+        $renewals = $multimediaObject->getProperty($this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewExpirationDateKey()) ?? [];
+        $renewals[] = $days;
+        $multimediaObject->setProperty($this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewExpirationDateKey(), $renewals);
+        $multimediaObject->removeProperty($this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey());
+        $multimediaObject->setPropertyAsDateTime(
+            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
+            new \DateTime('+'.$days.' days')
+        );
+
+        $this->expiredVideoUpdateService->postVideo($multimediaObject);
+        $this->documentManager->flush();
+        $this->addFlash('success', 'The video has been renewed.');
+
+        return $this->redirectToList($request);
+    }
+
+    private function checkToken(Request $request): void
+    {
+        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN, (string) $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Invalid CSRF token');
+        }
+    }
+
+    private function redirectToList(Request $request): RedirectResponse
+    {
+        return $this->redirectToRoute('pumukit_expired_video_list', ['page' => max(1, $request->request->getInt('page', 1))], Response::HTTP_SEE_OTHER);
     }
 }

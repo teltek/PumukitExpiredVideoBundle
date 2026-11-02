@@ -37,8 +37,8 @@ class ExpiredVideoDeleteCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($this->expiredVideoConfigurationService->isDeactivatedService()) {
-            $message = 'Expiration date days is 0, it means deactivate expired video functionality.';
+        if (!$this->expiredVideoConfigurationService->isEnabled()) {
+            $message = 'The expired video bundle is disabled (pumukit_expired_video.enable: false).';
             $this->generateTableWithResult($output, [], $message);
 
             return Command::FAILURE;

@@ -16,6 +16,7 @@ class ExpiredVideoConfigurationService
     public const ROLE_ACCESS_EXPIRED_VIDEO = 'ROLE_ACCESS_EXPIRED_VIDEO';
 
     public function __construct(
+        private readonly bool $enabled,
         private readonly int $expirationDateDaysConf,
         private readonly int $rangeWarningDays,
         private readonly string $notificationEmailSubject,
@@ -27,9 +28,9 @@ class ExpiredVideoConfigurationService
         private readonly string $deleteEmailTemplate,
     ) {}
 
-    public function isDeactivatedService(): bool
+    public function isEnabled(): bool
     {
-        return 0 === $this->expirationDateDaysConf;
+        return $this->enabled;
     }
 
     public function getExpirationDateDaysConf(): int

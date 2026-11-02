@@ -197,6 +197,30 @@
         <source>PuMuKIT - Multimedia objects deleted</source>
         <target>PuMuKIT - Obxetos multimedia borrados</target>
       </trans-unit>
+      <trans-unit id="KpKUTYh" resname="There are no videos about to expire.">
+        <source>There are no videos about to expire.</source>
+        <target state="translated">Non hai vídeos a piques de caducar.</target>
+      </trans-unit>
+      <trans-unit id="TWFhJCp" resname="This video has no expiration date.">
+        <source>This video has no expiration date.</source>
+        <target state="translated">Este vídeo non ten data de caducidade.</target>
+      </trans-unit>
+      <trans-unit id="KgTwmRm" resname="Expiration date updated">
+        <source>Expiration date updated</source>
+        <target state="translated">Data de caducidade actualizada</target>
+      </trans-unit>
+      <trans-unit id="XwQdRNF" resname="Leave it empty to renew with the default period.">
+        <source>Leave it empty to renew with the default period.</source>
+        <target state="translated">Déixao baleiro para renovar co período por defecto.</target>
+      </trans-unit>
+      <trans-unit id="aDjgTdx" resname="The video has been deleted.">
+        <source>The video has been deleted.</source>
+        <target state="translated">Borrouse o vídeo.</target>
+      </trans-unit>
+      <trans-unit id="xHntWzS" resname="The video has been renewed.">
+        <source>The video has been renewed.</source>
+        <target state="translated">Renovouse o vídeo.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

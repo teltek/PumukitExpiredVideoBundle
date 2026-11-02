@@ -197,6 +197,30 @@
         <source>PuMuKIT - Multimedia objects deleted</source>
         <target>PuMuKIT - Multimedia objektuak ezabatu dira</target>
       </trans-unit>
+      <trans-unit id="KpKUTYh" resname="There are no videos about to expire.">
+        <source>There are no videos about to expire.</source>
+        <target state="translated">Ez dago iraungitzear dagoen bideorik.</target>
+      </trans-unit>
+      <trans-unit id="TWFhJCp" resname="This video has no expiration date.">
+        <source>This video has no expiration date.</source>
+        <target state="translated">Bideo honek ez du iraungitze-datarik.</target>
+      </trans-unit>
+      <trans-unit id="KgTwmRm" resname="Expiration date updated">
+        <source>Expiration date updated</source>
+        <target state="translated">Iraungitze-data eguneratuta</target>
+      </trans-unit>
+      <trans-unit id="XwQdRNF" resname="Leave it empty to renew with the default period.">
+        <source>Leave it empty to renew with the default period.</source>
+        <target state="translated">Utzi hutsik lehenetsitako epearekin berritzeko.</target>
+      </trans-unit>
+      <trans-unit id="aDjgTdx" resname="The video has been deleted.">
+        <source>The video has been deleted.</source>
+        <target state="translated">Bideoa ezabatu da.</target>
+      </trans-unit>
+      <trans-unit id="xHntWzS" resname="The video has been renewed.">
+        <source>The video has been renewed.</source>
+        <target state="translated">Bideoa berritu da.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

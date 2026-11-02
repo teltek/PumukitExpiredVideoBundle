@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pumukit\ExpiredVideoBundle\Command;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Pumukit\ExpiredVideoBundle\Services\ExpiredOwnerRoleService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\SchemaBundle\Document\Role;
@@ -28,6 +29,7 @@ class RenewedVideosWithoutOwnerCommand extends Command
         private readonly DocumentManager $documentManager,
         private readonly ExpiredVideoService $expiredVideoService,
         private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        private readonly ExpiredOwnerRoleService $expiredOwnerRoleService,
     ) {
         parent::__construct();
     }
@@ -95,7 +97,7 @@ class RenewedVideosWithoutOwnerCommand extends Command
     {
         $webTVCode = 'PUCHWEBTV';
         $ownerRole = $this->documentManager->getRepository(Role::class)->findOneBy(['cod' => 'owner']);
-        $expiredOwnerRole = $this->documentManager->getRepository(Role::class)->findOneBy(['cod' => ExpiredVideoConfigurationService::EXPIRED_OWNER_CODE]);
+        $expiredOwnerRole = $this->expiredOwnerRoleService->getRole();
 
         $i = 0;
         foreach ($multimediaObjects as $multimediaObject) {

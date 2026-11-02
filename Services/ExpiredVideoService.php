@@ -6,7 +6,6 @@ namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
-use Pumukit\SchemaBundle\Document\Role;
 use Pumukit\SchemaBundle\Document\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -18,6 +17,7 @@ class ExpiredVideoService
         private readonly DocumentManager $documentManager,
         private readonly AuthorizationCheckerInterface $authorizationChecker,
         private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        private readonly ExpiredOwnerRoleService $expiredOwnerRoleService,
     ) {
         $this->mmobjRepo = $this->documentManager->getRepository(MultimediaObject::class);
     }
@@ -109,13 +109,7 @@ class ExpiredVideoService
             }
         }
 
-        $expiredOwnerRole = $this->documentManager->getRepository(Role::class)->findOneBy([
-            'cod' => ExpiredVideoConfigurationService::EXPIRED_OWNER_CODE,
-        ]);
-
-        if (!$expiredOwnerRole instanceof Role) {
-            throw new \Exception('Role not found');
-        }
+        $expiredOwnerRole = $this->expiredOwnerRoleService->getRole();
 
         $filteredMultimediaObjects = [];
         foreach ($multimediaObjects as $multimediaObject) {
