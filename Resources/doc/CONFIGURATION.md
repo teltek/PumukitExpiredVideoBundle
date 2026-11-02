@@ -1,47 +1,74 @@
-Configuration Guide
-===================
+Expired video configuration
+===========================
 
-### Step 1: Add or import the role
+Bundle
+------
 
-1.- Add the following line to include the role "expired owner" into your Resources/data/roles/roles_i18n.csv
-
+```yaml
+pumukit_expired_video:
+  enable: true
+  expiration_date_days: 365
+  range_warning_days: 90
+  administrator_emails: ['admin@example.org']
 ```
-x;"expired_owner";"expired_owner";1;"Antiguo propietario";"Antiguo propietario";"Old owner"
-```
 
-where X is the number of last role to be added.
+| Option                        | Default                                                   | Description |
+|-------------------------------|-----------------------------------------------------------|-------------|
+| `enable`                      | `true`                                                    | If false, nothing expires while the bundle stays registered: the commands and the listener do nothing, the routes return 404 and the menus and permissions disappear |
+| `expiration_date_days`        | `365`                                                     | Days a new multimedia object lasts, days added on each renewal and days an expired video waits before it is deleted (minimum 1) |
+| `range_warning_days`          | `90`                                                      | Days ahead shown in the back-office list |
+| `administrator_emails`        | `['youremailaccount@pumukit.es']`                         | Receivers of the update and delete reports |
+| `notification_email_subject`  | `PuMuKIT - These videos will be expired coming soon.`     | Subject of the email to the owners |
+| `notification_email_template` | `@PumukitExpiredVideo/Email/notification.html.twig`       | Template of the email to the owners |
+| `update_email_subject`        | `PuMuKIT - Remove owner of the following video.`          | Subject of the update report |
+| `update_email_template`       | `@PumukitExpiredVideo/Email/update_admin_email.html.twig` | Template of the update report |
+| `delete_email_subject`        | `PuMuKIT - Multimedia objects deleted`                    | Subject of the delete report |
+| `delete_email_template`       | `@PumukitExpiredVideo/Email/delete_admin_email.html.twig` | Template of the delete report |
 
+The emails are sent with the core `NotificationBundle`, so it must be enabled.
 
-### Step 2: Add configuration
+Permissions
+-----------
 
-The following parameters are necessary to configure the expired video bundle.
+- `ROLE_ACCESS_EXPIRED_VIDEO`: the back-office list, changing the expiration date of a video and renewing all the
+  videos of a series. With it, a user can also renew any video from the email links.
+- `ROLE_UNLIMITED_EXPIRED_VIDEO`: the videos created by the user and the series renewed without a date do not
+  expire (year 9999).
+
+Every user with access to the multimedia objects sees "Show expiration date" in the menu of a video.
+
+Roles
+-----
+
+The "Old owner" role (`expired_owner`) receives the owners of an expired video. It is created, hidden in the
+portal, the first time it is needed.
+
+Commands
+--------
 
 ```bash
-pumukit_expired_video:
-    expiration_date_days: 365
-    range_warning_days: 90
+# Email the owners of the videos that expire in exactly 30 days (or in the next 30 days with true)
+php bin/console pumukit:expired:video:notification 30 false
+
+# Move the owners of the expired videos to "Old owner" and remove the PUCHWEBTV tag
+php bin/console pumukit:expired:video:update --force
+
+# Delete the videos expired more than expiration_date_days ago (without --force it only lists them)
+php bin/console pumukit:expired:video:delete --force
+
+# List the expired videos
+php bin/console pumukit:expired:video:list
+
+# Give back the owners of renewed videos without owner (by default, all the users)
+php bin/console pumukit:expired:video:renewed:without:owner --user=jdoe --renewDate=2027/12/31 --addPublishTag --force
 ```
 
-`expiration_date_days`: number of days in which the Multimedia Object is active from the day of creation. When reaching these number of date days, the Multimedia Object will expire. If a Multimedia Object is renewed, the expiration day will be incresead in this number of days. If you set `expiration_date_days` to `0`, the Expired Video Bundle won't work and commands won't be executed.
+A typical crontab:
 
-`range_warning_days`: used on the administration panel where the list of expired videos to see in an easy way the Multimedia Objects that will be expired in this range of days.
-
-### Other configuration
 ```
-pumukit_expired_video:
-    notification_email_subject: "PuMuKIT - These videos will be expired coming soon."
-    notification_email_template: "@PumukitExpiredVideo/Email/notification.html.twig"
-    update_email_subject: "PuMuKIT - Remove owner of the following video."
-    update_email_template: "@PumukitExpiredVideo/Email/update_admin_email.html.twig"
-    administrator_emails: ['youremailaccount@pumukit.es']
-    delete_email_subject: "PuMuKIT - Multimedia objects deleted"
-    delete_email_template: "@PumukitExpiredVideo/Email/delete_admin_email.html.twig"
-``` 
-
-`notification_email_subject`: Subject of email send on notification command
-`notification_email_template`: Twig template to use on notification command
-`update_email_subject`: Subject of email send on update command
-`update_email_template`: Twig template to use on update command
-`administrator_emails`: Emails of admin that you want to receive all notifications 
-`delete_email_subject`: Subject of email send on delete command
-`delete_email_template`:  Twig template to use on delete command
+0 2 * * *   /srv/pumukit/bin/console pumukit:expired:video:notification 90 false --env=prod
+10 2 * * *  /srv/pumukit/bin/console pumukit:expired:video:notification 30 false --env=prod
+20 2 * * *  /srv/pumukit/bin/console pumukit:expired:video:notification 7 false --env=prod
+40 2 * * *  /srv/pumukit/bin/console pumukit:expired:video:update --force --env=prod
+50 2 * * *  /srv/pumukit/bin/console pumukit:expired:video:delete --force --env=prod
+```
