@@ -53,6 +53,9 @@ Upgrading from 5.0.x (PuMuKIT 5)
   `pumukit_expired_video_delete` and `pumukit_expired_video_update` take the multimedia object id as `{id}`.
 - The views use Bootstrap 5 and Stimulus: if a client overrides `@PumukitExpiredVideo` templates, it must adapt them.
 - The link to renew all the videos of an owner works again, and its token can only be used once.
+- The email links only renew the videos that have not expired yet. Once `pumukit:expired:video:update` has moved
+  the owners to "Old owner" and unpublished a video, only an administrator renews it and publishes it again from
+  the back-office list.
 - Renewing all the videos of a series without a date uses `expiration_date_days` (before, about 10,000 years).
 - `pumukit:expired:video:renewed:without:owner --force` requires `--renewDate YYYY/mm/dd`.
 - The commands are the `pumukit:expired:video:*` ones; old crontabs with `video:expired:*` must be updated.

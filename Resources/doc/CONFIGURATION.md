@@ -43,6 +43,14 @@ Roles
 The "Old owner" role (`expired_owner`) receives the owners of an expired video. It is created, hidden in the
 portal, the first time it is needed.
 
+Renewals
+--------
+
+- From the email links, an owner extends the expiration date of the videos that have not expired yet. Once the
+  update command has moved the owners to "Old owner" and unpublished a video, the links no longer renew it.
+- From the back-office list ("Renew with the same owners"), an administrator extends the date, gives the old owners
+  back the owner role and publishes the video again in the WebTV channel.
+
 Commands
 --------
 
