@@ -15,37 +15,17 @@ class ExpiredVideoConfigurationService
     public const ROLE_UNLIMITED_EXPIRED_VIDEO = 'ROLE_UNLIMITED_EXPIRED_VIDEO';
     public const ROLE_ACCESS_EXPIRED_VIDEO = 'ROLE_ACCESS_EXPIRED_VIDEO';
 
-    private $expirationDateDaysConf;
-    private $rangeWarningDays;
-    private $notificationEmailSubject;
-    private $notificationEmailTemplate;
-    private $updateEmailSubject;
-    private $updateEmailTemplate;
-    private $administratorEmails;
-    private $deleteEmailSubject;
-    private $deleteEmailTemplate;
-
     public function __construct(
-        int $expirationDateDaysConf,
-        int $rangeWarningDays,
-        string $notificationEmailSubject,
-        string $notificationEmailTemplate,
-        string $updateEmailSubject,
-        string $updateEmailTemplate,
-        array $administratorEmails,
-        string $deleteEmailSubject,
-        string $deleteEmailTemplate
-    ) {
-        $this->expirationDateDaysConf = $expirationDateDaysConf;
-        $this->rangeWarningDays = $rangeWarningDays;
-        $this->notificationEmailSubject = $notificationEmailSubject;
-        $this->notificationEmailTemplate = $notificationEmailTemplate;
-        $this->updateEmailSubject = $updateEmailSubject;
-        $this->updateEmailTemplate = $updateEmailTemplate;
-        $this->administratorEmails = $administratorEmails;
-        $this->deleteEmailSubject = $deleteEmailSubject;
-        $this->deleteEmailTemplate = $deleteEmailTemplate;
-    }
+        private readonly int $expirationDateDaysConf,
+        private readonly int $rangeWarningDays,
+        private readonly string $notificationEmailSubject,
+        private readonly string $notificationEmailTemplate,
+        private readonly string $updateEmailSubject,
+        private readonly string $updateEmailTemplate,
+        private readonly array $administratorEmails,
+        private readonly string $deleteEmailSubject,
+        private readonly string $deleteEmailTemplate,
+    ) {}
 
     public function isDeactivatedService(): bool
     {

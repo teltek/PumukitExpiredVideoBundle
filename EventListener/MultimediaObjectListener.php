@@ -13,20 +13,14 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class MultimediaObjectListener
 {
-    private $dm;
-    private $expiredVideoConfigurationService;
     private $days;
     private $newRenovationDate;
-    private $authorizationChecker;
 
     public function __construct(
-        DocumentManager $documentManager,
-        ExpiredVideoConfigurationService $expiredVideoConfigurationService,
-        AuthorizationCheckerInterface $authorizationChecker
+        private readonly DocumentManager $documentManager,
+        private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
     ) {
-        $this->dm = $documentManager;
-        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
-        $this->authorizationChecker = $authorizationChecker;
         $this->days = $this->expiredVideoConfigurationService->getExpirationDateDaysConf();
         $this->getNewRenovationDate();
     }
@@ -119,7 +113,7 @@ class MultimediaObjectListener
             $properties['renew_expiration_date']
         );
 
-        $this->dm->persist($multimediaObject);
-        $this->dm->flush();
+        $this->documentManager->persist($multimediaObject);
+        $this->documentManager->flush();
     }
 }

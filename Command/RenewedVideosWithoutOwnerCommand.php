@@ -9,72 +9,62 @@ use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Pumukit\SchemaBundle\Document\Role;
 use Pumukit\SchemaBundle\Document\Tag;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class renewedVideosWithoutOwnerCommand extends Command
+#[AsCommand(name: 'pumukit:expired:video:renewed:without:owner', description: 'Expired video massive renew by user or all')]
+class RenewedVideosWithoutOwnerCommand extends Command
 {
-    private $expiredVideoService;
-    private $expiredVideoConfigurationService;
-    private $documentManager;
-    private $force;
-    private $user;
-    private $addPublishTag;
-    private $renewDate;
+    private bool $force = false;
+    private string $user = 'allUsers';
+    private bool $addPublishTag = false;
+    private ?string $renewDate = null;
 
     public function __construct(
-        DocumentManager $documentManager,
-        ExpiredVideoService $expiredVideoService,
-        ExpiredVideoConfigurationService $expiredVideoConfigurationService
+        private readonly DocumentManager $documentManager,
+        private readonly ExpiredVideoService $expiredVideoService,
+        private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
     ) {
-        $this->expiredVideoService = $expiredVideoService;
-        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
-        $this->documentManager = $documentManager;
-
         parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('pumukit:expired:video:renewed:without:owner')
-            ->setDescription('Expired video massive renew by user or all')
             ->addOption('addPublishTag', null, InputOption::VALUE_NONE, 'Set this parameter to add publish tag or not')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
-            ->addOption('renewDate', null, InputArgument::OPTIONAL, 'Renew date for videos listed')
-            ->addOption('user', null, InputArgument::OPTIONAL, 'username', 'allUsers')
+            ->addOption('renewDate', null, InputOption::VALUE_REQUIRED, 'Renew date for videos listed')
+            ->addOption('user', null, InputOption::VALUE_REQUIRED, 'username', 'allUsers')
             ->setHelp(
                 <<<'EOT'
+                    Example:
 
-Example:
+                    php bin/console pumukit:expired:video:renewed:without:owner
 
-php bin/console pumukit:expired:video:renewed:without:owner
+                    Options and arguments
 
-Options and arguments
-
-renewDate - The new renew date for all videos listed. Format: YYYY/mm/dd
-user - Filter videos by user expired_owner role
-addPublishTag - add it to recover publish tag in all videos listed.
-force - necessary to execute actions, if not, command will list all videos to fix
-
-EOT
+                    renewDate - The new renew date for all videos listed. Format: YYYY/mm/dd
+                    user - Filter videos by user expired_owner role
+                    addPublishTag - add it to recover publish tag in all videos listed.
+                    force - necessary to execute actions, if not, command will list all videos to fix
+                    EOT
             )
         ;
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->force = (true === $input->getOption('force'));
-        $this->user = $input->getOption('user');
-        $this->addPublishTag = $input->getOption('addPublishTag');
+        $this->force = true === $input->getOption('force');
+        $this->user = (string) $input->getOption('user');
+        $this->addPublishTag = true === $input->getOption('addPublishTag');
         $this->renewDate = $input->getOption('renewDate');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): ?int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $user = ('allUsers' === $this->user) ? null : $this->user;
         $renewedVideos = $this->expiredVideoService->renewedVideosWithoutOwner($user);
@@ -86,15 +76,15 @@ EOT
         }
 
         if ($this->force) {
-            $this->fixVideos($renewedVideos, $this->renewDate, $this->addPublishTag);
+            $this->fixVideos($renewedVideos, (string) $this->renewDate, $this->addPublishTag);
         }
 
         $this->generateTableWithResult($output, $renewedVideos);
 
-        return 0;
+        return Command::SUCCESS;
     }
 
-    private function fixVideos(array $multimediaObjects, string $renewDate, bool $addPublishTag)
+    private function fixVideos(array $multimediaObjects, string $renewDate, bool $addPublishTag): void
     {
         $renewDate = \DateTime::createFromFormat('Y/m/d', $renewDate);
         $webTVCode = 'PUCHWEBTV';
@@ -109,9 +99,7 @@ EOT
             );
 
             if ($addPublishTag) {
-                $tag = $this->documentManager->getRepository(Tag::class)->findOneBy([
-                    'cod' => $webTVCode,
-                ]);
+                $tag = $this->documentManager->getRepository(Tag::class)->findOneBy(['cod' => $webTVCode]);
                 if (!$tag instanceof Tag) {
                     throw new \Exception('Tag not found');
                 }
@@ -135,13 +123,12 @@ EOT
 
     private function generateTableWithResult(OutputInterface $output, array $elements): void
     {
-        $now = new \DateTime();
         $output->writeln([
             '',
             '<info>***** Command: Expired video list *****</info>',
             '<comment>Criteria: </comment>',
-            '<comment>    Expiration date > '.$now->format('c').'</comment>',
-            '<comment>    addPublishTag => '.$this->addPublishTag.'</comment>',
+            '<comment>    Expiration date > '.new \DateTime()->format('c').'</comment>',
+            '<comment>    addPublishTag => '.($this->addPublishTag ? 'true' : 'false').'</comment>',
             '<comment>    Renew Date => '.$this->renewDate.'</comment>',
             '<comment>    User => '.$this->user.'</comment>',
         ]);
@@ -156,11 +143,11 @@ EOT
             ];
             ++$i;
         }
-        $table = new Table($output);
-        $table
+
+        new Table($output)
             ->setHeaders(['Nº', 'MultimediaObject', 'Expiration Date'])
             ->setRows($result)
+            ->render()
         ;
-        $table->render();
     }
 }

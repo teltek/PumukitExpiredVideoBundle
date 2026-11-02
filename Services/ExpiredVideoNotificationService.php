@@ -16,25 +16,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExpiredVideoNotificationService
 {
-    private $documentManager;
-    private $expiredVideoConfigurationService;
-    private $personService;
-    private $senderService;
-    private $translator;
-
     public function __construct(
-        DocumentManager $documentManager,
-        ExpiredVideoConfigurationService $expiredVideoConfigurationService,
-        PersonService $personService,
-        SenderService $senderService,
-        TranslatorInterface $translator
-    ) {
-        $this->documentManager = $documentManager;
-        $this->personService = $personService;
-        $this->senderService = $senderService;
-        $this->translator = $translator;
-        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
-    }
+        private readonly DocumentManager $documentManager,
+        private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        private readonly PersonService $personService,
+        private readonly SenderService $senderService,
+        private readonly TranslatorInterface $translator,
+    ) {}
 
     public function checkAndSendNotifications(iterable $multimediaObjects): array
     {

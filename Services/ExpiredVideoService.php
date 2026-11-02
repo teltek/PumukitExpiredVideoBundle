@@ -12,20 +12,14 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class ExpiredVideoService
 {
-    private $dm;
-    private $authorizationChecker;
-    private $expiredVideoConfigurationService;
     private $mmobjRepo;
 
     public function __construct(
-        DocumentManager $documentManager,
-        AuthorizationCheckerInterface $authorizationChecker,
-        ExpiredVideoConfigurationService $expiredVideoConfigurationService
+        private readonly DocumentManager $documentManager,
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
+        private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
     ) {
-        $this->dm = $documentManager;
-        $this->authorizationChecker = $authorizationChecker;
-        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
-        $this->mmobjRepo = $this->dm->getRepository(MultimediaObject::class);
+        $this->mmobjRepo = $this->documentManager->getRepository(MultimediaObject::class);
     }
 
     public function getExpiredVideos()
@@ -105,7 +99,7 @@ class ExpiredVideoService
 
         $person = null;
         if ($username) {
-            $user = $this->dm->getRepository(User::class)->findOneBy(['username' => $username]);
+            $user = $this->documentManager->getRepository(User::class)->findOneBy(['username' => $username]);
             if (!$user) {
                 throw new \Exception('User not found '.$user);
             }
@@ -115,7 +109,7 @@ class ExpiredVideoService
             }
         }
 
-        $expiredOwnerRole = $this->dm->getRepository(Role::class)->findOneBy([
+        $expiredOwnerRole = $this->documentManager->getRepository(Role::class)->findOneBy([
             'cod' => ExpiredVideoConfigurationService::EXPIRED_OWNER_CODE,
         ]);
 
@@ -139,7 +133,7 @@ class ExpiredVideoService
 
     private function videosByCriteria(array $criteria): array
     {
-        return $this->dm->getRepository(MultimediaObject::class)->findBy($criteria);
+        return $this->documentManager->getRepository(MultimediaObject::class)->findBy($criteria);
     }
 
     private function updateMultimediaObjectExpirationDate(MultimediaObject $multimediaObject, int $days, \DateTime $newRenovationDate): void
@@ -157,7 +151,7 @@ class ExpiredVideoService
             $renewedExpirationDates
         );
 
-        $this->dm->persist($multimediaObject);
-        $this->dm->flush();
+        $this->documentManager->persist($multimediaObject);
+        $this->documentManager->flush();
     }
 }

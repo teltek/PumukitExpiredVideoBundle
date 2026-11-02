@@ -6,36 +6,31 @@ namespace Pumukit\ExpiredVideoBundle\Command;
 
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'pumukit:expired:video:delete', description: 'Expired video delete')]
 class ExpiredVideoDeleteCommand extends Command
 {
-    private $expiredVideoConfigurationService;
-    private $expiredVideoDeleteService;
-
     public function __construct(
-        ExpiredVideoConfigurationService $expiredVideoConfigurationService,
-        ExpiredVideoDeleteService $expiredVideoDeleteService
+        private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        private readonly ExpiredVideoDeleteService $expiredVideoDeleteService,
     ) {
-        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
-        $this->expiredVideoDeleteService = $expiredVideoDeleteService;
         parent::__construct();
     }
 
     protected function configure(): void
     {
         $this
-            ->setName('pumukit:expired:video:delete')
-            ->setDescription('Expired video delete')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
             ->setHelp(
                 <<<'EOT'
-This command delete all the videos without owner people when this expiration_date is less than a the configured max time days.
-EOT
+                    This command delete all the videos without owner people when this expiration_date is less than a the configured max time days.
+                    EOT
             )
         ;
     }
@@ -75,7 +70,7 @@ EOT
 
         $this->generateTableWithResult($output, $result);
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     private function generateTableWithResult(OutputInterface $output, array $elements, ?string $message = null): void
@@ -97,11 +92,10 @@ EOT
             ]);
         }
 
-        $table = new Table($output);
-        $table
+        new Table($output)
             ->setHeaders(['MultimediaObjectID', 'Multimedia Object Title', 'Multimedia Object Expiration Date'])
             ->setRows($elements)
+            ->render()
         ;
-        $table->render();
     }
 }

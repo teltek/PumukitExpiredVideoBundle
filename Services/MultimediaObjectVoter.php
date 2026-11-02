@@ -9,25 +9,23 @@ use Pumukit\SchemaBundle\Document\PermissionProfile;
 use Pumukit\SchemaBundle\Document\User;
 use Pumukit\SchemaBundle\Services\MultimediaObjectService;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class MultimediaObjectVoter extends Voter
 {
     public const RENEW = 'renew';
 
-    private $multimediaObjectService;
+    public function __construct(
+        private readonly MultimediaObjectService $multimediaObjectService,
+    ) {}
 
-    public function __construct(MultimediaObjectService $multimediaObjectService)
+    protected function supports(string $attribute, mixed $subject): bool
     {
-        $this->multimediaObjectService = $multimediaObjectService;
+        return self::RENEW === $attribute && $subject instanceof MultimediaObject;
     }
 
-    protected function supports(string $attribute, $subject): bool
-    {
-        return !(self::RENEW !== $attribute || !$subject instanceof MultimediaObject);
-    }
-
-    protected function voteOnAttribute(string $attribute, $multimediaObject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $multimediaObject, TokenInterface $token, ?Vote $vote = null): bool
     {
         if (self::RENEW === $attribute) {
             return $this->canRenew($multimediaObject, $token->getUser());

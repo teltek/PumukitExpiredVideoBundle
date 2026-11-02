@@ -14,22 +14,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class ExpiredVideoRenewService
 {
-    private $documentManager;
-    private $expiredVideoConfigurationService;
-    private $authorizationChecker;
-    private $personalScopeRoleCode;
-
     public function __construct(
-        DocumentManager $documentManager,
-        ExpiredVideoConfigurationService $expiredVideoConfigurationService,
-        AuthorizationCheckerInterface $authorizationChecker,
-        string $personalScopeRoleCode
-    ) {
-        $this->documentManager = $documentManager;
-        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
-        $this->authorizationChecker = $authorizationChecker;
-        $this->personalScopeRoleCode = $personalScopeRoleCode;
-    }
+        private readonly DocumentManager $documentManager,
+        private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
+        private readonly string $personalScopeRoleCode,
+    ) {}
 
     public function findVideoByRenewKey(string $key)
     {

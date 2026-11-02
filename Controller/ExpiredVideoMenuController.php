@@ -21,19 +21,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/admin/expired/video')]
 class ExpiredVideoMenuController extends AbstractController implements NewAdminControllerInterface
 {
-    private $documentManager;
-    private $expiredVideoConfigurationService;
-    private $expiredVideoService;
-
     public function __construct(
-        DocumentManager $documentManager,
-        ExpiredVideoConfigurationService $expiredVideoConfigurationService,
-        ExpiredVideoService $expiredVideoService
-    ) {
-        $this->documentManager = $documentManager;
-        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
-        $this->expiredVideoService = $expiredVideoService;
-    }
+        private readonly DocumentManager $documentManager,
+        private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        private readonly ExpiredVideoService $expiredVideoService,
+    ) {}
 
     #[Route('/info/{id}', name: 'pumukit_expired_video_info')]
     #[IsGranted('ROLE_ACCESS_MULTIMEDIA_SERIES')]
@@ -51,7 +43,7 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
     #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
     public function updateDateFromModalAction(Request $request, MultimediaObject $multimediaObject): RedirectResponse
     {
-        $newDate = new \DateTime($request->get('date'));
+        $newDate = new \DateTime((string) $request->request->get('date'));
         $multimediaObject->setPropertyAsDateTime(
             $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
             $newDate
@@ -85,7 +77,7 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
     #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
     public function renewAllSeriesAction(Request $request, Series $series): JsonResponse
     {
-        $date = $request->get('date');
+        $date = $request->request->get('date');
         if (!$date) {
             $date = $this->expiredVideoService->getExpirationDateByPermission();
         } else {

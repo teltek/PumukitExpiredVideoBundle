@@ -14,15 +14,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/expired/video')]
 class ExpiredVideoUserController extends AbstractController implements NewAdminControllerInterface
 {
-    private $expiredVideoRenewService;
-
-    public function __construct(ExpiredVideoRenewService $expiredVideoRenewService)
-    {
-        $this->expiredVideoRenewService = $expiredVideoRenewService;
-    }
+    public function __construct(private readonly ExpiredVideoRenewService $expiredVideoRenewService) {}
 
     #[Route('/renew/{key}/', name: 'pumukit_expired_video_owner_renew', defaults: ['key' => null])]
-    public function renewMultimediaObjectFromEmailAction(string $key)
+    public function renewMultimediaObjectFromEmailAction(string $key): Response
     {
         if (!TokenUtils::isValidToken($key)) {
             return $this->redirectToRoute('homepage', [], Response::HTTP_MOVED_PERMANENTLY);
@@ -44,7 +39,7 @@ class ExpiredVideoUserController extends AbstractController implements NewAdminC
     }
 
     #[Route('/all/renew/{key}/', name: 'pumukit_expired_video_owner_renew_all', defaults: ['key' => null])]
-    public function renewAllMultimediaObjectsFromEmailAction(string $key)
+    public function renewAllMultimediaObjectsFromEmailAction(string $key): Response
     {
         if (!TokenUtils::isValidToken($key)) {
             return $this->redirectToRoute('homepage', [], Response::HTTP_MOVED_PERMANENTLY);

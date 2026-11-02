@@ -23,25 +23,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
 class ExpiredVideoAdminController extends AbstractController implements NewAdminControllerInterface
 {
-    private $documentManager;
-    private $expiredVideoConfigurationService;
-    private $expiredVideoDeleteService;
-    private $expiredVideoUpdateService;
-    private $personalScopeRoleCode;
-
     public function __construct(
-        DocumentManager $documentManager,
-        ExpiredVideoConfigurationService $expiredVideoConfigurationService,
-        ExpiredVideoDeleteService $expiredVideoDeleteService,
-        ExpiredVideoUpdateService $expiredVideoUpdateService,
-        string $personalScopeRoleCode
-    ) {
-        $this->documentManager = $documentManager;
-        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
-        $this->expiredVideoDeleteService = $expiredVideoDeleteService;
-        $this->expiredVideoUpdateService = $expiredVideoUpdateService;
-        $this->personalScopeRoleCode = $personalScopeRoleCode;
-    }
+        private readonly DocumentManager $documentManager,
+        private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        private readonly ExpiredVideoDeleteService $expiredVideoDeleteService,
+        private readonly ExpiredVideoUpdateService $expiredVideoUpdateService,
+        private readonly string $personalScopeRoleCode,
+    ) {}
 
     #[Route('/list/', name: 'pumukit_expired_video_list')]
     public function listAction(): Response

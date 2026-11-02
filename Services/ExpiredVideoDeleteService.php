@@ -19,25 +19,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExpiredVideoDeleteService
 {
-    private $documentManager;
-    private $expiredVideoConfigurationService;
-    private $expiredVideoService;
-    private $senderService;
-    private $translator;
-
     public function __construct(
-        DocumentManager $documentManager,
-        ExpiredVideoConfigurationService $expiredVideoConfigurationService,
-        ExpiredVideoService $expiredVideoService,
-        SenderService $senderService,
-        TranslatorInterface $translator
-    ) {
-        $this->documentManager = $documentManager;
-        $this->expiredVideoConfigurationService = $expiredVideoConfigurationService;
-        $this->expiredVideoService = $expiredVideoService;
-        $this->senderService = $senderService;
-        $this->translator = $translator;
-    }
+        private readonly DocumentManager $documentManager,
+        private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
+        private readonly ExpiredVideoService $expiredVideoService,
+        private readonly SenderService $senderService,
+        private readonly TranslatorInterface $translator,
+    ) {}
 
     public function getAllExpiredVideosToDelete()
     {
