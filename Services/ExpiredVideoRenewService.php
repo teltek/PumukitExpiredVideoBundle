@@ -87,7 +87,7 @@ class ExpiredVideoRenewService
     {
         return $this->documentManager->getRepository(MultimediaObject::class)->findBy(
             [
-                'people.people._id' => $person->getId(),
+                'people.people._id' => new ObjectId($person->getId()),
                 $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey(true) => [
                     '$exists' => true,
                 ],
@@ -118,7 +118,7 @@ class ExpiredVideoRenewService
     private function removePersonRenewProperty(PersonInterface $person)
     {
         $person->removeProperty(
-            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()
+            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey()
         );
 
         $this->documentManager->flush();

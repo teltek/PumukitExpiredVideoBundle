@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -43,7 +44,10 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
     #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
     public function updateDateFromModalAction(Request $request, MultimediaObject $multimediaObject): RedirectResponse
     {
-        $newDate = new \DateTime((string) $request->request->get('date'));
+        $newDate = \DateTime::createFromFormat('!Y-m-d', (string) $request->request->get('date'));
+        if (!$newDate) {
+            throw new BadRequestHttpException('The date must have the format YYYY-MM-DD');
+        }
         $multimediaObject->setPropertyAsDateTime(
             $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
             $newDate
@@ -77,11 +81,14 @@ class ExpiredVideoMenuController extends AbstractController implements NewAdminC
     #[IsGranted('ROLE_ACCESS_EXPIRED_VIDEO')]
     public function renewAllSeriesAction(Request $request, Series $series): JsonResponse
     {
-        $date = $request->request->get('date');
-        if (!$date) {
+        $date = (string) $request->request->get('date');
+        if ('' === $date) {
             $date = $this->expiredVideoService->getExpirationDateByPermission();
         } else {
-            $date = \DateTime::createFromFormat('Y-m-d', $date);
+            $date = \DateTime::createFromFormat('!Y-m-d', $date);
+            if (!$date) {
+                throw new BadRequestHttpException('The date must have the format YYYY-MM-DD');
+            }
         }
 
         $multimediaObjects = $this->documentManager->getRepository(MultimediaObject::class)->findBy(

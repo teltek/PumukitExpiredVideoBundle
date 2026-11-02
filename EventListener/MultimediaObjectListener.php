@@ -13,21 +13,14 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class MultimediaObjectListener
 {
-    private $days;
-    private $newRenovationDate;
-
     public function __construct(
         private readonly DocumentManager $documentManager,
         private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
         private readonly AuthorizationCheckerInterface $authorizationChecker,
-    ) {
-        $this->days = $this->expiredVideoConfigurationService->getExpirationDateDaysConf();
-        $this->getNewRenovationDate();
-    }
+    ) {}
 
     public function onMultimediaObjectCreate(MultimediaObjectEvent $event): void
     {
-        $properties = [];
         if ($this->expiredVideoConfigurationService->isDeactivatedService()) {
             return;
         }
@@ -37,82 +30,52 @@ class MultimediaObjectListener
             return;
         }
 
-        $properties['expiration_date'] = $this->newRenovationDate;
-        $properties['renew_expiration_date'] = [$this->expiredVideoConfigurationService->getExpirationDateDaysConf()];
-        $this->updateProperties($multimediaObject, $properties);
+        $multimediaObject->setPropertyAsDateTime(
+            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
+            $this->newExpirationDate()
+        );
+        $multimediaObject->setProperty(
+            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewExpirationDateKey(),
+            [$this->expiredVideoConfigurationService->getExpirationDateDaysConf()]
+        );
+
+        $this->save($multimediaObject);
     }
 
     public function onMultimediaObjectClone(MultimediaObjectCloneEvent $event): void
     {
-        $properties = [];
         if ($this->expiredVideoConfigurationService->isDeactivatedService()) {
             return;
         }
 
         $multimediaObjects = $event->getMultimediaObjects();
-        $validObjects = $this->checkValidMultimediaObject($multimediaObjects['origin'], $multimediaObjects['clon']);
-        if (!$validObjects) {
+        $origin = $multimediaObjects['origin'];
+        $cloned = $multimediaObjects['clon'];
+        if ($origin->isPrototype() || $cloned->isPrototype()) {
             return;
         }
 
-        $this->updateMultimediaObject($multimediaObjects['origin'], $multimediaObjects['clon']);
-        $properties['expiration_date'] = $multimediaObjects['origin']->getProperty(
-            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()
-        );
-        $properties['renew_expiration_date'] = $multimediaObjects['origin']->getProperty(
-            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewExpirationDateKey()
-        );
-        $this->updateProperties($multimediaObjects['clon'], $properties, false);
-    }
-
-    private function getNewRenovationDate(): void
-    {
-        try {
-            if ($this->authorizationChecker->isGranted($this->expiredVideoConfigurationService->getUnlimitedDateExpiredVideoCodePermission())) {
-                $date = new \DateTime();
-                $date->setDate(9999, 01, 01);
-                $this->days = $this->expiredVideoConfigurationService->getUnlimitedExpirationDateDays();
-                $this->newRenovationDate = $date;
-            } else {
-                $this->newRenovationDate = new \DateTime('+'.$this->days.' days');
-            }
-        } catch (\Exception $exception) {
-            $this->newRenovationDate = new \DateTime('+'.$this->days.' days');
-        }
-    }
-
-    private function checkValidMultimediaObject(MultimediaObject $origin, MultimediaObject $cloned): bool
-    {
-        return !($origin->isPrototype() || $cloned->isPrototype());
-    }
-
-    private function updateMultimediaObject(MultimediaObject $origin, MultimediaObject $cloned): void
-    {
-        $properties = $origin->getProperties();
-        if (is_array($properties)) {
-            $this->updateProperties($cloned, $properties, false);
-        }
-    }
-
-    private function updateProperties(MultimediaObject $multimediaObject, array $properties, bool $format = true): void
-    {
-        if ($format) {
-            $multimediaObject->setPropertyAsDateTime(
-                $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
-                $properties['expiration_date']
-            );
-        } else {
-            $multimediaObject->setProperty(
-                $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
-                $properties['expiration_date']
-            );
-        }
-
-        $multimediaObject->setProperty(
+        foreach ([
+            $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(),
             $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewExpirationDateKey(),
-            $properties['renew_expiration_date']
-        );
+        ] as $key) {
+            $cloned->setProperty($key, $origin->getProperty($key));
+        }
 
+        $this->save($cloned);
+    }
+
+    private function newExpirationDate(): \DateTime
+    {
+        if ($this->authorizationChecker->isGranted($this->expiredVideoConfigurationService->getUnlimitedDateExpiredVideoCodePermission())) {
+            return new \DateTime()->setDate(9999, 1, 1);
+        }
+
+        return new \DateTime('+'.$this->expiredVideoConfigurationService->getExpirationDateDaysConf().' days');
+    }
+
+    private function save(MultimediaObject $multimediaObject): void
+    {
         $this->documentManager->persist($multimediaObject);
         $this->documentManager->flush();
     }

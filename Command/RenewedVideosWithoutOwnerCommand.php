@@ -66,6 +66,13 @@ class RenewedVideosWithoutOwnerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $renewDate = $this->renewDate ? \DateTime::createFromFormat('!Y/m/d', $this->renewDate) : false;
+        if ($this->force && !$renewDate) {
+            $output->writeln('<error>The option renewDate is required with force and its format is YYYY/mm/dd.</error>');
+
+            return Command::INVALID;
+        }
+
         $user = ('allUsers' === $this->user) ? null : $this->user;
         $renewedVideos = $this->expiredVideoService->renewedVideosWithoutOwner($user);
 
@@ -76,7 +83,7 @@ class RenewedVideosWithoutOwnerCommand extends Command
         }
 
         if ($this->force) {
-            $this->fixVideos($renewedVideos, (string) $this->renewDate, $this->addPublishTag);
+            $this->fixVideos($renewedVideos, $renewDate, $this->addPublishTag);
         }
 
         $this->generateTableWithResult($output, $renewedVideos);
@@ -84,9 +91,8 @@ class RenewedVideosWithoutOwnerCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function fixVideos(array $multimediaObjects, string $renewDate, bool $addPublishTag): void
+    private function fixVideos(array $multimediaObjects, \DateTime $renewDate, bool $addPublishTag): void
     {
-        $renewDate = \DateTime::createFromFormat('Y/m/d', $renewDate);
         $webTVCode = 'PUCHWEBTV';
         $ownerRole = $this->documentManager->getRepository(Role::class)->findOneBy(['cod' => 'owner']);
         $expiredOwnerRole = $this->documentManager->getRepository(Role::class)->findOneBy(['cod' => ExpiredVideoConfigurationService::EXPIRED_OWNER_CODE]);

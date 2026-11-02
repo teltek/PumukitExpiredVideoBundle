@@ -73,7 +73,7 @@ class ExpiredVideoService
             $date->setDate(9999, 01, 01);
             $newRenovationDate = $date;
         } else {
-            $newRenovationDate = new \DateTime('+'.$this->expiredVideoConfigurationService->getUnlimitedExpirationDateDays().' days');
+            $newRenovationDate = new \DateTime('+'.$this->expiredVideoConfigurationService->getExpirationDateDaysConf().' days');
         }
 
         return $newRenovationDate;
@@ -100,8 +100,8 @@ class ExpiredVideoService
         $person = null;
         if ($username) {
             $user = $this->documentManager->getRepository(User::class)->findOneBy(['username' => $username]);
-            if (!$user) {
-                throw new \Exception('User not found '.$user);
+            if (!$user instanceof User) {
+                throw new \Exception('User not found '.$username);
             }
             $person = $user->getPerson();
             if (!$person) {
@@ -123,7 +123,7 @@ class ExpiredVideoService
                 $filteredMultimediaObjects[] = $multimediaObject;
             }
 
-            if (!$person && !$multimediaObject->getPeopleByRoleCod($expiredOwnerRole)) {
+            if (!$person) {
                 $filteredMultimediaObjects[] = $multimediaObject;
             }
         }

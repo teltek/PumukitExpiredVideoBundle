@@ -5,16 +5,10 @@ declare(strict_types=1);
 namespace Pumukit\ExpiredVideoBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use MongoDB\BSON\ObjectId;
 use Pumukit\NotificationBundle\Services\SenderService;
-use Pumukit\SchemaBundle\Document\Material;
-use Pumukit\SchemaBundle\Document\MediaType\Track;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
-use Pumukit\SchemaBundle\Document\Pic;
-use Pumukit\SchemaBundle\Document\Series;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
+use Pumukit\SchemaBundle\Services\FactoryService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExpiredVideoDeleteService
@@ -22,210 +16,100 @@ class ExpiredVideoDeleteService
     public function __construct(
         private readonly DocumentManager $documentManager,
         private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
-        private readonly ExpiredVideoService $expiredVideoService,
+        private readonly FactoryService $factoryService,
         private readonly SenderService $senderService,
         private readonly TranslatorInterface $translator,
     ) {}
 
-    public function getAllExpiredVideosToDelete()
+    public function getAllExpiredVideosToDelete(): array
     {
-        $now = new \DateTime();
-        $now->sub(new \DateInterval('P'.$this->expiredVideoConfigurationService->getExpirationDateDaysConf().'D'));
-
-        /** @var DocumentRepository $qb */
-        $qb = $this->documentManager->getRepository(MultimediaObject::class);
-        $qb = $qb->createQueryBuilder();
-        $qb->field($this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(true))->exists(true);
-        $qb->field($this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(true))->lte($now->format('c'));
-
-        return $qb->getQuery()->execute();
+        return $this->findExpiredBefore($this->deletionLimit(new \DateTimeImmutable()));
     }
 
-    public function removeMultimediaObject(MultimediaObject $multimediaObject): ?array
+    public function getVideosToDeleteTomorrow(): array
     {
-        $element = [
+        $now = new \DateTimeImmutable();
+
+        return $this->findExpiredBefore($this->deletionLimit($now->modify('+1 day')), $this->deletionLimit($now));
+    }
+
+    public function describe(MultimediaObject $multimediaObject): array
+    {
+        return [
             $multimediaObject->getId(),
             $multimediaObject->getTitle(),
-            $multimediaObject->getProperty(
-                $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()
-            ),
+            $multimediaObject->getProperty($this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey()),
         ];
+    }
 
-        $this->removeAllMedia($multimediaObject);
-        $this->deleteOnBBDD($multimediaObject);
-        $this->deleteSeries($multimediaObject->getSeries()->getId());
+    public function removeMultimediaObject(MultimediaObject $multimediaObject): array
+    {
+        $element = $this->describe($multimediaObject);
+        $series = $multimediaObject->getSeries();
+
+        $this->factoryService->deleteMultimediaObject($multimediaObject);
+
+        if (null !== $series && !$this->seriesHasMultimediaObjects($series->getId())) {
+            $this->factoryService->deleteSeries($series);
+        }
 
         return $element;
     }
 
-    public function removeAllMedia(MultimediaObject $multimediaObject): void
+    public function sendAdministratorEmail(array $result): bool
     {
-        $this->removeTracks($multimediaObject);
-        $this->removeMaterial($multimediaObject);
-        $this->removePics($multimediaObject);
-    }
+        if (!$this->senderService->isEnabled()) {
+            return false;
+        }
 
-    public function sendAdministratorEmail(array $result)
-    {
-        $multimediaObjects = $this->getMultimediaObjectsWhichExpiredTomorrow();
-        $this->senderService->sendNotification(
+        $configuration = $this->expiredVideoConfigurationService->getDeleteEmailConfiguration();
+
+        return $this->senderService->sendNotification(
             $this->expiredVideoConfigurationService->getAdministratorEmails(),
-            $this->translator->trans($this->expiredVideoConfigurationService->getDeleteEmailConfiguration()['subject']),
-            $this->expiredVideoConfigurationService->getDeleteEmailConfiguration()['template'],
+            $this->translator->trans($configuration['subject']),
+            $configuration['template'],
             [
-                'subject' => $this->expiredVideoConfigurationService->getDeleteEmailConfiguration()['subject'],
+                'subject' => $configuration['subject'],
                 'multimedia_objects' => $result,
-                'multimedia_objects_to_remove_tomorrow' => $multimediaObjects,
+                'multimedia_objects_to_remove_tomorrow' => $this->getMultimediaObjectsWhichExpiredTomorrow(),
             ],
             false
         );
     }
 
+    private function deletionLimit(\DateTimeImmutable $date): \DateTimeImmutable
+    {
+        return $date->sub(new \DateInterval('P'.$this->expiredVideoConfigurationService->getExpirationDateDaysConf().'D'));
+    }
+
+    private function findExpiredBefore(\DateTimeImmutable $limit, ?\DateTimeImmutable $after = null): array
+    {
+        $key = $this->expiredVideoConfigurationService->getMultimediaObjectPropertyExpirationDateKey(true);
+        $qb = $this->documentManager->getRepository(MultimediaObject::class)->createQueryBuilder()
+            ->field('status')->notEqual(MultimediaObject::STATUS_PROTOTYPE)
+            ->field($key)->exists(true)
+            ->field($key)->lte($limit->format('c'))
+        ;
+        if ($after) {
+            $qb->field($key)->gt($after->format('c'));
+        }
+
+        return $qb->getQuery()->toArray();
+    }
+
+    private function seriesHasMultimediaObjects(string $seriesId): bool
+    {
+        return null !== $this->documentManager->getRepository(MultimediaObject::class)->findOneBy([
+            'series' => new ObjectId($seriesId),
+            'status' => ['$ne' => MultimediaObject::STATUS_PROTOTYPE],
+        ]);
+    }
+
     private function getMultimediaObjectsWhichExpiredTomorrow(): array
     {
-        $multimediaObjects = $this->expiredVideoService->getExpiredVideosByDateAndRange(1, true);
-
-        $result = [];
-        foreach ($multimediaObjects as $multimediaObject) {
-            $result[] = [
-                $multimediaObject->getId(),
-                $multimediaObject->getTitle(),
-            ];
-        }
-
-        return $result;
-    }
-
-    private function deleteOnBBDD(MultimediaObject $multimediaObject)
-    {
-        /** @var DocumentRepository $repository */
-        $repository = $this->documentManager->getRepository(MultimediaObject::class);
-
-        return $repository->createQueryBuilder()
-            ->remove()
-            ->field('_id')->equals(new ObjectId($multimediaObject->getId()))
-            ->getQuery()
-            ->execute()
-        ;
-    }
-
-    private function deleteSeries(string $seriesID)
-    {
-        $seriesMongoId = new ObjectId($seriesID);
-
-        $multimediaObjectsFromSeries = $this->documentManager->getRepository(MultimediaObject::class)->findBy([
-            'series' => $seriesMongoId,
-            'status' => ['$nin' => [
-                MultimediaObject::STATUS_PROTOTYPE,
-            ]],
-        ]);
-
-        if (0 !== count($multimediaObjectsFromSeries)) {
-            return false;
-        }
-
-        /** @var DocumentRepository $repository */
-        $repository = $this->documentManager->getRepository(Series::class);
-
-        return $repository->createQueryBuilder()
-            ->remove()
-            ->field('_id')->equals($seriesMongoId)
-            ->getQuery()
-            ->execute()
-        ;
-    }
-
-    private function removeTracks(MultimediaObject $multimediaObject): void
-    {
-        $fileSystem = new Filesystem();
-        $tracks = $multimediaObject->getTracks();
-
-        foreach ($tracks as $track) {
-            if ($track instanceof Track) {
-                $isUsedOnAnotherMedia = $this->checkMedia($track);
-                if (!$isUsedOnAnotherMedia && $fileSystem->exists($track->storage()->path()->path())) {
-                    $this->removeFileFromDisk($track->storage()->path()->path());
-                }
-            }
-        }
-    }
-
-    private function removeMaterial(MultimediaObject $multimediaObject): void
-    {
-        $fileSystem = new Filesystem();
-        $materials = $multimediaObject->getMaterials();
-
-        foreach ($materials as $material) {
-            if ($material instanceof Material) {
-                $isUsedOnAnotherMedia = $this->checkMaterial($material);
-                if (!$isUsedOnAnotherMedia && $fileSystem->exists($material->getPath())) {
-                    $this->removeFileFromDisk($material->getPath());
-                }
-            }
-        }
-    }
-
-    private function removePics(MultimediaObject $multimediaObject): void
-    {
-        $fileSystem = new Filesystem();
-        $pics = $multimediaObject->getPics();
-
-        foreach ($pics as $pic) {
-            if ($pic instanceof Pic) {
-                $isUsedOnAnotherMedia = $this->checkPics($pic);
-                if (!$isUsedOnAnotherMedia && $fileSystem->exists($pic->getPath())) {
-                    $this->removeFileFromDisk($pic->getPath());
-                }
-            }
-        }
-    }
-
-    private function checkMedia(Track $track): bool
-    {
-        $multimediaObjects = $this->documentManager->getRepository(MultimediaObject::class)->findBy([
-            'tracks.storage.path' => $track->storage()->path(),
-        ]);
-
-        return count($multimediaObjects) > 1;
-    }
-
-    private function checkMaterial(Material $material): bool
-    {
-        $multimediaObjects = $this->documentManager->getRepository(MultimediaObject::class)->findBy([
-            'materials.path' => $material->getPath(),
-        ]);
-
-        return count($multimediaObjects) > 1;
-    }
-
-    private function checkPics(Pic $pic): bool
-    {
-        $multimediaObjects = $this->documentManager->getRepository(MultimediaObject::class)->findBy([
-            'pics.path' => $pic->getPath(),
-        ]);
-
-        return count($multimediaObjects) > 1;
-    }
-
-    private function removeFileFromDisk(string $path): void
-    {
-        $dirname = pathinfo($path, PATHINFO_DIRNAME);
-
-        try {
-            $deleted = unlink($path);
-            if (!$deleted) {
-                throw new \Exception("Error deleting file '".$path."' on disk");
-            }
-            $finder = new Finder();
-            $finder->files()->in($dirname);
-            if (0 === $finder->count()) {
-                $dirDeleted = rmdir($dirname);
-                if (!$dirDeleted) {
-                    throw new \Exception("Error deleting directory '".$dirname."'on disk");
-                }
-            }
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
+        return array_map(
+            static fn (MultimediaObject $multimediaObject): array => [$multimediaObject->getId(), $multimediaObject->getTitle()],
+            $this->getVideosToDeleteTomorrow()
+        );
     }
 }

@@ -29,7 +29,7 @@ class ExpiredVideoDeleteCommand extends Command
             ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter force the execution of this action')
             ->setHelp(
                 <<<'EOT'
-                    This command delete all the videos without owner people when this expiration_date is less than a the configured max time days.
+                    Deletes the multimedia objects whose expiration date is older than expiration_date_days. Without --force it only lists them.
                     EOT
             )
         ;
@@ -52,21 +52,19 @@ class ExpiredVideoDeleteCommand extends Command
             return Command::FAILURE;
         }
 
+        if (!$input->getOption('force')) {
+            $message = 'The option force must be set to delete expired videos';
+            $this->generateTableWithResult($output, array_map($this->expiredVideoDeleteService->describe(...), $multimediaObjectsExpired), $message);
+
+            return Command::FAILURE;
+        }
+
         $result = [];
         foreach ($multimediaObjectsExpired as $multimediaObject) {
             $result[] = $this->expiredVideoDeleteService->removeMultimediaObject($multimediaObject);
         }
 
-        if (!$input->getOption('force')) {
-            $message = 'The option force must be set to delete expired videos';
-            $this->generateTableWithResult($output, $result, $message);
-
-            return Command::FAILURE;
-        }
-
-        if (!empty($result)) {
-            $this->expiredVideoDeleteService->sendAdministratorEmail($result);
-        }
+        $this->expiredVideoDeleteService->sendAdministratorEmail($result);
 
         $this->generateTableWithResult($output, $result);
 
