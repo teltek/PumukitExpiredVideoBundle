@@ -38,7 +38,7 @@ class ExpiredVideoServiceTest extends TestCase
         return new ExpiredVideoService(
             $this->createStub(DocumentManager::class),
             $authorizationChecker,
-            new ExpiredVideoConfigurationService(true, 365, 90, 'subject', 'template', 'subject', 'template', [], 'subject', 'template'),
+            new ExpiredVideoConfigurationService(365, 90, 'subject', 'template', 'subject', 'template', [], 'subject', 'template'),
             $this->createStub(ExpiredOwnerRoleService::class),
         );
     }

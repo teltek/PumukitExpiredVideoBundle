@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Pumukit\ExpiredVideoBundle\Command;
 
-use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoNotificationService;
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoService;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -18,7 +17,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ExpiredVideoNotificationCommand extends Command
 {
     public function __construct(
-        private readonly ExpiredVideoConfigurationService $expiredVideoConfigurationService,
         private readonly ExpiredVideoService $expiredVideoService,
         private readonly ExpiredVideoNotificationService $expiredVideoNotificationService,
     ) {
@@ -54,13 +52,6 @@ class ExpiredVideoNotificationCommand extends Command
     {
         $days = (int) $input->getArgument('days');
         $range = 'true' === $input->getArgument('range');
-
-        if (!$this->expiredVideoConfigurationService->isEnabled()) {
-            $message = 'The expired video bundle is disabled (pumukit_expired_video.enable: false).';
-            $this->generateTableWithResult($output, [], $days, $message);
-
-            return Command::FAILURE;
-        }
 
         $expiredVideos = $this->expiredVideoService->getExpiredVideosByDateAndRange($days, $range);
         $expiredVideos = is_array($expiredVideos) ? $expiredVideos : iterator_to_array($expiredVideos, false);

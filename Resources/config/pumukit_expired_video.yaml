@@ -5,7 +5,6 @@ services:
     public:        true
     bind:
       $personalScopeRoleCode: "%pumukitschema.personal_scope_role_code%"
-      $isEnabled: "%pumukit_expired_video.enable%"
 
   Pumukit\ExpiredVideoBundle\Controller\:
     resource: '../../Controller'
@@ -18,7 +17,6 @@ services:
   Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService:
     class: Pumukit\ExpiredVideoBundle\Services\ExpiredVideoConfigurationService
     arguments:
-      $enabled: "%pumukit_expired_video.enable%"
       $expirationDateDaysConf: "%pumukit_expired_video.expiration_date_days%"
       $rangeWarningDays: "%pumukit_expired_video.range_warning_days%"
       $notificationEmailSubject: "%pumukit_expired_video.notification_email_subject%"
@@ -48,9 +46,6 @@ services:
 
   Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService:
     class: Pumukit\ExpiredVideoBundle\Services\ExpiredVideoDeleteService
-
-  Pumukit\ExpiredVideoBundle\EventListener\DisabledExpiredVideoListener:
-    class: Pumukit\ExpiredVideoBundle\EventListener\DisabledExpiredVideoListener
 
   Pumukit\ExpiredVideoBundle\EventListener\MultimediaObjectListener:
     class: Pumukit\ExpiredVideoBundle\EventListener\MultimediaObjectListener

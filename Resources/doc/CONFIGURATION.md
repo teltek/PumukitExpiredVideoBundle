@@ -14,7 +14,7 @@ pumukit_expired_video:
 
 | Option                        | Default                                                   | Description |
 |-------------------------------|-----------------------------------------------------------|-------------|
-| `enable`                      | `true`                                                    | If false, nothing expires while the bundle stays registered: the commands and the listener do nothing, the routes return 404 and the menus and permissions disappear |
+| `enable`                      | `true`                                                    | If false, the routes give 404 and nothing else of the bundle is loaded: no commands, listener, voter, menus or permissions |
 | `expiration_date_days`        | `365`                                                     | Days a new multimedia object lasts, days added on each renewal and days an expired video waits before it is deleted (minimum 1) |
 | `range_warning_days`          | `90`                                                      | Days ahead shown in the back-office list |
 | `administrator_emails`        | `['youremailaccount@pumukit.es']`                         | Receivers of the update and delete reports |

@@ -42,13 +42,6 @@ class ExpiredVideoUpdateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (!$this->expiredVideoConfigurationService->isEnabled()) {
-            $message = 'The expired video bundle is disabled (pumukit_expired_video.enable: false).';
-            $this->generateTableWithResult($output, [], $message);
-
-            return Command::FAILURE;
-        }
-
         $expiredVideos = $this->expiredVideoService->getExpiredVideos();
         $expiredVideos = is_array($expiredVideos) ? $expiredVideos : iterator_to_array($expiredVideos, false);
 

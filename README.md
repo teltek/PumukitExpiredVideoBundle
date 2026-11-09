@@ -42,7 +42,7 @@ Upgrading from 5.0.x (PuMuKIT 5)
 --------------------------------
 
 - `expiration_date_days: 0` no longer disables the bundle and is rejected: use `enable: false`. Disabled, the
-  commands and the listener do nothing, the routes return 404 and the menus and permissions disappear.
+  routes give 404 and nothing else of the bundle is loaded: no commands, listener, voter, menus or permissions.
 - `expiration_date_days` and `range_warning_days` must be integers.
 - `pumukit:expired:video:delete` without `--force` only lists the videos; before, it deleted them anyway. The
   videos and the series left empty are deleted through the core: their files, jobs, playlists and annotations

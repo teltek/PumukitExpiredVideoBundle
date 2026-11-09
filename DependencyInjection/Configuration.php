@@ -17,7 +17,7 @@ class Configuration implements ConfigurationInterface
             ->children()
             ->booleanNode('enable')
             ->defaultTrue()
-            ->info('If false, nothing expires while the bundle stays registered: the commands and the listener do nothing, its routes return 404 and its menus and permissions disappear')
+            ->info('If false, the routes give 404 and nothing else of the bundle is loaded: no commands, listener, voter, menus or permissions')
             ->end()
             ->integerNode('expiration_date_days')
             ->defaultValue(365)
