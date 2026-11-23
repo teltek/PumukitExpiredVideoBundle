@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pumukit\ExpiredVideoBundle\Tests\Command;
 
+use MongoDB\BSON\ObjectId;
 use Pumukit\CoreBundle\Tests\PumukitTestCase;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Series;
@@ -67,7 +68,7 @@ class ExpiredVideoDeleteCommandTest extends PumukitTestCase
 
         $this->dm->clear();
         $this->assertNull($this->dm->getRepository(Series::class)->find($seriesId));
-        $this->assertSame(0, $this->dm->getRepository(MultimediaObject::class)->count(['series' => $seriesId]));
+        $this->assertSame(0, $this->dm->getRepository(MultimediaObject::class)->createStandardQueryBuilder()->field('series')->equals(new ObjectId($seriesId))->count()->getQuery()->execute());
     }
 
     private function multimediaObject(Series $series, string $expiration): MultimediaObject

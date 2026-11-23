@@ -9,8 +9,8 @@ use MongoDB\BSON\ObjectId;
 use Pumukit\SchemaBundle\Document\MultimediaObject;
 use Pumukit\SchemaBundle\Document\Person;
 use Pumukit\SchemaBundle\Document\PersonInterface;
+use Pumukit\SchemaBundle\Document\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class ExpiredVideoRenewService
 {
@@ -30,14 +30,14 @@ class ExpiredVideoRenewService
         ]);
     }
 
-    public function getPersonWithRenewKey(string $key)
+    public function getPersonWithRenewKey(string $key): ?Person
     {
         return $this->documentManager->getRepository(Person::class)->findOneBy([
             $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey(true) => new ObjectId($key),
         ]);
     }
 
-    public function isOwner(MultimediaObject $multimediaObject, UserInterface $user): bool
+    public function isOwner(MultimediaObject $multimediaObject, User $user): bool
     {
         if ($this->authorizationChecker->isGranted(ExpiredVideoConfigurationService::ROLE_ACCESS_EXPIRED_VIDEO)) {
             return true;
@@ -95,7 +95,7 @@ class ExpiredVideoRenewService
         );
     }
 
-    public function renewAllMultimediaObjects($multimediaObjects, UserInterface $user, PersonInterface $person): void
+    public function renewAllMultimediaObjects($multimediaObjects, User $user, Person $person): void
     {
         foreach ($multimediaObjects as $multimediaObject) {
             if (!$this->isOwner($multimediaObject, $user)) {
@@ -108,14 +108,14 @@ class ExpiredVideoRenewService
         $this->removePersonRenewProperty($person);
     }
 
-    private function generateRenewDate(int $days): \DateTimeInterface
+    private function generateRenewDate(int $days): \DateTime
     {
         $date = new \DateTime();
 
         return $date->add(new \DateInterval('P'.$days.'D'));
     }
 
-    private function removePersonRenewProperty(PersonInterface $person)
+    private function removePersonRenewProperty(Person $person)
     {
         $person->removeProperty(
             $this->expiredVideoConfigurationService->getMultimediaObjectPropertyRenewKey()

@@ -6,6 +6,7 @@ namespace Pumukit\ExpiredVideoBundle\Controller;
 
 use Pumukit\ExpiredVideoBundle\Services\ExpiredVideoRenewService;
 use Pumukit\ExpiredVideoBundle\Utils\TokenUtils;
+use Pumukit\NewAdminBundle\Controller\LoggedInUserTrait;
 use Pumukit\NewAdminBundle\Controller\NewAdminControllerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/expired/video')]
 class ExpiredVideoUserController extends AbstractController implements NewAdminControllerInterface
 {
+    use LoggedInUserTrait;
+
     public function __construct(private readonly ExpiredVideoRenewService $expiredVideoRenewService) {}
 
     #[Route('/renew/{key}/', name: 'pumukit_expired_video_owner_renew', methods: ['GET'])]
@@ -28,7 +31,7 @@ class ExpiredVideoUserController extends AbstractController implements NewAdminC
             return $this->render('@PumukitExpiredVideo/ExpiredVideo/renewExpiredVideo.html.twig', ['message' => 2]);
         }
 
-        $isOwner = $this->expiredVideoRenewService->isOwner($multimediaObject, $this->getUser());
+        $isOwner = $this->expiredVideoRenewService->isOwner($multimediaObject, $this->loggedInUser());
         if (!$isOwner) {
             return $this->render('@PumukitExpiredVideo/ExpiredVideo/renewExpiredVideo.html.twig', ['message' => 1]);
         }
@@ -55,7 +58,7 @@ class ExpiredVideoUserController extends AbstractController implements NewAdminC
             return $this->render('@PumukitExpiredVideo/ExpiredVideo/renewExpiredVideo.html.twig', ['message' => 2]);
         }
 
-        $this->expiredVideoRenewService->renewAllMultimediaObjects($multimediaObjects, $this->getUser(), $person);
+        $this->expiredVideoRenewService->renewAllMultimediaObjects($multimediaObjects, $this->loggedInUser(), $person);
 
         return $this->render('@PumukitExpiredVideo/ExpiredVideo/renewExpiredVideo.html.twig', ['message' => 0]);
     }
